@@ -1,2 +1,1 @@
-# cuongduong
-a portfolio site for myself
+# cuongduong.dev
