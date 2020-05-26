@@ -16,7 +16,7 @@
     height: 21px;
     width: 46px;
 
-    left: 60px;
+    left: 61px;
     top: 70px;
 
     position: absolute;
@@ -65,6 +65,22 @@
       top: -138px;
       left: 10px;
       width: 220px;
+    }
+    a {
+      will-change: opacity, background-color;
+
+      transition-property: background-color;
+      transition-duration: 0.6s;
+      transition-timing-function: ease-in-out;
+    }
+    a:hover {
+      background-color: #444;
+      cursor: pointer;
+    }
+    a:active {
+      opacity: 0.8;
+      background-color: #333;
+      transition: background-color 0.1s;
     }
   }
   .animatedIntroRight {

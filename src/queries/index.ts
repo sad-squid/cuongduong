@@ -35,9 +35,9 @@ export const homePageLogoP2Query = graphql`
 
 export const githubLogoQuery = graphql`
   fragment githubLogoQuery on Query {
-    githubLogo: file(relativePath: { eq: "GitHub-Mark-Light-32px.png" }) {
+    githubLogo: file(relativePath: { eq: "GitHub-Mark-Light-64px.png" }) {
       childImageSharp {
-        fluid(maxHeight: 32) {
+        fluid(maxHeight: 64) {
           ...GatsbyImageSharpFluid
         }
       }
@@ -49,7 +49,7 @@ export const twitterLogoQuery = graphql`
   fragment twitterLogoQuery on Query {
     twitterLogo: file(relativePath: { eq: "Twitter_Logo_WhiteOnImage.png" }) {
       childImageSharp {
-        fluid(maxHeight: 32) {
+        fluid(maxHeight: 64) {
           ...GatsbyImageSharpFluid
         }
       }
@@ -61,7 +61,7 @@ export const instagramLogoQuery = graphql`
   fragment instagramLogoQuery on Query {
     instagramLogo: file(relativePath: { eq: "IG_Glyph_Fill.png" }) {
       childImageSharp {
-        fluid(maxHeight: 32) {
+        fluid(maxHeight: 64) {
           ...GatsbyImageSharpFluid
         }
       }

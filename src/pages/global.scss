@@ -1,13 +1,13 @@
 html,
 body {
   margin: 0;
+  background: #222;
 }
 
 main {
   background: #222;
   display: flex;
 
-  height: max-content;
   min-height: 100vh;
   justify-content: center;
   align-items: center;

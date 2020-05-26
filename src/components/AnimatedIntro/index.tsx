@@ -99,10 +99,10 @@ const AnimatedIntro: React.FC = () => {
         </animated.div>
         <animated.div className={styles.links} style={isTransitioning ? { opacity: 0 } : { opacity: 1 }}>
           <a className={styles.link} href="https://github.com/sad-squid/" rel="noreferrer noopener" target="_blank">
-            <img alt="link to github" src={data.githubLogo.childImageSharp.fluid.src} />
+            <img height={32} alt="link to github" src={data.githubLogo.childImageSharp.fluid.src} />
           </a>
           <a className={styles.link} href="https://twitter.com/asadsquid/" rel="noreferrer noopener" target="_blank">
-            <img alt="link to twitter" src={data.twitterLogo.childImageSharp.fluid.src} />
+            <img height={32} alt="link to twitter" src={data.twitterLogo.childImageSharp.fluid.src} />
           </a>
           <a
             className={styles.link}
@@ -110,7 +110,7 @@ const AnimatedIntro: React.FC = () => {
             rel="noreferrer noopener"
             target="_blank"
           >
-            <img alt="link to instagram" src={data.instagramLogo.childImageSharp.fluid.src} />
+            <img height={32} alt="link to instagram" src={data.instagramLogo.childImageSharp.fluid.src} />
           </a>
         </animated.div>
       </div>
