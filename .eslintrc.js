@@ -24,7 +24,7 @@ module.exports = {
     '@typescript-eslint/camelcase': 'off',
     '@typescript-eslint/quotes': 'off',
     'react/prop-types': 'off',
-    indent: ['error', 2, { SwitchCase: 1 }],
+    indent: ['warn', 2],
   },
   settings: {
     react: {
