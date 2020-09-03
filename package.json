@@ -1,5 +1,6 @@
 {
   "homepage": "http://cuongduong.dev/",
+  "license": "MIT",
   "dependencies": {
     "gatsby": "^2.22.9",
     "gatsby-image": "^2.4.4",
