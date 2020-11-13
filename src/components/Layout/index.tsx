@@ -1,13 +1,14 @@
 import React from 'react';
-import { Helmet } from 'react-helmet';
+import { Header } from './Header';
+import styles from './layout.module.scss';
 
 const Layout: React.FC = ({ children }) => {
   return (
     <>
-      <Helmet>
-        <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet" />
-      </Helmet>
-      <main>{children}</main>
+      <Header>helo</Header>
+      <div className={styles.mainContent}>
+        <main>{children}</main>
+      </div>
     </>
   );
 };

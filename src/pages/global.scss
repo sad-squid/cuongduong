@@ -1,17 +1,23 @@
 html,
 body {
+  height: 100%;
   margin: 0;
-  background: #222;
+  background: var(--color-bg);
+  color: var(--color-text-onDark);
+  font: var(--typography-default);
+}
+
+#___gatsby {
+  min-height: 100%;
+}
+
+#gatsby-focus-wrapper {
+  margin: 0 auto;
 }
 
 main {
-  background: #222;
-  display: flex;
-
-  min-height: 100vh;
-  justify-content: center;
-  align-items: center;
-  margin: 0;
+  display: block;
+  min-height: 100%;
 }
 
 .noselect {
@@ -20,6 +26,18 @@ main {
   -khtml-user-select: none; /* Konqueror HTML */
   -moz-user-select: none; /* Old versions of Firefox */
   -ms-user-select: none; /* Internet Explorer/Edge */
-  user-select: none; /* Non-prefixed version, currently
-                        supported by Chrome, Edge, Opera and Firefox */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+}
+
+:root {
+  --color-primary: #f86048;
+  --color-secondary: #fff;
+  --color-text-onDark: #fff;
+  --color-bg: #222;
+  --border: solid 1px #fff;
+  --font-size-default: 14px;
+  --font-family: 'Montserrat', sans-serif;
+  --font-weight: 300;
+
+  --typography-default: normal normal 300 14px 'Montserrat', sans-serif;
 }

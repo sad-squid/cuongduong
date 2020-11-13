@@ -1,0 +1,60 @@
+.introBlock {
+  grid-area: intro;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 16px;
+  font-weight: 300;
+
+  color: white;
+  line-height: 2rem;
+}
+.intro {
+  margin-bottom: 1rem;
+
+  .coloredIntroText {
+    font-weight: bold;
+    color: var(--color-primary);
+  }
+
+  a:hover {
+    background-color: #444;
+    cursor: pointer;
+  }
+  a:active {
+    opacity: 0.8;
+    background-color: #333;
+  }
+}
+.introRight {
+  text-align: left;
+  margin-left: 1rem;
+}
+
+#lastInList {
+  margin-top: 1rem;
+  margin-bottom: 0rem;
+}
+
+.links {
+  margin-top: 0;
+  padding-top: 0.5rem;
+
+  .link {
+    margin-right: 12px;
+  }
+  @media (max-width: 768px) {
+    padding-top: 0.25em;
+  }
+}
+
+.socialMediaLogo {
+  opacity: 0.5;
+  height: 24px;
+}
+
+#twitterLogo {
+  object-fit: cover;
+  height: 24px;
+  width: 32px;
+
+  margin: 0 -4px;
+}

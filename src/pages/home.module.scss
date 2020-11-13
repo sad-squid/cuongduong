@@ -1,0 +1,35 @@
+.homeContainer {
+  margin: 0 auto;
+  max-width: 1000px;
+  padding: 1rem 0;
+  display: grid;
+  grid-template-columns: 2.5fr 2fr;
+  grid-template-areas: 'intro pic';
+  grid-template-rows: auto;
+  grid-column-gap: 1em;
+  grid-row-gap: 2em;
+
+  @media (max-width: 768px) {
+    grid-template-rows: max-content auto;
+    grid-template-columns: auto;
+    grid-template-areas:
+      'pic'
+      'intro';
+  }
+}
+
+.profilePic {
+  margin: 0 2rem;
+  padding: -4px;
+
+  justify-self: center;
+  align-self: center;
+  grid-area: pic;
+
+  @media (max-width: 768px) {
+    margin: 2rem;
+  }
+  @media (max-width: 450px) {
+    max-height: 152px;
+  }
+}

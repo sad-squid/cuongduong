@@ -15,8 +15,7 @@
     "node-sass": "^4.14.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-helmet": "^6.1.0",
-    "react-spring": "^9.0.0-rc.3"
+    "react-helmet": "^6.1.0"
   },
   "devDependencies": {
     "@types/node": "^13.7.4",
@@ -30,7 +29,7 @@
     "eslint-config-prettier": "^6.10.1",
     "eslint-plugin-prettier": "^3.1.2",
     "eslint-plugin-react": "^7.19.0",
-    "prettier": "2.0.5",
+    "prettier": "^2.1.2",
     "typescript": "^3.9.2"
   },
   "resolutions": {
@@ -42,8 +41,8 @@
     "build": "gatsby build",
     "dev": "gatsby develop",
     "format": "prettier --write \"**/*.{js,jsx,json,md}\"",
-    "test": "npm run type-check && npm run lint",
-    "lint": "eslint . --ext .js,.ts,.tsx",
+    "test": "yarn type-check && yarn lint",
+    "lint": "eslint src --ext .js,.ts,.tsx",
     "start": "yarn dev",
     "serve": "gatsby serve",
     "clean": "gatsby clean"

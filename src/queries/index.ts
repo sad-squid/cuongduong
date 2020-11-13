@@ -1,14 +1,5 @@
 import { graphql } from 'gatsby';
 
-// export const siteMetadataTitleQuery = graphql`
-//   fragment siteMetadataTitleQuery on Query {
-//     site {
-//       siteMetadata {
-//         title
-//       }
-//     }
-//   }
-// `;
 export const homePageLogoP1Query = graphql`
   fragment homePageLogoP1Query on Query {
     logop1: file(relativePath: { eq: "iconp1.png" }) {
@@ -26,6 +17,17 @@ export const homePageLogoP2Query = graphql`
     logop2: file(relativePath: { eq: "iconp2.png" }) {
       childImageSharp {
         fluid(maxHeight: 152) {
+          ...GatsbyImageSharpFluid
+        }
+      }
+    }
+  }
+`;
+export const homePageProfileQuery = graphql`
+  fragment homePageProfileQuery on Query {
+    profile: file(relativePath: { eq: "profile.png" }) {
+      childImageSharp {
+        fluid(maxHeight: 300) {
           ...GatsbyImageSharpFluid
         }
       }
@@ -60,6 +62,17 @@ export const twitterLogoQuery = graphql`
 export const instagramLogoQuery = graphql`
   fragment instagramLogoQuery on Query {
     instagramLogo: file(relativePath: { eq: "IG_Glyph_Fill.png" }) {
+      childImageSharp {
+        fluid(maxHeight: 64) {
+          ...GatsbyImageSharpFluid
+        }
+      }
+    }
+  }
+`;
+export const linkedInLogoQuery = graphql`
+  fragment linkedInLogoQuery on Query {
+    linkedInLogo: file(relativePath: { eq: "LI-In-Bug.png" }) {
       childImageSharp {
         fluid(maxHeight: 64) {
           ...GatsbyImageSharpFluid

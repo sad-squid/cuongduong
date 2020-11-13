@@ -1,6 +1,6 @@
 module.exports = {
   siteMetadata: {
-    description: "Cuong Duong's personal blog/website",
+    description: 'Personal blog and website for Cuong Duong',
     title: 'cuongduong.dev',
     github: '@sad-squid',
     twitter: '@asadsquid',
