@@ -1,7 +1,6 @@
 import React from 'react';
 import { useStaticQuery, graphql } from 'gatsby';
 
-// import Logo from '../components/Logo';
 import './global.scss';
 import styles from './home.module.scss';
 import Layout from '../components/Layout';
