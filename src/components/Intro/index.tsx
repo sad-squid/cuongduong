@@ -23,9 +23,14 @@ export const Intro: React.FC = () => {
         people. I&rsquo;m passionate about fostering a healthy learning culture and creating that space for everyone.
       </div>
       <div className={styles.intro}>
-        Currently, I&rsquo;m working as a software engineer creating and maintaining scalable guest experiences on{' '}
-        <a className={styles.coloredIntroText} href="https://www.target.com" rel="noreferrer noopener" target="_blank">
-          Target.com
+        Currently, I&rsquo;m working as a software engineer creating and maintaining scalable customer experiences for{' '}
+        <a
+          className={styles.coloredIntroText}
+          href="https://on.zoom.us/e/view"
+          rel="noreferrer noopener"
+          target="_blank"
+        >
+          OnZoom
         </a>
         .
       </div>
@@ -83,7 +88,7 @@ export const Intro: React.FC = () => {
         </a>
         <a
           className={styles.link}
-          href="https://linkedin.com/cuongduong-dev/"
+          href="https://linkedin.com/in/cuongduong-dev/"
           rel="noreferrer noopener"
           target="_blank"
         >
