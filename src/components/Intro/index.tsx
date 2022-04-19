@@ -23,14 +23,15 @@ export const Intro: React.FC = () => {
         people. I&rsquo;m passionate about fostering a healthy learning culture and creating that space for everyone.
       </div>
       <div className={styles.intro}>
-        Currently, I&rsquo;m working as a software engineer creating and maintaining scalable customer experiences for{' '}
+        Currently, I&rsquo;m working as a software engineer creating and maintaining scalable customer experiences for
+        the{' '}
         <a
           className={styles.coloredIntroText}
-          href="https://on.zoom.us/e/view"
+          href="https://support.google.com/"
           rel="noreferrer noopener"
           target="_blank"
         >
-          OnZoom
+          Google Help Experience
         </a>
         .
       </div>
