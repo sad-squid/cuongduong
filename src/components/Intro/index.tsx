@@ -77,7 +77,7 @@ export const Intro: React.FC = () => {
         </a>
         <a
           className={styles.link}
-          href="https://instagram.com/cuongduong152/"
+          href="https://instagram.com/c__squid/"
           rel="noreferrer noopener"
           target="_blank"
         >
