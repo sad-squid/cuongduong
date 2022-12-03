@@ -1,7 +1,7 @@
 import React from 'react';
 import { useStaticQuery, graphql } from 'gatsby';
 
-import styles from './intro.module.scss';
+import * as styles from './intro.module.scss';
 
 export const Intro: React.FC = () => {
   const data = useStaticQuery(graphql`

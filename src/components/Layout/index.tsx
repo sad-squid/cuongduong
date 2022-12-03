@@ -1,6 +1,6 @@
 import React from 'react';
 import { Header } from './Header';
-import styles from './layout.module.scss';
+import * as styles from './layout.module.scss';
 
 const Layout: React.FC = ({ children }) => {
   return (
