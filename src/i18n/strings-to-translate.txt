@@ -1,0 +1,77 @@
+# All user-visible strings in the site. Keep in sync with locales/en.json.
+# Format: one string per line. <1>...</1> marks an inline emphasis span.
+
+# --- home ---
+software engineer
+cuong duong
+I'm a senior engineer in Tokyo — currently building <1>NewsArc</1> at SmartNews, previously at Google, Zoom, and Target. Before tech I pulled crab cages in Louisiana bayous and stamped metal at my dad's shop. These days I build for the web, think hard about accessibility, and study languages (programming and human).
+not looking, say hi
+Founding engineer · NewsArc
+Top A11y Contributor '23 · Google
+$6M+ ad revenue saved · Target
+Portfolio
+role
+Senior Software Engineer
+SmartNews · Tokyo, Japan
+previously
+highlights
+say something,
+do something
+Tokyo, JP
+speaks
+
+# --- about ---
+about
+hi, im cuong
+name
+Cuong = 'Kong' · Tri = 'tree' · Duong = 'Dong'
+story
+Born in Ho Chi Minh City. Landed in Minnesota on Valentine's Day 1998, age four, with my parents and sister. Grew up in Eagan — studied computer science and IT infrastructure at the University of Minnesota.
+Before tech I did other work. A summer stamping metal at my dad's shop. A summer pulling crab cages with my uncle in Louisiana bayous — 3am to 3pm, Gulf of Mexico heat. Years pulling espresso at Caribou Coffee and bartending through school. That work shaped how I think about craft: slow is fast, and the person next to you matters more than the tool in your hand.
+Tech career started at Target in 2017. Then Zoom, Google, and now SmartNews in Tokyo — where I'm a founding engineer on NewsArc. I'm near Shibuya, learning Mandarin, resuming Korean, and trying to move to Kichijoji by the end of 2026.
+skills
+Frontend
+Accessibility
+LLM / AI
+Design Systems
+Platform
+awards
+Top Accessibility Contributor '23 — Google
+codeRED Hackathon Winner — Target, '17 / '18 / '19
+MN State Champion — One Act Play, Forensics & Speech
+languages
+English — fluent
+Vietnamese — native
+Japanese — near-native speaking, weak reading
+Chinese — learning
+Korean — resuming
+
+# --- work ---
+work
+Roles
+Eight years, four companies, one throughline: build for real people, and leave things better than I found them.
+timeline
+(role-specific scope, bullets, dates — see locales/en.json under work.roles.*)
+
+# --- blog ---
+blog
+Writing
+Notes on accessibility, design systems, and learning languages — programming and human. First post drafting.
+
+# --- nav / layout / search ---
+home
+work (nav)
+about (nav)
+blog (nav)
+the cake is a lie
+hello, world!
+today is {{date}}.
+Light mode
+Dark mode
+oh, the places you'll go!
+no match
+navigate
+complete
+go
+close
+Language

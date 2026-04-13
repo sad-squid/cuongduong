@@ -1,0 +1,147 @@
+{
+  "common": {
+    "portfolio": "ポートフォリオ",
+    "comingSoon": "近日公開。",
+    "previously": "前職",
+    "currently": "現在",
+    "language": "言語"
+  },
+  "home": {
+    "overline": "ソフトウェアエンジニア",
+    "name": "楊 志強",
+    "bio": "東京の SmartNews に勤めるシニアエンジニアです。以前は Google、Zoom、Target に在籍していました。学びの文化を育み、誰もがそのための場所を持てるようにすることに情熱を持っています。",
+    "highlight1": "React Native + LLM パイプライン · SmartNews",
+    "highlight2": "デザインシステム · Target / Zoom / Google",
+    "highlight3": "広告収益 600万ドル超を救出 · Target",
+    "factGoogle": "Guided Support Experience のアクセシビリティ推進役と i18n 担当。",
+    "factZoom": "Zoom Events の CI/CD とテストフレームワークを再設計。",
+    "factTarget": "Target 初のデザインシステムを出荷 — 100以上のアプリ、3,600以上の宣言。",
+    "role": "役職",
+    "roleTitle": "シニアソフトウェアエンジニア",
+    "roleOrg": "SmartNews · 東京、日本",
+    "highlights": "ハイライト",
+    "tagline1": "有言",
+    "tagline2": "実行",
+    "locationCity": "東京、JP",
+    "speaks": "話せる"
+  },
+  "about": {
+    "overline": "紹介",
+    "title": "ヤッホー、コンです",
+    "subtitle": "シニアエンジニア、見習いパン職人。",
+    "subtitleAlt": "元スラム・ポエト、元バイユーの蟹漁師。",
+    "introOpener": "見つけてくれたね！",
+    "intro": "最初は古いサイトの作り直しのつもりが、つい夢中になってしまって — LLM のおかげで時間に余裕ができて、ようやく作る側の楽しみが戻ってきた感じ。ここには、この数年（ちょっと煮詰まりすぎたくらい）温めてきたアイデアを少しずつ並べていく予定です。ひとまずは、ゆっくりしていってください。用があれば、<1>こちら</1>に。",
+    "nameHeader": "名前",
+    "pronounceEn": "/kɔŋ/ · /tɹi/ · /dɔŋ/",
+    "pronounceVi": "/kuəŋ˨˩/ · /ʈʂi˧˥/ · /zɨəŋ˨˩/",
+    "pronounceZh": "/jɑŋ˧˥/ · /ʈʂɻ̩˥˩/ · /tɕʰjɑŋ˧˥/",
+    "nameEn": "Cuong Tri Duong",
+    "nameVi": "Dương Trí Cường",
+    "nameZh": "楊 志強",
+    "blurbHeader": "ひとこと",
+    "skillsHeader": "スキル",
+    "skillsFrontend": "人前で話すこと",
+    "skillsFrontendItems": "要するに、大勢の前で恥をかくこと。",
+    "skillsA11y": "アクセシビリティ",
+    "skillsA11yItems": "階段は多くの人が使える。スロープは誰でも使える。",
+    "skillsAi": "メンタリング",
+    "skillsAiItems": "その人が本当はどれだけの才能を持っているかを見せること。",
+    "skillsDs": "デザインシステム",
+    "skillsDsItems": "一度作って、ずっと使う。",
+    "skillsCrab": "カニ籠引き",
+    "skillsCrabItems": "ルイジアナの湿地、朝3時から午後3時。",
+    "skillsCoffee": "まともな一杯を淹れる",
+    "skillsCoffeeItems": "まだ完璧な豆を探している。",
+    "awardsHeader": "受賞歴",
+    "award1": "codeRED ハッカソン優勝 — Target、'17 / '18 / '19",
+    "award2": "MN 州チャンピオン — 一幕劇、弁論・スピーチ",
+    "langsHeader": "言語",
+    "langEn": "英語 — ネイティブ",
+    "langVi": "ベトナム語 — 流暢",
+    "langJa": "日本語 — まあまあ",
+    "langZh": "中国語 — 学習中",
+    "langKr": "韓国語 — 先延ばし中",
+    "langFr": "フランス語 — 昔は知ってた"
+  },
+  "work": {
+    "overline": "作品",
+    "title": "これまでの役割",
+    "subtitle": "8年、4社、素晴らしい先輩たち。",
+    "subtitleAlt": "より良い素材、より良いピザ。パパ・ジョンズ。",
+    "timelineLabel": "タイムライン",
+    "timelineHint": "ウィンドウをドラッグで絞り込み",
+    "roles": {
+      "smartnews": {
+        "company": "SmartNews",
+        "role": "シニアソフトウェアエンジニア",
+        "dates": "2024年7月 — 現在",
+        "scope": "SmartNews のクロスプラットフォームモバイル開発 — React Native、Expo、LLM を活用したコンテンツパイプライン。",
+        "bullet1": "React Native + Expo の統合を設計。チーム全体の開発標準を策定。",
+        "bullet2": "パーソナライゼーションとコンテンツ関連性を支える LLM パイプラインをエンドツーエンドで構築。",
+        "bullet3": "ネイティブ iOS/Android から React Native へ移行するエンジニアをメンタリング。"
+      },
+      "google": {
+        "company": "Google",
+        "role": "ソフトウェアエンジニア",
+        "dates": "2022年4月 — 2024年6月",
+        "scope": "Guided Support Experience (GSE) と Help Experience Guidance。",
+        "bullet1": "デスクトップ実装、アクセシビリティ読み上げ実験、i18n 基盤を出荷。",
+        "bullet2": "アクセシビリティの主任担当として GAR4 準拠を推進。2023年 A11y 最優秀貢献者。",
+        "bullet3": "Help Experience デザインシステムと GSE コンポーネントライブラリを社内で立ち上げ。"
+      },
+      "zoom": {
+        "company": "Zoom",
+        "role": "シニアソフトウェアエンジニア",
+        "dates": "2021年3月 — 2022年3月",
+        "scope": "Zoom Events — Zoom のバーチャルイベントプラットフォーム。",
+        "bullet1": "CI/CD 基盤を提案・再設計し、チームの開発速度を向上。",
+        "bullet2": "主要 scrum プロジェクトにユニット・統合テストフレームワークを導入。",
+        "bullet3": "社内デザインシステムを創設、インターンを指導しオンボーディングガイドを執筆。"
+      },
+      "target": {
+        "company": "Target",
+        "role": "シニアソフトウェアエンジニア → ソフトウェアエンジニア",
+        "dates": "2017年7月 — 2021年2月",
+        "scope": "Guest Web Experience Platform、その後 API Platform と Design Systems。1日1.3億以上のアクセスを受けるページ群。",
+        "bullet1": "的を絞ったコード変更とテストカバレッジ拡充で600万ドル超の広告収益リスクを回避。",
+        "bullet2": "Target.com 規模で10週間のうちに本番アプリを出荷できるマイクロサイト基盤を構築。",
+        "bullet3": "Target 初のデザインシステムのローンチエンジニア — 100以上のアプリ、3,600以上のライブラリ宣言。"
+      }
+    }
+  },
+  "blog": {
+    "overline": "ブログ",
+    "title": "文章",
+    "stub": "アクセシビリティ、デザインシステム、そして言語学習（プログラミングと人間の両方）についての覚書。最初の記事を執筆中。"
+  },
+  "notFound": {
+    "overline": "迷子？",
+    "body": "このページは存在しません — あるいは、最初からなかったのかも。他にも立ち寄れる場所はあります。",
+    "tryHeader": "試してみる"
+  },
+  "nav": {
+    "home": "ホーム",
+    "work": "作品",
+    "about": "紹介",
+    "blog": "ブログ"
+  },
+  "layout": {
+    "motifCake": "ケーキはうそだ",
+    "motifHello": "ハローワールド！",
+    "motifPokemon": "ポケモン、ゲットだぜ！",
+    "motifMinecraft": "F3 で世界を覗こう",
+    "motifValorant": "スパイク設置！",
+    "motifLol": "時は矢のごとく飛ぶ。ハエはバナナのごとく飛ぶ。",
+    "themeLight": "ライトモード",
+    "themeDark": "ダークモード"
+  },
+  "search": {
+    "placeholder": "きみの行く道！",
+    "noMatch": "一致なし",
+    "kbdNavigate": "移動",
+    "kbdComplete": "補完",
+    "kbdGo": "実行",
+    "kbdClose": "閉じる"
+  }
+}

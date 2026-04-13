@@ -1,0 +1,147 @@
+{
+  "common": {
+    "portfolio": "Danh mục",
+    "comingSoon": "Sắp ra mắt.",
+    "previously": "trước đây",
+    "currently": "hiện tại",
+    "language": "Ngôn ngữ"
+  },
+  "home": {
+    "overline": "kỹ sư phần mềm",
+    "name": "cường dương",
+    "bio": "Tôi là kỹ sư cấp cao tại SmartNews ở Tokyo. Trước đây làm việc tại Google, Zoom và Target. Tôi đam mê việc nuôi dưỡng một văn hóa học hỏi lành mạnh và tạo ra không gian đó cho tất cả mọi người.",
+    "highlight1": "React Native + pipeline LLM · SmartNews",
+    "highlight2": "Design system · Target / Zoom / Google",
+    "highlight3": "Tiết kiệm 6 triệu USD doanh thu quảng cáo · Target",
+    "factGoogle": "Đại diện tiếp cận và i18n cho Guided Support Experience.",
+    "factZoom": "Tái kiến trúc CI/CD và framework kiểm thử cho Zoom Events.",
+    "factTarget": "Ra mắt design system đầu tiên của Target — 100+ ứng dụng, 3.600+ khai báo.",
+    "role": "vai trò",
+    "roleTitle": "Kỹ sư phần mềm cấp cao",
+    "roleOrg": "SmartNews · Tokyo, Nhật Bản",
+    "highlights": "nổi bật",
+    "tagline1": "nói điều gì đó,",
+    "tagline2": "làm điều gì đó",
+    "locationCity": "Tokyo, JP",
+    "speaks": "nói"
+  },
+  "about": {
+    "overline": "giới thiệu",
+    "title": "hi, cường đây",
+    "subtitle": "kỹ sư cấp cao, thợ làm bánh tập sự.",
+    "subtitleAlt": "từng là slam poet, cựu thợ bắt cua bayou.",
+    "introOpener": "bạn tìm thấy mình rồi!",
+    "intro": "ban đầu chỉ định làm mới lại trang cũ rồi bị cuốn đi — LLM giúp mình rảnh tay đủ để phần sáng tạo cuối cùng cũng có chỗ thở. ở đây sẽ dần xuất hiện vài ý tưởng đã (quá) chín suốt mấy năm qua. còn bây giờ, cứ tự nhiên như ở nhà. cần gì — mình ở <1>đây</1>.",
+    "nameHeader": "tên",
+    "pronounceEn": "/kɔŋ/ · /tɹi/ · /dɔŋ/",
+    "pronounceVi": "/kuəŋ˨˩/ · /ʈʂi˧˥/ · /zɨəŋ˨˩/",
+    "pronounceZh": "/jɑŋ˧˥/ · /ʈʂɻ̩˥˩/ · /tɕʰjɑŋ˧˥/",
+    "nameEn": "Cuong Tri Duong",
+    "nameVi": "Dương Trí Cường",
+    "nameZh": "楊 志強",
+    "blurbHeader": "vài dòng",
+    "skillsHeader": "kỹ năng",
+    "skillsFrontend": "Nói trước công chúng",
+    "skillsFrontendItems": "hay còn gọi là, tự làm trò trước đám đông.",
+    "skillsA11y": "Tiếp cận",
+    "skillsA11yItems": "Hầu hết người ta đi được cầu thang. Ai cũng đi được đường dốc.",
+    "skillsAi": "Hướng dẫn",
+    "skillsAiItems": "Cho mọi người thấy họ thực sự tài năng đến nhường nào.",
+    "skillsDs": "Design Systems",
+    "skillsDsItems": "Xây một lần, xài mãi mãi.",
+    "skillsCrab": "Kéo lồng cua",
+    "skillsCrabItems": "Đầm lầy Louisiana, 3h sáng đến 3h chiều.",
+    "skillsCoffee": "Pha một ly tử tế",
+    "skillsCoffeeItems": "Vẫn đang tìm hạt hoàn hảo.",
+    "awardsHeader": "giải thưởng",
+    "award1": "Nhà vô địch Hackathon codeRED — Target, '17 / '18 / '19",
+    "award2": "Nhà vô địch bang MN — Kịch một màn, Hùng biện & Diễn thuyết",
+    "langsHeader": "ngôn ngữ",
+    "langEn": "Tiếng Anh — bản ngữ",
+    "langVi": "Tiếng Việt — thành thạo",
+    "langJa": "Tiếng Nhật — tạm ổn",
+    "langZh": "Tiếng Trung — đang học",
+    "langKr": "Tiếng Hàn — trì hoãn",
+    "langFr": "Tiếng Pháp — từng biết"
+  },
+  "work": {
+    "overline": "công việc",
+    "title": "vai trò",
+    "subtitle": "tám năm, bốn công ty, những người thầy tuyệt vời.",
+    "subtitleAlt": "nguyên liệu tốt hơn, pizza ngon hơn. papa john's.",
+    "timelineLabel": "dòng thời gian",
+    "timelineHint": "kéo cửa sổ để lọc",
+    "roles": {
+      "smartnews": {
+        "company": "SmartNews",
+        "role": "Kỹ sư phần mềm cấp cao",
+        "dates": "7/2024 — Hiện tại",
+        "scope": "Phát triển di động đa nền tảng tại SmartNews — React Native, Expo, và pipeline nội dung dùng LLM.",
+        "bullet1": "Thiết kế tích hợp React Native + Expo; soạn thảo tiêu chuẩn phát triển áp dụng toàn nhóm.",
+        "bullet2": "Xây dựng các pipeline LLM đầu-cuối, hỗ trợ cá nhân hóa và độ liên quan nội dung.",
+        "bullet3": "Hướng dẫn kỹ sư chuyển từ native iOS/Android sang React Native."
+      },
+      "google": {
+        "company": "Google",
+        "role": "Kỹ sư phần mềm",
+        "dates": "4/2022 — 6/2024",
+        "scope": "Guided Support Experience (GSE) và Help Experience Guidance.",
+        "bullet1": "Triển khai desktop, thử nghiệm đọc hỗ trợ tiếp cận, hạ tầng i18n.",
+        "bullet2": "Đại diện tiếp cận chính; dẫn dắt chuẩn GAR4. Đóng góp A11y hàng đầu 2023.",
+        "bullet3": "Sáng lập design system nội bộ Help Experience và thư viện thành phần GSE."
+      },
+      "zoom": {
+        "company": "Zoom",
+        "role": "Kỹ sư phần mềm cấp cao",
+        "dates": "3/2021 — 3/2022",
+        "scope": "Zoom Events — nền tảng sự kiện trực tuyến của Zoom.",
+        "bullet1": "Đề xuất và thiết kế lại hạ tầng CI/CD; tăng tốc độ phát triển rõ rệt.",
+        "bullet2": "Giới thiệu framework kiểm thử đơn vị + tích hợp cho dự án scrum cốt lõi.",
+        "bullet3": "Sáng lập design system nội bộ; hướng dẫn thực tập sinh và viết tài liệu onboarding."
+      },
+      "target": {
+        "company": "Target",
+        "role": "Kỹ sư phần mềm cấp cao → Kỹ sư phần mềm",
+        "dates": "7/2017 — 2/2021",
+        "scope": "Guest Web Experience Platform, rồi API Platform và Design Systems. Các trang phục vụ 130 triệu+ lượt truy cập mỗi ngày.",
+        "bullet1": "Giảm thiểu 6 triệu USD+ rủi ro doanh thu quảng cáo qua thay đổi mã và mở rộng kiểm thử.",
+        "bullet2": "Xây nền tảng microsite cho phép phát hành ứng dụng sản xuất trong 10 tuần ở quy mô Target.com.",
+        "bullet3": "Kỹ sư ra mắt design system đầu tiên của Target — 100+ ứng dụng, 3.600+ khai báo thư viện."
+      }
+    }
+  },
+  "blog": {
+    "overline": "blog",
+    "title": "bài viết",
+    "stub": "Ghi chú về khả năng tiếp cận, design system, và việc học ngôn ngữ — lập trình lẫn con người. Bài đầu tiên đang được soạn thảo."
+  },
+  "notFound": {
+    "overline": "lạc rồi?",
+    "body": "trang này không tồn tại — hoặc chưa bao giờ tồn tại. không sao, còn nhiều nơi khác để ghé thăm.",
+    "tryHeader": "thử"
+  },
+  "nav": {
+    "home": "trang chủ",
+    "work": "công việc",
+    "about": "giới thiệu",
+    "blog": "blog"
+  },
+  "layout": {
+    "motifCake": "chiếc bánh là lời nói dối",
+    "motifHello": "xin chào, thế giới!",
+    "motifPokemon": "phải bắt cho hết",
+    "motifMinecraft": "nhấn F3 để xem thế giới",
+    "motifValorant": "đã cài spike!",
+    "motifLol": "thời gian bay như mũi tên. ruồi trái cây bay như chuối.",
+    "themeLight": "Chế độ sáng",
+    "themeDark": "Chế độ tối"
+  },
+  "search": {
+    "placeholder": "ồ, những nơi bạn sẽ đến!",
+    "noMatch": "không có kết quả",
+    "kbdNavigate": "điều hướng",
+    "kbdComplete": "hoàn thành",
+    "kbdGo": "đi",
+    "kbdClose": "đóng"
+  }
+}

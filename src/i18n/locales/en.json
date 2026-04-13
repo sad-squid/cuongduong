@@ -1,0 +1,147 @@
+{
+  "common": {
+    "portfolio": "Portfolio",
+    "comingSoon": "Coming soon.",
+    "previously": "previously",
+    "currently": "currently",
+    "language": "Language"
+  },
+  "home": {
+    "overline": "software engineer",
+    "name": "cuong duong",
+    "bio": "I'm a senior engineer at SmartNews in Tokyo. Previously at Google, Zoom, and Target. I'm passionate about fostering a healthy learning culture and creating that space for everyone.",
+    "highlight1": "React Native + LLM pipelines · SmartNews",
+    "highlight2": "Design systems · Target / Zoom / Google",
+    "highlight3": "$6M+ ad revenue saved · Target",
+    "factGoogle": "Accessibility champion + i18n on Guided Support Experience.",
+    "factZoom": "Re-architected CI/CD and test frameworks for Zoom Events.",
+    "factTarget": "Launched Target's first design system — 100+ apps, 3,600+ declarations.",
+    "role": "role",
+    "roleTitle": "Senior Software Engineer",
+    "roleOrg": "SmartNews · Tokyo, Japan",
+    "highlights": "highlights",
+    "tagline1": "say something,",
+    "tagline2": "do something",
+    "locationCity": "Tokyo, JP",
+    "speaks": "speaks"
+  },
+  "about": {
+    "overline": "about",
+    "title": "hi, im cuong",
+    "subtitle": "senior engineer, aspiring baker.",
+    "subtitleAlt": "former slam poet, ex-bayou crabber.",
+    "introOpener": "you found me!",
+    "intro": "i started this as a refresh of my old site and got carried away — LLMs freed up enough time that the creative side finally had room to breathe. expect some ideas here that've been (over)brewing for years. for now, make yourself at home. if you need me — i'll be <1>here</1>.",
+    "nameHeader": "name",
+    "pronounceEn": "/kɔŋ/ · /tɹi/ · /dɔŋ/",
+    "pronounceVi": "/kuəŋ˨˩/ · /ʈʂi˧˥/ · /zɨəŋ˨˩/",
+    "pronounceZh": "/jɑŋ˧˥/ · /ʈʂɻ̩˥˩/ · /tɕʰjɑŋ˧˥/",
+    "nameEn": "Cuong Tri Duong",
+    "nameVi": "Dương Trí Cường",
+    "nameZh": "楊 志強",
+    "blurbHeader": "blurb",
+    "skillsHeader": "skills",
+    "skillsFrontend": "Public speaking",
+    "skillsFrontendItems": "aka, making a fool of myself in front of a crowd.",
+    "skillsA11y": "Accessibility",
+    "skillsA11yItems": "Most people can use stairs. Everyone can use a slope.",
+    "skillsAi": "Mentorship",
+    "skillsAiItems": "Showing people how much talent they really have.",
+    "skillsDs": "Design Systems",
+    "skillsDsItems": "Build it once, use it forever.",
+    "skillsCrab": "Pulling crab cages",
+    "skillsCrabItems": "Louisiana bayous, 3am to 3pm.",
+    "skillsCoffee": "Brewing a decent cup",
+    "skillsCoffeeItems": "Still looking for the perfect bean.",
+    "awardsHeader": "awards",
+    "award1": "codeRED Hackathon Winner — Target, '17 / '18 / '19",
+    "award2": "MN State Champion — One Act Play, Forensics & Speech",
+    "langsHeader": "languages",
+    "langEn": "English — native",
+    "langVi": "Vietnamese — fluent",
+    "langJa": "Japanese — decent",
+    "langZh": "Chinese — learning",
+    "langKr": "Korean — procrastinating",
+    "langFr": "French — knew it at one point"
+  },
+  "work": {
+    "overline": "work",
+    "title": "roles",
+    "subtitle": "eight years, four companies, incredible role models.",
+    "subtitleAlt": "better ingredients, better pizza. papa john's.",
+    "timelineLabel": "timeline",
+    "timelineHint": "drag window to filter",
+    "roles": {
+      "smartnews": {
+        "company": "SmartNews",
+        "role": "Senior Software Engineer",
+        "dates": "Jul 2024 — Present",
+        "scope": "Cross-platform mobile work on SmartNews — React Native, Expo, and LLM-powered content pipelines.",
+        "bullet1": "Architected the React Native + Expo integration; authored team-wide development standards.",
+        "bullet2": "Built LLM-driven pipelines end-to-end, powering personalization and content relevance.",
+        "bullet3": "Mentored engineers transitioning from native iOS/Android to React Native."
+      },
+      "google": {
+        "company": "Google",
+        "role": "Software Engineer",
+        "dates": "Apr 2022 — Jun 2024",
+        "scope": "Guided Support Experience (GSE) and Help Experience Guidance.",
+        "bullet1": "Shipped desktop implementation, accessibility readout experiments, i18n infrastructure.",
+        "bullet2": "Primary accessibility rep; led the push to GAR4 compliance. Top A11y Contributor 2023.",
+        "bullet3": "Founded the internal Help Experience design system + GSE component library."
+      },
+      "zoom": {
+        "company": "Zoom",
+        "role": "Senior Software Engineer",
+        "dates": "Mar 2021 — Mar 2022",
+        "scope": "Zoom Events — Zoom's virtual events platform.",
+        "bullet1": "Proposed and re-architected CI/CD infrastructure; measurable velocity gains.",
+        "bullet2": "Introduced unit + integration testing frameworks to the core scrum project.",
+        "bullet3": "Founded an internal design system; mentored interns and authored the onboarding guide."
+      },
+      "target": {
+        "company": "Target",
+        "role": "Senior Software Engineer → Software Engineer",
+        "dates": "Jul 2017 — Feb 2021",
+        "scope": "Guest Web Experience Platform, then API Platform and Design Systems. Pages serving 130M+ daily visits.",
+        "bullet1": "Mitigated $6M+ in ad revenue risk via targeted code changes and expanded test coverage.",
+        "bullet2": "Built a microsite platform that shipped a production app in 10 weeks at Target.com scale.",
+        "bullet3": "Launch engineer on Target's first design system — 100+ apps, 3,600+ library declarations."
+      }
+    }
+  },
+  "blog": {
+    "overline": "blog",
+    "title": "writing",
+    "stub": "Notes on accessibility, design systems, and learning languages — programming and human. First post drafting."
+  },
+  "notFound": {
+    "overline": "lost?",
+    "body": "this page doesn't exist — or never did. no worries, there are other places to wander.",
+    "tryHeader": "try"
+  },
+  "nav": {
+    "home": "home",
+    "work": "work",
+    "about": "about",
+    "blog": "blog"
+  },
+  "layout": {
+    "motifCake": "the cake is a lie",
+    "motifHello": "hello, world!",
+    "motifPokemon": "gotta catch 'em all",
+    "motifMinecraft": "press F3 to see the world",
+    "motifValorant": "spike planted!",
+    "motifLol": "time flies like an arrow. fruit flies like a banana.",
+    "themeLight": "Light mode",
+    "themeDark": "Dark mode"
+  },
+  "search": {
+    "placeholder": "oh, the places you'll go!",
+    "noMatch": "no match",
+    "kbdNavigate": "navigate",
+    "kbdComplete": "complete",
+    "kbdGo": "go",
+    "kbdClose": "close"
+  }
+}
