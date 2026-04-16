@@ -500,7 +500,14 @@ export function WorkPage() {
           >
             {t('work.overline')}
           </Typography>
-          <Typography variant="h2" sx={{ mb: 2 }}>
+          <Typography
+            variant="h1"
+            sx={{
+              fontSize: { xs: '2.4rem', sm: '3.2rem', md: '4rem' },
+              lineHeight: 1.1,
+              mb: 2,
+            }}
+          >
             {t('work.title')}
           </Typography>
           <Typography

@@ -15,7 +15,14 @@ export function BlogPage() {
           >
             {t('blog.overline')}
           </Typography>
-          <Typography variant="h2" sx={{ mb: 0 }}>
+          <Typography
+            variant="h1"
+            sx={{
+              fontSize: { xs: '2.4rem', sm: '3.2rem', md: '4rem' },
+              lineHeight: 1.1,
+              mb: 0,
+            }}
+          >
             {t('blog.title')}
           </Typography>
         </Box>
