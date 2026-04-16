@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "→ pre-push: pnpm lint"
+pnpm lint
+
+echo "→ pre-push: pnpm build"
+pnpm build
+
+echo "✓ pre-push checks passed"
