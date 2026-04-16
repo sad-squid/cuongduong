@@ -474,20 +474,6 @@ export function Layout() {
             <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
               <Typography
                 component="a"
-                href="mailto:cuongduong.git@gmail.com"
-                sx={{
-                  fontFamily: SPACE_MONO,
-                  fontSize: '0.7rem',
-                  color: 'text.secondary',
-                  textDecoration: 'none',
-                  '&:hover': { color: 'primary.main' },
-                  transition: 'color 0.15s',
-                }}
-              >
-                cuongduong.git@gmail.com
-              </Typography>
-              <Typography
-                component="a"
                 href="https://linkedin.com/in/cuongduong-dev/"
                 target="_blank"
                 rel="noopener noreferrer"
