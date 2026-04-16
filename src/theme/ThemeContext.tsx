@@ -53,6 +53,8 @@ export const ThemeContextProvider = ({ children }: { children: ReactNode }) => {
   )
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useThemeToggle = () => useContext(ThemeContext)
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useColors = () => useContext(ThemeContext).palette

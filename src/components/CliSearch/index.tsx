@@ -62,26 +62,30 @@ export function CliSearch({ open, onClose }: CliSearchProps) {
   const c = useColors()
   const { t } = useTranslation()
   const [query, setQuery] = useState('')
-  const [activeIndex, setActiveIndex] = useState(0)
+  const [rawActiveIndex, setActiveIndex] = useState(0)
+  const [prevOpen, setPrevOpen] = useState(open)
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const navigate = useNavigate()
 
   const labelFor = (k: SearchItem['key']) => t(`nav.${k}`)
   const results = filterItems(query, labelFor)
+  const activeIndex = Math.min(rawActiveIndex, Math.max(results.length - 1, 0))
 
-  useEffect(() => {
+  if (open !== prevOpen) {
+    setPrevOpen(open)
     if (open) {
       setQuery('')
       setActiveIndex(0)
+    }
+  }
+
+  useEffect(() => {
+    if (open) {
       const t = setTimeout(() => inputRef.current?.focus(), 50)
       return () => clearTimeout(t)
     }
   }, [open])
-
-  useEffect(() => {
-    setActiveIndex((prev) => Math.min(prev, Math.max(results.length - 1, 0)))
-  }, [results.length])
 
   const go = useCallback(
     (path: string) => {

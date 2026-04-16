@@ -153,12 +153,14 @@ function Timeline({
     [scheduleRepaint],
   )
 
+  const dragAbortRef = useRef<AbortController | null>(null)
+
   const onPointerUp = useCallback(() => {
     dragState.current.mode = null
-    window.removeEventListener('pointermove', onPointerMove)
-    window.removeEventListener('pointerup', onPointerUp)
+    dragAbortRef.current?.abort()
+    dragAbortRef.current = null
     setWindowRange(liveRange.current)
-  }, [onPointerMove, setWindowRange])
+  }, [setWindowRange])
 
   const startDrag = (mode: Exclude<DragMode, null>) => (e: React.PointerEvent) => {
     e.preventDefault()
@@ -168,8 +170,10 @@ function Timeline({
       startX: e.clientX,
       initial: [...liveRange.current] as [number, number],
     }
-    window.addEventListener('pointermove', onPointerMove)
-    window.addEventListener('pointerup', onPointerUp)
+    const controller = new AbortController()
+    dragAbortRef.current = controller
+    window.addEventListener('pointermove', onPointerMove, { signal: controller.signal })
+    window.addEventListener('pointerup', onPointerUp, { signal: controller.signal })
   }
 
   const onTrackWheel = useCallback(
