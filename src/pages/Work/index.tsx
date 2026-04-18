@@ -1,6 +1,7 @@
 import { useRef, useState, useMemo, useCallback, useEffect } from 'react'
 import { Box, Container, Typography, Chip, Stack } from '@mui/material'
 import { SPACE_MONO } from '@/theme'
+import { cellEntrance } from '@/theme/animations'
 import { useColors } from '@/theme/ThemeContext'
 import type { ThemePalette } from '@/theme/palettes'
 import { useTranslation } from 'react-i18next'
@@ -46,15 +47,6 @@ const ROLE_META: Record<RoleKey, RoleMeta> = {
 const monthsFrom = (origin: [number, number], point: [number, number]) =>
   (point[0] - origin[0]) * 12 + (point[1] - origin[1])
 
-const ENTRANCE = (delay: number) => ({
-  '@keyframes cellEnter': {
-    from: { opacity: 0, transform: 'translateY(20px)' },
-    to: { opacity: 1, transform: 'translateY(0)' },
-  },
-  '@media (prefers-reduced-motion: no-preference)': {
-    animation: `cellEnter 0.5s ease-out ${delay}ms both`,
-  },
-})
 
 const EPOCH: [number, number] = [2017, 7]
 const now = new Date()
@@ -244,7 +236,7 @@ function Timeline({
   const [wA, wB] = windowRange
 
   return (
-    <Box sx={{ mb: { xs: 5, md: 7 }, ...ENTRANCE(0) }}>
+    <Box sx={{ mb: { xs: 5, md: 7 }, ...cellEntrance(0) }}>
       <Box sx={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', mb: 1.5 }}>
         <Typography
           variant="overline"
@@ -543,7 +535,7 @@ export function WorkPage() {
                   '&:hover': { borderColor: `${accent}55` },
                   '&:hover .role-accent': { width: 6 },
                   scrollMarginTop: 96,
-                  ...ENTRANCE(100 + i * 100),
+                  ...cellEntrance(100 + i * 100),
                 }}
               >
                 <Box

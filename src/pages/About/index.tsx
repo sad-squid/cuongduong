@@ -1,18 +1,9 @@
 import { Box, Container, Typography, Stack } from '@mui/material'
 import { GlitchText } from '@/components/ui/GlitchText'
 import { SPACE_GROTESK, SPACE_MONO } from '@/theme'
+import { cellEntrance } from '@/theme/animations'
 import { useColors } from '@/theme/ThemeContext'
 import { Trans, useTranslation } from 'react-i18next'
-
-const ENTRANCE = (delay: number) => ({
-  '@keyframes cellEnter': {
-    from: { opacity: 0, transform: 'translateY(20px)' },
-    to: { opacity: 1, transform: 'translateY(0)' },
-  },
-  '@media (prefers-reduced-motion: no-preference)': {
-    animation: `cellEnter 0.5s ease-out ${delay}ms both`,
-  },
-})
 
 type SectionProps = {
   header: string
@@ -21,7 +12,7 @@ type SectionProps = {
 }
 
 const Section = ({ header, delay = 0, children }: SectionProps) => (
-  <Box sx={{ mb: { xs: 5, md: 7 }, ...ENTRANCE(delay) }}>
+  <Box sx={{ mb: { xs: 5, md: 7 }, ...cellEntrance(delay) }}>
     <Typography
       variant="overline"
       sx={{ color: 'primary.main', display: 'block', mb: 2 }}
