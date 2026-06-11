@@ -272,7 +272,7 @@ export function AboutPage() {
           <Box
             sx={{
               display: 'grid',
-              gridTemplateColumns: { xs: '1fr', md: 'repeat(6, 1fr)' },
+              gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(6, 1fr)' },
               gap: 2,
             }}
           >
@@ -295,7 +295,11 @@ export function AboutPage() {
                 <Box
                   key={label}
                   sx={{
-                    gridColumn: { xs: '1 / -1', md: `span ${spans[i]}` },
+                    gridColumn: {
+                      xs: '1 / -1',
+                      sm: i === 5 ? '1 / -1' : 'span 1',
+                      md: `span ${spans[i]}`,
+                    },
                     py: variant === 'bar' ? 2 : undefined,
                     transition: 'all 0.2s',
                     '&:hover':

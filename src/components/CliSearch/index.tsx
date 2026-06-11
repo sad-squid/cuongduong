@@ -140,9 +140,11 @@ export function CliSearch({ open, onClose }: CliSearchProps) {
           display: 'inline-flex',
           alignItems: 'baseline',
           fontFamily: SPACE_MONO,
-          fontSize: '1rem',
+          fontSize: { xs: '0.85rem', sm: '1rem' },
           cursor: 'text',
           position: 'relative',
+          maxWidth: { xs: 'calc(100vw - 130px)', sm: 'none' },
+          minWidth: 0,
         }}
         onClick={() => inputRef.current?.focus()}
       >
@@ -153,12 +155,15 @@ export function CliSearch({ open, onClose }: CliSearchProps) {
             sx={{
               position: 'absolute',
               left: 0,
+              right: 0,
               fontFamily: SPACE_MONO,
-              fontSize: '1rem',
+              fontSize: { xs: '0.85rem', sm: '1rem' },
               color: c.beige,
               opacity: 0.3,
               pointerEvents: 'none',
               whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
               bottom: 0,
             }}
           >
@@ -169,7 +174,7 @@ export function CliSearch({ open, onClose }: CliSearchProps) {
           component="span"
           sx={{
             fontFamily: SPACE_MONO,
-            fontSize: '1rem',
+            fontSize: { xs: '0.85rem', sm: '1rem' },
             fontWeight: 700,
             color: c.cream,
           }}
@@ -181,10 +186,13 @@ export function CliSearch({ open, onClose }: CliSearchProps) {
             component="span"
             sx={{
               fontFamily: SPACE_MONO,
-              fontSize: '1rem',
+              fontSize: { xs: '0.85rem', sm: '1rem' },
               color: c.cream,
               ml: 0.75,
               whiteSpace: 'pre',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              minWidth: 0,
             }}
           >
             {query}

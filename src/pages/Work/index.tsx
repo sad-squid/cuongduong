@@ -278,7 +278,7 @@ function Timeline({
         }}
       >
         {/* year ticks */}
-        {YEAR_TICKS.map(({ year, pct }) => (
+        {YEAR_TICKS.map(({ year, pct }, i) => (
           <Box
             key={year}
             aria-hidden="true"
@@ -290,6 +290,7 @@ function Timeline({
               borderLeft: '1px dashed',
               borderColor: 'divider',
               opacity: 0.5,
+              display: { xs: i % 2 === 0 ? 'block' : 'none', sm: 'block' },
             }}
           >
             <Typography

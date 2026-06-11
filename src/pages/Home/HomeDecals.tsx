@@ -82,11 +82,11 @@ const HorizSpec = ({ children, sx }: { children: string; sx?: object }) => (
 )
 
 export const BaseDecals = ({ c }: { c: ThemePalette }) => (
-  <Box sx={{ display: { xs: 'none', md: 'contents' } }}>
-    <VertSpec sx={{ position: 'absolute', left: -24, top: '22%' }}>
+  <>
+    <VertSpec sx={{ position: 'absolute', left: -24, top: '22%', display: { xs: 'none', md: 'block' } }}>
       CD—25 Software Engineer
     </VertSpec>
-    <VertSpec sx={{ position: 'absolute', right: -24, bottom: '20%' }}>
+    <VertSpec sx={{ position: 'absolute', right: -24, bottom: '20%', display: { xs: 'none', md: 'block' } }}>
       Brevity Is The Soul Of Wit
     </VertSpec>
     <Box
@@ -102,8 +102,14 @@ export const BaseDecals = ({ c }: { c: ThemePalette }) => (
         WebkitMaskImage: 'radial-gradient(ellipse 65% 45% at 50% 50%, black 10%, transparent 60%)',
       }}
     />
-    <HorizSpec sx={{ position: 'absolute', top: 'calc(50% - 230px)', right: 0, pointerEvents: 'none' }}>
+    <HorizSpec sx={{ position: 'absolute', top: { xs: 8, md: 'calc(50% - 230px)' }, right: 0, pointerEvents: 'none' }}>
       CD—25 / Rev.03
     </HorizSpec>
-  </Box>
+    <HorizSpec sx={{ position: 'absolute', top: 8, left: 0, pointerEvents: 'none', display: { xs: 'block', md: 'none' } }}>
+      CD—25 · Software Engineer
+    </HorizSpec>
+    <HorizSpec sx={{ position: 'absolute', bottom: 8, right: 0, pointerEvents: 'none', display: { xs: 'block', md: 'none' }, opacity: 0.3 }}>
+      Brevity Is The Soul Of Wit
+    </HorizSpec>
+  </>
 )

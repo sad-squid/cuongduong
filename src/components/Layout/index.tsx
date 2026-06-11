@@ -56,13 +56,18 @@ const Motif = () => {
         aria-hidden="true"
         sx={{
           fontFamily: SPACE_MONO,
-          fontSize: '0.8rem',
+          fontSize: { xs: '0.65rem', sm: '0.8rem' },
           color: c.beige,
           opacity: 0.55,
-          ml: 1.5,
-          whiteSpace: 'nowrap',
+          ml: { xs: 0, sm: 1.5 },
+          mt: { xs: 0.25, sm: 0 },
+          whiteSpace: { xs: 'nowrap', sm: 'nowrap' },
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          maxWidth: { xs: '55vw', sm: 'none' },
+          lineHeight: 1.3,
           transition: 'opacity 0.6s ease',
-          display: { xs: 'none', sm: 'inline' },
+          display: { xs: 'block', sm: 'inline' },
         }}
       >
         {motif}
@@ -84,7 +89,9 @@ function NavBrand({ onClick }: { onClick: () => void }) {
         padding: 0,
         cursor: 'pointer',
         display: 'flex',
-        alignItems: 'baseline',
+        flexDirection: { xs: 'column', sm: 'row' },
+        alignItems: { xs: 'flex-start', sm: 'baseline' },
+        textAlign: 'left',
         '&:focus-visible': {
           outline: `2px solid ${c.coral}`,
           outlineOffset: 4,
@@ -92,6 +99,7 @@ function NavBrand({ onClick }: { onClick: () => void }) {
         },
       }}
     >
+      <Box sx={{ display: 'flex', alignItems: 'baseline' }}>
       <Typography
         component="span"
         sx={{
@@ -139,6 +147,7 @@ function NavBrand({ onClick }: { onClick: () => void }) {
         }}
       >
         ⌘K
+      </Box>
       </Box>
       <Motif />
     </Box>
@@ -377,13 +386,14 @@ export function Layout() {
               sx={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: 4,
+                gap: { xs: 1.5, sm: 4 },
                 opacity: searchOpen ? 0.3 : 1,
                 transition: 'opacity 0.2s',
                 pointerEvents: searchOpen ? 'none' : 'auto',
+                flexShrink: 0,
               }}
             >
-              <Box component="nav" sx={{ display: 'flex', gap: 4 }}>
+              <Box component="nav" sx={{ display: 'flex', gap: { xs: 2, sm: 4 } }}>
                 {navLinks}
               </Box>
               <Box sx={{ ml: 1 }}>

@@ -139,7 +139,7 @@ export function HomePage() {
           gridTemplateColumns: { xs: '1fr', md: '7fr 5fr' },
           gridTemplateRows: { xs: 'auto', md: 'auto auto auto' },
           gap: 2,
-          py: { xs: 6, md: 8 },
+          py: { xs: 7, md: 8 },
           minHeight: 'calc(100svh - 140px)',
           alignContent: 'center',
           position: 'relative',
@@ -263,10 +263,10 @@ export function HomePage() {
           sx={{
             ...CELL_BASE,
             ...CELL_TRANSITION,
-            display: { xs: 'none', md: 'flex' },
+            display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
-            p: 4,
+            p: { xs: 3, md: 4 },
             '&:hover': { borderColor: `${c.coral}55` },
             '&::before': {
               content: '""',
@@ -333,7 +333,7 @@ export function HomePage() {
           sx={{
             ...CELL_BASE,
             ...CELL_TRANSITION,
-            display: { xs: 'none', md: 'flex' },
+            display: 'flex',
             alignItems: 'stretch',
             p: 0,
             transition: 'border-color 0.2s',
@@ -359,7 +359,7 @@ export function HomePage() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              p: 3,
+              p: { xs: 2.5, md: 3 },
             }}
           >
             <Typography
@@ -395,15 +395,19 @@ export function HomePage() {
           sx={{
             ...CELL_BASE,
             ...CELL_TRANSITION,
-            display: { xs: 'none', md: 'flex' },
+            display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
-            p: 3,
+            p: { xs: 2.5, md: 3 },
             '&:hover': { borderColor: `${c.coral}55` },
             ...cellEntrance(300),
           }}
         >
-          <Stack spacing={0.75}>
+          <Stack
+            direction={{ xs: 'row', md: 'column' }}
+            spacing={{ xs: 3, md: 0.75 }}
+            sx={{ flexWrap: 'wrap' }}
+          >
             {NAV_ITEMS.map(({ label, to }, i) => {
               const navLabel = t(`nav.${label}`)
               const colors = [c.coral, c.teal, c.roseText]
@@ -456,7 +460,7 @@ export function HomePage() {
         {/* ── Row 3 right — location + lang ── */}
         <Box
           sx={{
-            display: { xs: 'none', md: 'flex' },
+            display: 'flex',
             gap: 2,
           }}
         >
