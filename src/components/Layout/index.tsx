@@ -341,7 +341,7 @@ export function Layout() {
           inset: 0,
           pointerEvents: 'none',
           zIndex: 9999,
-          opacity: 0.025,
+          opacity: isDark ? 0.025 : 0.05,
           backgroundImage: `url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>")`,
           backgroundRepeat: 'repeat',
         }}
@@ -472,15 +472,27 @@ export function Layout() {
               justifyContent: 'space-between',
             }}
           >
-            <Typography
-              sx={{
-                fontFamily: SPACE_MONO,
-                fontSize: '0.7rem',
-                color: 'text.secondary',
-              }}
-            >
-              &copy; {new Date().getFullYear()} cuong duong
-            </Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+              <Typography
+                sx={{
+                  fontFamily: SPACE_MONO,
+                  fontSize: '0.7rem',
+                  color: 'text.secondary',
+                }}
+              >
+                &copy; {new Date().getFullYear()} cuong duong
+              </Typography>
+              <Typography
+                sx={{
+                  fontFamily: SPACE_MONO,
+                  fontSize: '0.65rem',
+                  color: 'text.secondary',
+                  opacity: 0.6,
+                }}
+              >
+                {t('layout.colophonLine')}
+              </Typography>
+            </Box>
             <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
               <Typography
                 component="a"

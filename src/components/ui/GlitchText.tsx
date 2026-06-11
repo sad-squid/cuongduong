@@ -18,7 +18,9 @@ const hexToRgba = (hex: string, alpha: number) => {
   return `rgba(${r},${g},${b},${alpha.toFixed(2)})`
 }
 
-const buildGlitchPalette = (c: ThemePalette) => [c.coral, c.teal, c.dustyRose, c.warmCoral, c.rose]
+// 2–3 ink plates: vermillion, stamp blue, and the text ink itself — offset
+// layers read as risograph misregistration rather than digital corruption
+const buildGlitchPalette = (c: ThemePalette) => [c.coral, c.teal, c.cream]
 
 // --- Glitch state generation ---
 
@@ -33,7 +35,7 @@ interface GlitchParams {
 const generateParams = (): GlitchParams => ({
   movementIntensity: rand(0.3, 1.0),
   colorIntensity: rand(0.3, 1.0),
-  layerCount: randInt(2, 6),
+  layerCount: randInt(2, 3),
   baseObscureChance: rand(0, 0.12),
   scanlineIntensity: rand(0.2, 1.0),
 })
@@ -53,9 +55,9 @@ const generateShadows = (params: GlitchParams, intensity = 1, palette: string[] 
     const maxOffset = 3 + movementIntensity * 8
     const x = rand(-maxOffset, maxOffset)
     const y = rand(-maxOffset * 0.4, maxOffset * 0.4)
-    const alpha = rand(0.08, 0.5) * colorIntensity * intensity
-    const blur = Math.random() > 0.7 ? rand(0, 2) : 0
-    shadows.push(`${x.toFixed(1)}px ${y.toFixed(1)}px ${blur.toFixed(1)}px ${hexToRgba(color, Math.max(0.05 * intensity, alpha))}`)
+    const alpha = rand(0.12, 0.55) * colorIntensity * intensity
+    // ink plates offset, they don't blur
+    shadows.push(`${x.toFixed(1)}px ${y.toFixed(1)}px 0 ${hexToRgba(color, Math.max(0.05 * intensity, alpha))}`)
   }
 
   return shadows.join(', ')
@@ -70,14 +72,15 @@ interface ScanLine {
 }
 
 const generateScanLines = (intensity: number, palette: string[], bg: string): ScanLine[] => {
-  const count = randInt(1, Math.ceil(2 + intensity * 4))
+  // sparse bands: bg-colored = ink skips, tinted = roller marks
+  const count = randInt(1, Math.ceil(1 + intensity * 3))
   const lines: ScanLine[] = []
 
   for (let i = 0; i < count; i++) {
     const isTinted = Math.random() > 0.5
     lines.push({
       top: rand(0, 95),
-      height: rand(1, 4 + intensity * 8),
+      height: rand(1, 3 + intensity * 5),
       opacity: Math.min(1, rand(0.3, 0.7 + intensity * 0.3)),
       color: isTinted
         ? hexToRgba(palette[randInt(0, 2)], Math.min(1, rand(0.05, 0.2) * intensity))
@@ -410,7 +413,6 @@ export const GlitchText = ({
         transition: glitching
           ? 'text-shadow 0.07s ease, opacity 0.1s ease'
           : 'text-shadow 0.25s ease-out, opacity 0.2s ease-out',
-        overflow: 'hidden',
         '& > *': {
           opacity: baseOpacity,
           transition: 'opacity 0.1s ease',

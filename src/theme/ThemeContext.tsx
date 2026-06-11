@@ -12,7 +12,7 @@ type ThemeContextValue = {
 
 const ThemeContext = createContext<ThemeContextValue>(null!)
 
-const STORAGE_KEY_DARK = 'theme-dark'
+const STORAGE_KEY_DARK = 'theme-dark-v2'
 
 const readBool = (key: string, fallback: boolean): boolean => {
   try {
@@ -25,7 +25,7 @@ const readBool = (key: string, fallback: boolean): boolean => {
 }
 
 export const ThemeContextProvider = ({ children }: { children: ReactNode }) => {
-  const [isDark, setIsDark] = useState(() => readBool(STORAGE_KEY_DARK, true))
+  const [isDark, setIsDark] = useState(() => readBool(STORAGE_KEY_DARK, false))
 
   const toggleColorMode = useCallback(() => {
     setIsDark((prev) => {

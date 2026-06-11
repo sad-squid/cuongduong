@@ -1,4 +1,7 @@
 import { createTheme } from '@mui/material/styles'
+import '@fontsource/fraunces/400-italic.css'
+import '@fontsource/fraunces/600.css'
+import '@fontsource/fraunces/700.css'
 import '@fontsource/space-grotesk/400.css'
 import '@fontsource/space-grotesk/500.css'
 import '@fontsource/space-grotesk/700.css'
@@ -8,6 +11,7 @@ import '@fontsource/space-mono/400.css'
 import '@fontsource/space-mono/700.css'
 import { getPalette } from './palettes'
 
+const FRAUNCES = '"Fraunces", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif'
 const SPACE_GROTESK = '"Space Grotesk", system-ui, sans-serif'
 const DM_SANS = '"DM Sans", system-ui, sans-serif'
 const SPACE_MONO = '"Space Mono", ui-monospace, monospace'
@@ -41,8 +45,8 @@ export const buildTheme = (isDark: boolean) => {
     },
     typography: {
       fontFamily: DM_SANS,
-      h1: { fontFamily: SPACE_GROTESK, fontWeight: 700, letterSpacing: '-0.03em' },
-      h2: { fontFamily: SPACE_GROTESK, fontWeight: 700, letterSpacing: '-0.02em' },
+      h1: { fontFamily: FRAUNCES, fontWeight: 600, letterSpacing: '-0.01em' },
+      h2: { fontFamily: FRAUNCES, fontWeight: 600, letterSpacing: '-0.005em' },
       h3: { fontFamily: SPACE_GROTESK, fontWeight: 500, letterSpacing: '-0.015em' },
       h4: { fontFamily: SPACE_GROTESK, fontWeight: 500 },
       h5: { fontFamily: SPACE_GROTESK, fontWeight: 500 },
@@ -129,10 +133,9 @@ export const buildTheme = (isDark: boolean) => {
           root: {
             border: `1px solid ${c.rose}`,
             backgroundImage: 'none',
-            transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+            transition: 'border-color 0.2s ease',
             '&:hover': {
               borderColor: c.coral,
-              boxShadow: `0 0 20px ${c.coral}15`,
             },
           },
         },
@@ -166,6 +169,6 @@ export const buildTheme = (isDark: boolean) => {
   })
 }
 
-const theme = buildTheme(true)
+const theme = buildTheme(false)
 
-export { SPACE_MONO, SPACE_GROTESK, theme }
+export { SPACE_MONO, SPACE_GROTESK, FRAUNCES, theme }
