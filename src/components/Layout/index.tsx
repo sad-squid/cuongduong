@@ -544,7 +544,7 @@ export function Layout() {
                   opacity: 0.6,
                 }}
               >
-                {t(isDark ? 'layout.colophonLineDark' : 'layout.colophonLine')} — {REVISION}
+                {t('layout.colophonLine')} — {REVISION}
               </Typography>
             </Box>
             <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
