@@ -5,7 +5,6 @@ import { Link, Outlet, useLocation, useNavigate } from '@tanstack/react-router'
 import { SPACE_MONO } from '@/theme'
 import { useThemeToggle, useColors } from '@/theme/ThemeContext'
 import { CliSearch, SearchBackdrop } from '@/components/CliSearch'
-import { REVISION } from '@/data/site'
 import { GlitchText } from '../ui/GlitchText'
 import { useTranslation } from 'react-i18next'
 import { SUPPORTED_LANGUAGES, type Language } from '@/i18n'
@@ -526,27 +525,15 @@ export function Layout() {
               justifyContent: 'space-between',
             }}
           >
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-              <Typography
-                sx={{
-                  fontFamily: SPACE_MONO,
-                  fontSize: '0.7rem',
-                  color: 'text.secondary',
-                }}
-              >
-                &copy; {new Date().getFullYear()} cuong duong
-              </Typography>
-              <Typography
-                sx={{
-                  fontFamily: SPACE_MONO,
-                  fontSize: '0.65rem',
-                  color: 'text.secondary',
-                  opacity: 0.6,
-                }}
-              >
-                {t('layout.colophonLine')} — {REVISION}
-              </Typography>
-            </Box>
+            <Typography
+              sx={{
+                fontFamily: SPACE_MONO,
+                fontSize: '0.7rem',
+                color: 'text.secondary',
+              }}
+            >
+              &copy; {new Date().getFullYear()} cuong duong
+            </Typography>
             <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
               <Typography
                 component="a"
