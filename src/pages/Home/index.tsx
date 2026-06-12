@@ -28,6 +28,8 @@ const SPECIMENS = [
 const NAV_ITEMS = [
   { no: '01', label: 'work', to: '/work' },
   { no: '02', label: 'about', to: '/about' },
+  { no: '03', label: 'notes', to: '/notes' },
+  { no: '04', label: 'colophon', to: '/colophon' },
 ] as const
 
 const PREVIOUSLY = [

@@ -1,6 +1,7 @@
 import { Box, Container, Typography, Stack } from '@mui/material'
 import { GlitchText } from '@/components/ui/GlitchText'
-import { SPACE_GROTESK, SPACE_MONO } from '@/theme'
+import { CropMarks } from '@/components/ui/PrintMarks'
+import { FRAUNCES, SPACE_GROTESK, SPACE_MONO } from '@/theme'
 import { cellEntrance } from '@/theme/animations'
 import { useColors } from '@/theme/ThemeContext'
 import { Trans, useTranslation } from 'react-i18next'
@@ -38,13 +39,14 @@ export function AboutPage() {
 
   const awards = [t('about.award1'), t('about.award2')]
 
-  const langs: Array<{ code: string; text: string; bg: string }> = [
-    { code: 'EN', text: t('about.langEn'), bg: c.coral },
-    { code: 'VI', text: t('about.langVi'), bg: c.teal },
-    { code: 'JA', text: t('about.langJa'), bg: c.roseText },
-    { code: 'ZH', text: t('about.langZh'), bg: c.warmCoral },
-    { code: 'KO', text: t('about.langKr'), bg: c.dustyRose },
-    { code: 'FR', text: t('about.langFr'), bg: c.rose },
+  // ink fades with fluency
+  const langs: Array<{ code: string; text: string; ink: number }> = [
+    { code: 'EN', text: t('about.langEn'), ink: 1 },
+    { code: 'VI', text: t('about.langVi'), ink: 1 },
+    { code: 'JA', text: t('about.langJa'), ink: 0.8 },
+    { code: 'ZH', text: t('about.langZh'), ink: 0.6 },
+    { code: 'KO', text: t('about.langKr'), ink: 0.45 },
+    { code: 'FR', text: t('about.langFr'), ink: 0.3 },
   ]
 
   return (
@@ -61,7 +63,6 @@ export function AboutPage() {
           <Typography
             variant="h1"
             sx={{
-              fontFamily: SPACE_GROTESK,
               fontSize: { xs: '2.4rem', sm: '3.2rem', md: '4rem' },
               lineHeight: 1.1,
               cursor: 'default',
@@ -183,22 +184,9 @@ export function AboutPage() {
               borderLeftColor: c.coral,
               backgroundColor: `${c.coral}08`,
               p: { xs: 3, md: 4 },
-              '&::before, &::after, & > .corner-bl, & > .corner-br': {
-                content: '""',
-                position: 'absolute',
-                width: 10,
-                height: 10,
-                borderColor: c.coral,
-                borderStyle: 'solid',
-              },
-              '&::before': { top: -1, left: -3, borderWidth: '1px 0 0 3px' },
-              '&::after': { top: -1, right: -1, borderWidth: '1px 1px 0 0' },
-              '& > .corner-bl': { bottom: -1, left: -3, borderWidth: '0 0 1px 3px' },
-              '& > .corner-br': { bottom: -1, right: -1, borderWidth: '0 1px 1px 0' },
             }}
           >
-            <Box className="corner-bl" />
-            <Box className="corner-br" />
+            <CropMarks color={c.coral} size={10} opacity={1} />
             <Typography
               sx={{
                 fontFamily: SPACE_MONO,
@@ -209,14 +197,15 @@ export function AboutPage() {
                 mb: 1.5,
               }}
             >
-              B.01
+              ¶ 01
             </Typography>
             <Typography
               sx={{
-                fontFamily: SPACE_GROTESK,
+                fontFamily: FRAUNCES,
                 fontSize: { xs: '1.25rem', md: '1.4rem' },
                 color: 'text.primary',
                 fontStyle: 'italic',
+                fontWeight: 400,
                 lineHeight: 1.4,
                 mb: 2,
               }}
@@ -277,10 +266,9 @@ export function AboutPage() {
             }}
           >
             {skills.map(([label, items, tag], i) => {
-              const accents = [c.coral, c.teal, c.roseText, c.warmCoral, c.dustyRose, c.rose]
               const spans = [3, 3, 2, 2, 2, 6]
               const variants = ['border', 'bar', 'tint', 'border', 'bar', 'tint'] as const
-              const accent = accents[i]
+              const accent = c.coral
               const variant = variants[i]
               const code = `SK.${tag}`
 
@@ -391,7 +379,7 @@ export function AboutPage() {
         {/* Languages */}
         <Section header={t('about.langsHeader')} delay={400}>
           <Stack spacing={1}>
-            {langs.map(({ code, text, bg }) => (
+            {langs.map(({ code, text, ink }) => (
               <Box
                 key={code}
                 sx={{
@@ -403,7 +391,8 @@ export function AboutPage() {
               >
                 <Box
                   sx={{
-                    backgroundColor: bg,
+                    backgroundColor: c.cream,
+                    opacity: ink,
                     color: c.bg,
                     fontFamily: SPACE_MONO,
                     fontSize: '0.65rem',

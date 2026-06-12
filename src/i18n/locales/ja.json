@@ -37,7 +37,7 @@
     "intro": "最初は古いサイトの作り直しのつもりが、つい夢中になってしまって — LLM のおかげで時間に余裕ができて、ようやく作る側の楽しみが戻ってきた感じ。ここには、この数年（ちょっと煮詰まりすぎたくらい）温めてきたアイデアを少しずつ並べていく予定です。ひとまずは、ゆっくりしていってください。用があれば、<1>こちら</1>に。",
     "nameHeader": "名前",
     "pronounceEn": "/kɔŋ/ · /tɹi/ · /dɔŋ/",
-    "pronounceVi": "/kuəŋ˨˩/ · /ʈʂi˧˥/ · /zɨəŋ˨˩/",
+    "pronounceVi": "/zɨəŋ˧˧/ · /ʈʂi˧˥/ · /kuəŋ˨˩/",
     "pronounceZh": "/jɑŋ˧˥/ · /ʈʂɻ̩˥˩/ · /tɕʰjɑŋ˧˥/",
     "nameEn": "Cuong Tri Duong",
     "nameVi": "Dương Trí Cường",
@@ -113,11 +113,6 @@
       }
     }
   },
-  "blog": {
-    "overline": "ブログ",
-    "title": "文章",
-    "stub": "アクセシビリティ、デザインシステム、そして言語学習（プログラミングと人間の両方）についての覚書。最初の記事を執筆中。"
-  },
   "notFound": {
     "overline": "迷子？",
     "body": "このページは存在しません — あるいは、最初からなかったのかも。他にも立ち寄れる場所はあります。",
@@ -127,7 +122,8 @@
     "home": "ホーム",
     "work": "作品",
     "about": "紹介",
-    "blog": "ブログ"
+    "notes": "ノート",
+    "colophon": "奥付"
   },
   "layout": {
     "motifCake": "ケーキはうそだ",
@@ -147,5 +143,46 @@
     "kbdComplete": "補完",
     "kbdGo": "実行",
     "kbdClose": "閉じる"
+  },
+  "notes": {
+    "overline": "ノート",
+    "title": "ノート",
+    "intro": "仕上がり具合もばらばらな書きかけの索引。刷れるものはまだない — 最初の校正刷り:",
+    "item1Title": "階段はたいていの人が使える",
+    "item1Desc": "チェックボックスではなく、ユニバーサルデザインとしてのアクセシビリティ。",
+    "item2Title": "三つの名前",
+    "item2Desc": "cuong、cường、志強 — それぞれの言語に残るもの。",
+    "item3Title": "デザインシステムは言語の問題",
+    "item3Desc": "命名と文法、そしてコンポーネントライブラリが失敗する理由。",
+    "statusDrafting": "執筆中",
+    "statusInProof": "校正中"
+  },
+  "colophon": {
+    "overline": "奥付",
+    "title": "奥付",
+    "subtitle": "このサイトの作りかた。",
+    "editionsHeader": "改版履歴",
+    "ed1": "gatsby、ダークにコーラル。初版 — とうに絶版。",
+    "ed2": "誰も訪れないサイトの依存関係だけ更新。アーカイブ済み。",
+    "ed3": "react + vite でゼロから組み直し。紙の上に再組版、2026年。現在地はここ。",
+    "designHeader": "デザイン",
+    "designBody": "ひとつの名前を、三つの版で刷る — 英語、ベトナム語、中国語。版がぴったり重ならないのは、印刷機のバグではない。インクは以下のとおり:",
+    "inkVermillion": "朱",
+    "inkStampBlue": "印藍",
+    "inkInk": "墨",
+    "inkPaper": "紙",
+    "typeHeader": "書体",
+    "typeFraunces": "見出し用。ダイアクリティカルマークを支える。",
+    "typeDm": "本文用。",
+    "typeMono": "検版記号と脚注、そしてこの行。",
+    "buildHeader": "ビルドノート",
+    "build1": "react 19 + typescript + vite。mui テーマ、tanstack router。",
+    "build2": "i18next で三言語組版 — en・vi・ja。",
+    "build3": "playwright のスクリプトが、出荷前に全ページを三つの幅で検版する。",
+    "build4": "pre-push フックが、lint とビルドを通らないものは一切押し返す。",
+    "build5": "reduced-motion・forced-colors・prefers-contrast に対応。誰にでも同じページを。",
+    "devHeader": "制作中",
+    "devPhotos": "写真 — 東京のコンタクトシート。まだ現像中。",
+    "devNotes": "ノート — 最初の数本を校正中。"
   }
 }

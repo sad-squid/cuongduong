@@ -3,7 +3,8 @@ import { Layout } from '@/components/Layout'
 import { HomePage } from '@/pages/Home'
 import { AboutPage } from '@/pages/About'
 import { WorkPage } from '@/pages/Work'
-import { BlogPage } from '@/pages/Blog'
+import { NotesPage } from '@/pages/Notes'
+import { ColophonPage } from '@/pages/Colophon'
 import { NotFoundPage } from '@/pages/NotFound'
 
 const rootRoute = createRootRoute({
@@ -29,13 +30,19 @@ const workRoute = createRoute({
   component: WorkPage,
 })
 
-const blogRoute = createRoute({
+const notesRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/blog',
-  component: BlogPage,
+  path: '/notes',
+  component: NotesPage,
 })
 
-const routeTree = rootRoute.addChildren([homeRoute, aboutRoute, workRoute, blogRoute])
+const colophonRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/colophon',
+  component: ColophonPage,
+})
+
+const routeTree = rootRoute.addChildren([homeRoute, aboutRoute, workRoute, notesRoute, colophonRoute])
 
 export const router = createRouter({ routeTree })
 

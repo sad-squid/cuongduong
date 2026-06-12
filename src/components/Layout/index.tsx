@@ -5,6 +5,7 @@ import { Link, Outlet, useLocation } from '@tanstack/react-router'
 import { SPACE_MONO } from '@/theme'
 import { useThemeToggle, useColors } from '@/theme/ThemeContext'
 import { CliSearch, SearchBackdrop } from '@/components/CliSearch'
+import { REVISION } from '@/data/site'
 import { GlitchText } from '../ui/GlitchText'
 import { useTranslation } from 'react-i18next'
 import { SUPPORTED_LANGUAGES, type Language } from '@/i18n'
@@ -483,14 +484,19 @@ export function Layout() {
                 &copy; {new Date().getFullYear()} cuong duong
               </Typography>
               <Typography
+                component={Link}
+                to="/colophon"
                 sx={{
                   fontFamily: SPACE_MONO,
                   fontSize: '0.65rem',
                   color: 'text.secondary',
                   opacity: 0.6,
+                  textDecoration: 'none',
+                  transition: 'color 0.15s, opacity 0.15s',
+                  '&:hover': { color: 'primary.main', opacity: 1 },
                 }}
               >
-                {t('layout.colophonLine')}
+                {t('layout.colophonLine')} — {REVISION} ↗
               </Typography>
             </Box>
             <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>

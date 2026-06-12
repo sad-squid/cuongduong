@@ -37,7 +37,7 @@
     "intro": "i started this as a refresh of my old site and got carried away — LLMs freed up enough time that the creative side finally had room to breathe. expect some ideas here that've been (over)brewing for years. for now, make yourself at home. if you need me — i'll be <1>here</1>.",
     "nameHeader": "name",
     "pronounceEn": "/kɔŋ/ · /tɹi/ · /dɔŋ/",
-    "pronounceVi": "/kuəŋ˨˩/ · /ʈʂi˧˥/ · /zɨəŋ˨˩/",
+    "pronounceVi": "/zɨəŋ˧˧/ · /ʈʂi˧˥/ · /kuəŋ˨˩/",
     "pronounceZh": "/jɑŋ˧˥/ · /ʈʂɻ̩˥˩/ · /tɕʰjɑŋ˧˥/",
     "nameEn": "Cuong Tri Duong",
     "nameVi": "Dương Trí Cường",
@@ -113,11 +113,6 @@
       }
     }
   },
-  "blog": {
-    "overline": "blog",
-    "title": "writing",
-    "stub": "Notes on accessibility, design systems, and learning languages — programming and human. First post drafting."
-  },
   "notFound": {
     "overline": "lost?",
     "body": "this page doesn't exist — or never did. no worries, there are other places to wander.",
@@ -127,7 +122,8 @@
     "home": "home",
     "work": "work",
     "about": "about",
-    "blog": "blog"
+    "notes": "notes",
+    "colophon": "colophon"
   },
   "layout": {
     "motifCake": "the cake is a lie",
@@ -147,5 +143,46 @@
     "kbdComplete": "complete",
     "kbdGo": "go",
     "kbdClose": "close"
+  },
+  "notes": {
+    "overline": "notes",
+    "title": "notes",
+    "intro": "an index of pieces in various states of doneness. nothing to press yet — the first proofs:",
+    "item1Title": "most people can use stairs",
+    "item1Desc": "accessibility as universal design, not a compliance checkbox.",
+    "item2Title": "three names",
+    "item2Desc": "on being cuong, cường, and 志強 — what each language keeps.",
+    "item3Title": "design systems are a language problem",
+    "item3Desc": "naming, grammar, and why component libraries fail.",
+    "statusDrafting": "drafting",
+    "statusInProof": "in proof"
+  },
+  "colophon": {
+    "overline": "colophon",
+    "title": "colophon",
+    "subtitle": "how this thing is made.",
+    "editionsHeader": "edition history",
+    "ed1": "gatsby, coral on dark. first edition — long out of print.",
+    "ed2": "dependency bumps to a site nobody visited. archived.",
+    "ed3": "rebuilt from zero in react + vite. reset on paper, 2026. you are here.",
+    "designHeader": "design",
+    "designBody": "one name, printed through three plates — english, vietnamese, chinese. when the plates don’t quite line up, that’s not a bug in the press. the inks:",
+    "inkVermillion": "vermillion",
+    "inkStampBlue": "stamp blue",
+    "inkInk": "ink",
+    "inkPaper": "paper",
+    "typeHeader": "faces",
+    "typeFraunces": "display. carries the diacritics.",
+    "typeDm": "body.",
+    "typeMono": "proof marks, footnotes, and this line.",
+    "buildHeader": "build notes",
+    "build1": "react 19 + typescript + vite; mui theme, tanstack router.",
+    "build2": "set in three languages — en, vi, ja — via i18next.",
+    "build3": "playwright scripts proof every page at three widths before anything ships.",
+    "build4": "a pre-push hook refuses anything that doesn’t lint and build.",
+    "build5": "honors reduced-motion, forced-colors, and prefers-contrast. everyone gets the same page.",
+    "devHeader": "in development",
+    "devPhotos": "photographs — a contact sheet from tokyo. still in the darkroom.",
+    "devNotes": "notes — first pieces in proof."
   }
 }

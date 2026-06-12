@@ -6,7 +6,7 @@ import { useColors } from '@/theme/ThemeContext'
 import { useTranslation } from 'react-i18next'
 
 interface SearchItem {
-  key: 'home' | 'work' | 'about'
+  key: 'home' | 'work' | 'about' | 'notes' | 'colophon'
   path: string
   keywords: string[]
   description: string
@@ -16,6 +16,8 @@ const SEARCH_ITEMS: SearchItem[] = [
   { key: 'home', path: '/', keywords: ['index', 'hero', 'landing', 'main'], description: '~/' },
   { key: 'work', path: '/work', keywords: ['projects', 'portfolio', 'case studies'], description: '~/work' },
   { key: 'about', path: '/about', keywords: ['bio', 'cuong', 'who', 'info', 'resume'], description: '~/about' },
+  { key: 'notes', path: '/notes', keywords: ['blog', 'writing', 'posts', 'essays'], description: '~/notes' },
+  { key: 'colophon', path: '/colophon', keywords: ['design', 'type', 'build', 'rev', 'edition', 'credits'], description: '~/colophon' },
 ]
 
 function filterItems(query: string, labelFor: (k: SearchItem['key']) => string): SearchItem[] {
@@ -211,10 +213,10 @@ export function CliSearch({ open, onClose }: CliSearchProps) {
           width: { xs: '90vw', sm: 400 },
           backgroundColor: c.surface,
           border: `1px solid ${c.rose}`,
-          borderRadius: 1,
+          borderRadius: 0,
           py: 1,
           zIndex: 10001,
-          boxShadow: `0 12px 40px rgba(0,0,0,0.5), 0 0 20px ${c.coral}08`,
+          boxShadow: `4px 4px 0 ${c.rose}33`,
         }}
       >
         {results.map((item, i) => (
