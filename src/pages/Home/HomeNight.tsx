@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Box, Container, Typography, IconButton, Stack, Chip } from '@mui/material'
 import { Link } from '@tanstack/react-router'
 import { GlitchText } from '@/components/ui/GlitchText'
@@ -10,32 +10,10 @@ import type { ThemePalette } from '@/theme/palettes'
 import { useTranslation } from 'react-i18next'
 import { LANGUAGE_META, SUPPORTED_LANGUAGES, type Language } from '@/i18n'
 import { Spec, Barcode, Rule, BaseDecals } from '@/components/ui/PrintMarks'
-
-const SOCIAL_LINKS = [
-  { label: 'GitHub', href: 'https://github.com/sad-squid/', symbol: 'gh' },
-  { label: 'Instagram', href: 'https://instagram.com/c__squid/', symbol: 'ig' },
-  { label: 'LinkedIn', href: 'https://linkedin.com/in/cuongduong-dev/', symbol: 'in' },
-] as const
+import { SOCIAL_LINKS, PREVIOUSLY } from '@/data/site'
+import { useTokyoTime } from './useTokyoTime'
 
 const HOVER_NAMES = ['cường dương', '楊 志強']
-
-// ─── Hooks ───────────────────────────────────────────────────────────────────
-
-function useTokyoTime() {
-  const [time, setTime] = useState(() =>
-    DateTime.now().setZone('Asia/Tokyo').toFormat('HH:mm'),
-  )
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTime(DateTime.now().setZone('Asia/Tokyo').toFormat('HH:mm'))
-    }, 60_000)
-    return () => clearInterval(interval)
-  }, [])
-
-  return time
-}
-
 
 // ─── Shared cell base ───────────────────────────────────────────────────────
 
@@ -54,13 +32,6 @@ const NAV_ITEMS = [
   { label: 'about', to: '/about' },
   { label: 'work', to: '/work' },
   { label: 'notes', to: '/notes' },
-] as const
-
-
-const PREVIOUSLY = [
-  { co: 'Google', href: 'https://support.google.com', factKey: 'home.factGoogle' },
-  { co: 'Zoom', href: 'https://events.zoom.us/', factKey: 'home.factZoom' },
-  { co: 'Target', href: 'https://www.target.com', factKey: 'home.factTarget' },
 ] as const
 
 const PreviouslyChips = ({

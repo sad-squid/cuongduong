@@ -1,4 +1,4 @@
-import { createRootRoute, createRoute, createRouter } from '@tanstack/react-router'
+import { createRootRoute, createRoute, createRouter, redirect } from '@tanstack/react-router'
 import { Layout } from '@/components/Layout'
 import { HomePage } from '@/pages/Home'
 import { AboutPage } from '@/pages/About'
@@ -35,7 +35,16 @@ const notesRoute = createRoute({
   component: NotesPage,
 })
 
-const routeTree = rootRoute.addChildren([homeRoute, aboutRoute, workRoute, notesRoute])
+// /blog shipped publicly before the rebuild; keep old links alive
+const blogRedirectRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/blog',
+  beforeLoad: () => {
+    throw redirect({ to: '/notes' })
+  },
+})
+
+const routeTree = rootRoute.addChildren([homeRoute, aboutRoute, workRoute, notesRoute, blogRedirectRoute])
 
 export const router = createRouter({ routeTree, defaultViewTransition: true })
 

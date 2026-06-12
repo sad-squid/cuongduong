@@ -1,7 +1,6 @@
 import { createTheme } from '@mui/material/styles'
 import '@fontsource/fraunces/400-italic.css'
 import '@fontsource/fraunces/600.css'
-import '@fontsource/fraunces/700.css'
 import '@fontsource/space-grotesk/400.css'
 import '@fontsource/space-grotesk/500.css'
 import '@fontsource/space-grotesk/700.css'
@@ -131,6 +130,12 @@ export const buildTheme = (isDark: boolean) => {
               transitionDuration: '0.001ms !important',
               scrollBehavior: 'auto !important',
             },
+            // the universal selector above can't match view-transition
+            // pseudo-elements, so the UA's default cross-fade must be
+            // disabled explicitly
+            '::view-transition-old(root), ::view-transition-new(root)': {
+              animation: 'none !important',
+            },
           },
           '@media (forced-colors: active)': {
             '*': {
@@ -198,6 +203,4 @@ export const buildTheme = (isDark: boolean) => {
   })
 }
 
-const theme = buildTheme(true)
-
-export { SPACE_MONO, SPACE_GROTESK, FRAUNCES, theme }
+export { SPACE_MONO, SPACE_GROTESK, FRAUNCES }

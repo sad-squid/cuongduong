@@ -103,10 +103,12 @@ export function CliSearch({ open, onClose }: CliSearchProps) {
         break
       case 'ArrowDown':
         e.preventDefault()
+        if (results.length === 0) break
         setActiveIndex((i) => (i + 1) % results.length)
         break
       case 'ArrowUp':
         e.preventDefault()
+        if (results.length === 0) break
         setActiveIndex((i) => (i - 1 + results.length) % results.length)
         break
       case 'Enter':
@@ -192,8 +194,11 @@ export function CliSearch({ open, onClose }: CliSearchProps) {
               ml: 0.75,
               whiteSpace: 'pre',
               overflow: 'hidden',
-              textOverflow: 'ellipsis',
               minWidth: 0,
+              // anchor the END of the query so the characters being typed
+              // stay visible; overflow clips from the start instead
+              display: 'flex',
+              justifyContent: 'flex-end',
             }}
           >
             {query}

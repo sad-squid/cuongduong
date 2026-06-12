@@ -1,7 +1,6 @@
 {
   "common": {
     "portfolio": "Danh mục",
-    "comingSoon": "Sắp ra mắt.",
     "previously": "trước đây",
     "currently": "hiện tại",
     "language": "Ngôn ngữ"
@@ -10,16 +9,12 @@
     "overline": "kỹ sư phần mềm",
     "name": "cường dương",
     "bio": "Tôi là kỹ sư cấp cao tại SmartNews ở Tokyo. Trước đây làm việc tại Google, Zoom và Target. Tôi đam mê việc nuôi dưỡng một văn hóa học hỏi lành mạnh và tạo ra không gian đó cho tất cả mọi người.",
-    "highlight1": "React Native + pipeline LLM · SmartNews",
-    "highlight2": "Design system · Target / Zoom / Google",
-    "highlight3": "Tiết kiệm 6 triệu USD doanh thu quảng cáo · Target",
     "factGoogle": "Đại diện tiếp cận và i18n cho Guided Support Experience.",
     "factZoom": "Tái kiến trúc CI/CD và framework kiểm thử cho Zoom Events.",
     "factTarget": "Ra mắt design system đầu tiên của Target — 100+ ứng dụng, 3.600+ khai báo.",
     "role": "vai trò",
     "roleTitle": "Kỹ sư phần mềm cấp cao",
     "roleOrg": "SmartNews · Tokyo, Nhật Bản",
-    "highlights": "nổi bật",
     "tagline1": "nói điều gì đó,",
     "tagline2": "làm điều gì đó",
     "locationCity": "Tokyo, JP",

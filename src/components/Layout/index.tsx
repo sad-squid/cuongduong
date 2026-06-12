@@ -51,7 +51,8 @@ function useSwipeNavigation(enabled: boolean) {
       const elapsed = performance.now() - start.t
       start = null
       if (elapsed > 600 || Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 2) return
-      const idx = SWIPE_ORDER.indexOf(pathRef.current as (typeof SWIPE_ORDER)[number])
+      const path = pathRef.current.replace(/\/+$/, '') || '/'
+      const idx = SWIPE_ORDER.indexOf(path as (typeof SWIPE_ORDER)[number])
       if (idx === -1) return
       const next = SWIPE_ORDER[idx + (dx < 0 ? 1 : -1)]
       if (next) navigate({ to: next })
@@ -113,7 +114,7 @@ const Motif = () => {
           opacity: 0.55,
           ml: { xs: 0, sm: 1.5 },
           mt: { xs: 0.25, sm: 0 },
-          whiteSpace: { xs: 'nowrap', sm: 'nowrap' },
+          whiteSpace: 'nowrap',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           maxWidth: { xs: '55vw', sm: 'none' },

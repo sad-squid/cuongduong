@@ -1,7 +1,6 @@
 {
   "common": {
     "portfolio": "Portfolio",
-    "comingSoon": "Coming soon.",
     "previously": "previously",
     "currently": "currently",
     "language": "Language"
@@ -10,16 +9,12 @@
     "overline": "software engineer",
     "name": "cuong duong",
     "bio": "I'm a senior engineer at SmartNews in Tokyo. Previously at Google, Zoom, and Target. I'm passionate about fostering a healthy learning culture and creating that space for everyone.",
-    "highlight1": "React Native + LLM pipelines · SmartNews",
-    "highlight2": "Design systems · Target / Zoom / Google",
-    "highlight3": "$6M+ ad revenue saved · Target",
     "factGoogle": "Accessibility champion + i18n on Guided Support Experience.",
     "factZoom": "Re-architected CI/CD and test frameworks for Zoom Events.",
     "factTarget": "Launched Target's first design system — 100+ apps, 3,600+ declarations.",
     "role": "role",
     "roleTitle": "Senior Software Engineer",
     "roleOrg": "SmartNews · Tokyo, Japan",
-    "highlights": "highlights",
     "tagline1": "say something,",
     "tagline2": "do something",
     "locationCity": "Tokyo, JP",

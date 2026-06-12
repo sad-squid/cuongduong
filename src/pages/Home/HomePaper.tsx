@@ -1,20 +1,17 @@
-import { useState, useEffect } from 'react'
 import { Box, Container, Typography, IconButton, Stack } from '@mui/material'
 import { Link } from '@tanstack/react-router'
 import { GlitchText } from '@/components/ui/GlitchText'
-import { SPACE_MONO } from '@/theme'
+import { FRAUNCES, SPACE_MONO } from '@/theme'
 import { cellEntrance, ruleDraw } from '@/theme/animations'
 import { useColors } from '@/theme/ThemeContext'
 import { DateTime } from 'luxon'
 import { useTranslation } from 'react-i18next'
 import { LANGUAGE_META, SUPPORTED_LANGUAGES, type Language } from '@/i18n'
 import { Rule, CropMarks, BaseDecals } from '@/components/ui/PrintMarks'
+import { SOCIAL_LINKS, PREVIOUSLY } from '@/data/site'
+import { useTokyoTime } from './useTokyoTime'
 
-const SOCIAL_LINKS = [
-  { label: 'GitHub', href: 'https://github.com/sad-squid/', symbol: 'gh' },
-  { label: 'Instagram', href: 'https://instagram.com/c__squid/', symbol: 'ig' },
-  { label: 'LinkedIn', href: 'https://linkedin.com/in/cuongduong-dev/', symbol: 'in' },
-] as const
+const FOOTNOTE_MARKS = ['¹', '²', '³']
 
 const DISPLAY_NAMES = ['cuong duong', 'cường dương', '楊 志強']
 
@@ -30,29 +27,6 @@ const NAV_ITEMS = [
   { no: '02', label: 'about', to: '/about' },
   { no: '03', label: 'notes', to: '/notes' },
 ] as const
-
-const PREVIOUSLY = [
-  { mark: '¹', co: 'google', href: 'https://support.google.com', factKey: 'home.factGoogle' },
-  { mark: '²', co: 'zoom', href: 'https://events.zoom.us/', factKey: 'home.factZoom' },
-  { mark: '³', co: 'target', href: 'https://www.target.com', factKey: 'home.factTarget' },
-] as const
-
-// ─── Hooks ───────────────────────────────────────────────────────────────────
-
-function useTokyoTime() {
-  const [time, setTime] = useState(() =>
-    DateTime.now().setZone('Asia/Tokyo').toFormat('HH:mm'),
-  )
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTime(DateTime.now().setZone('Asia/Tokyo').toFormat('HH:mm'))
-    }, 60_000)
-    return () => clearInterval(interval)
-  }, [])
-
-  return time
-}
 
 // ─── HomePage ──────────────────────────────────────────────────────────────
 
@@ -300,7 +274,7 @@ export function HomePaper() {
             <Typography sx={{ ...monoLabel, display: 'block', mb: 1.5 }}>
               {t('common.previously')}
             </Typography>
-            {PREVIOUSLY.map(({ mark, co, href, factKey }) => (
+            {PREVIOUSLY.map(({ co, href, factKey }, i) => (
               <Typography
                 key={co}
                 sx={{
@@ -311,7 +285,7 @@ export function HomePaper() {
                 }}
               >
                 <Box component="span" aria-hidden="true" sx={{ color: c.coral, mr: 0.75 }}>
-                  {mark}
+                  {FOOTNOTE_MARKS[i]}
                 </Box>
                 <Box
                   component="a"
@@ -327,7 +301,7 @@ export function HomePaper() {
                     '&:hover': { color: c.coral, textDecorationColor: c.coral },
                   }}
                 >
-                  {co}
+                  {co.toLowerCase()}
                 </Box>
                 {' — '}
                 {t(factKey)}
@@ -441,7 +415,7 @@ export function HomePaper() {
               </Stack>
               <Typography
                 sx={{
-                  fontFamily: '"Fraunces", serif',
+                  fontFamily: FRAUNCES,
                   fontStyle: 'italic',
                   fontWeight: 400,
                   fontSize: '0.95rem',

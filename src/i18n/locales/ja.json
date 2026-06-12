@@ -1,7 +1,6 @@
 {
   "common": {
     "portfolio": "ポートフォリオ",
-    "comingSoon": "近日公開。",
     "previously": "前職",
     "currently": "現在",
     "language": "言語"
@@ -10,16 +9,12 @@
     "overline": "ソフトウェアエンジニア",
     "name": "楊 志強",
     "bio": "東京の SmartNews に勤めるシニアエンジニアです。以前は Google、Zoom、Target に在籍していました。学びの文化を育み、誰もがそのための場所を持てるようにすることに情熱を持っています。",
-    "highlight1": "React Native + LLM パイプライン · SmartNews",
-    "highlight2": "デザインシステム · Target / Zoom / Google",
-    "highlight3": "広告収益 600万ドル超を救出 · Target",
     "factGoogle": "Guided Support Experience のアクセシビリティ推進役と i18n 担当。",
     "factZoom": "Zoom Events の CI/CD とテストフレームワークを再設計。",
     "factTarget": "Target 初のデザインシステムを出荷 — 100以上のアプリ、3,600以上の宣言。",
     "role": "役職",
     "roleTitle": "シニアソフトウェアエンジニア",
     "roleOrg": "SmartNews · 東京、日本",
-    "highlights": "ハイライト",
     "tagline1": "有言",
     "tagline2": "実行",
     "locationCity": "東京、JP",

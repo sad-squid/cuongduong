@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useMemo, useCallback, useEffect, type ReactNode } from 'react'
+import { createContext, useContext, useState, useMemo, useCallback, useEffect, useRef, type ReactNode } from 'react'
 import { flushSync } from 'react-dom'
 import { ThemeProvider } from '@mui/material/styles'
 import { CssBaseline } from '@mui/material'
@@ -14,6 +14,7 @@ type ThemeContextValue = {
 const ThemeContext = createContext<ThemeContextValue>(null!)
 
 const STORAGE_KEY_DARK = 'theme-dark-v3'
+const STORAGE_KEY_DARK_LEGACY = 'theme-dark'
 
 const readBool = (key: string, fallback: boolean): boolean => {
   try {
@@ -25,8 +26,21 @@ const readBool = (key: string, fallback: boolean): boolean => {
   }
 }
 
+// Honor a preference saved under the pre-redesign key
+const readInitialDark = (): boolean => {
+  try {
+    if (localStorage.getItem(STORAGE_KEY_DARK) !== null) {
+      return readBool(STORAGE_KEY_DARK, true)
+    }
+    return readBool(STORAGE_KEY_DARK_LEGACY, true)
+  } catch {
+    return true
+  }
+}
+
 export const ThemeContextProvider = ({ children }: { children: ReactNode }) => {
-  const [isDark, setIsDark] = useState(() => readBool(STORAGE_KEY_DARK, true))
+  const [isDark, setIsDark] = useState(readInitialDark)
+  const switchToken = useRef(0)
 
   const toggleColorMode = useCallback(() => {
     const apply = () => {
@@ -44,12 +58,16 @@ export const ThemeContextProvider = ({ children }: { children: ReactNode }) => {
       apply()
       return
     }
+    const token = ++switchToken.current
     document.documentElement.setAttribute('data-theme-switching', '')
     const transition = document.startViewTransition(() => {
       flushSync(apply)
     })
     transition.finished.finally(() => {
-      document.documentElement.removeAttribute('data-theme-switching')
+      // a rapid second toggle supersedes this transition — leave its attribute alone
+      if (switchToken.current === token) {
+        document.documentElement.removeAttribute('data-theme-switching')
+      }
     })
   }, [])
 
