@@ -23,7 +23,10 @@
     "tagline1": "say something,",
     "tagline2": "do something",
     "locationCity": "Tokyo, JP",
-    "speaks": "speaks"
+    "speaks": "speaks",
+    "pastLivesLabel": "past lives",
+    "pastLives": "slam poet · bayou crabber · metal fabricator · barista",
+    "currentlyLine": "senior software engineer at smartnews · learning chinese · baking on weekends"
   },
   "about": {
     "overline": "about",

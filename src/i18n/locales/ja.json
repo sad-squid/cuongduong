@@ -23,7 +23,10 @@
     "tagline1": "有言",
     "tagline2": "実行",
     "locationCity": "東京、JP",
-    "speaks": "話せる"
+    "speaks": "話せる",
+    "pastLivesLabel": "前世",
+    "pastLives": "スラム詩人 · ベイユーの蟹漁師 · 金属加工職人 · バリスタ",
+    "currentlyLine": "smartnews シニアソフトウェアエンジニア · 中国語を勉強中 · 週末はパン作り"
   },
   "about": {
     "overline": "紹介",

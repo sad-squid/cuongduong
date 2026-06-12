@@ -38,7 +38,7 @@ export const Rule = ({ color, sx }: { color: string; sx?: object }) => (
   <Box aria-hidden="true" sx={{ height: '1px', backgroundColor: color, opacity: 0.2, ...sx }} />
 )
 
-const VertSpec = ({ children, sx }: { children: string; sx?: object }) => (
+export const VertSpec = ({ children, sx }: { children: string; sx?: object }) => (
   <Typography
     aria-hidden="true"
     sx={{
@@ -60,7 +60,7 @@ const VertSpec = ({ children, sx }: { children: string; sx?: object }) => (
   </Typography>
 )
 
-const HorizSpec = ({ children, sx }: { children: string; sx?: object }) => (
+export const HorizSpec = ({ children, sx }: { children: string; sx?: object }) => (
   <Typography
     aria-hidden="true"
     sx={{
@@ -79,6 +79,65 @@ const HorizSpec = ({ children, sx }: { children: string; sx?: object }) => (
   >
     {children}
   </Typography>
+)
+
+export const Folio = ({ children, sx }: { children: string; sx?: object }) => (
+  <Typography
+    aria-hidden="true"
+    sx={{
+      fontFamily: SPACE_MONO,
+      fontSize: '0.55rem',
+      letterSpacing: '0.15em',
+      textTransform: 'uppercase',
+      color: 'text.secondary',
+      opacity: 0.45,
+      userSelect: 'none',
+      lineHeight: 1,
+      ...sx,
+    }}
+  >
+    {children}
+  </Typography>
+)
+
+/** Four corner registration marks. Parent must be position: relative. */
+export const CropMarks = ({
+  color,
+  size = 10,
+  opacity = 0.5,
+  sx,
+}: {
+  color: string
+  size?: number
+  opacity?: number
+  sx?: object
+}) => (
+  <Box
+    aria-hidden="true"
+    sx={{
+      position: 'absolute',
+      inset: 0,
+      pointerEvents: 'none',
+      '& > span': {
+        position: 'absolute',
+        width: size,
+        height: size,
+        borderColor: color,
+        borderStyle: 'solid',
+        opacity,
+      },
+      '& > .cm-tl': { top: 0, left: 0, borderWidth: '1px 0 0 1px' },
+      '& > .cm-tr': { top: 0, right: 0, borderWidth: '1px 1px 0 0' },
+      '& > .cm-bl': { bottom: 0, left: 0, borderWidth: '0 0 1px 1px' },
+      '& > .cm-br': { bottom: 0, right: 0, borderWidth: '0 1px 1px 0' },
+      ...sx,
+    }}
+  >
+    <Box component="span" className="cm-tl" />
+    <Box component="span" className="cm-tr" />
+    <Box component="span" className="cm-bl" />
+    <Box component="span" className="cm-br" />
+  </Box>
 )
 
 export const BaseDecals = ({ c }: { c: ThemePalette }) => (
@@ -102,9 +161,10 @@ export const BaseDecals = ({ c }: { c: ThemePalette }) => (
         WebkitMaskImage: 'radial-gradient(ellipse 65% 45% at 50% 50%, black 10%, transparent 60%)',
       }}
     />
-    <HorizSpec sx={{ position: 'absolute', top: { xs: 8, md: 'calc(50% - 230px)' }, right: 0, pointerEvents: 'none' }}>
+    <HorizSpec sx={{ position: 'absolute', top: 8, right: 0, pointerEvents: 'none' }}>
       CD—25 / Rev.03
     </HorizSpec>
+    <Folio sx={{ position: 'absolute', bottom: 8, left: 0 }}>P.01 / Index</Folio>
     <HorizSpec sx={{ position: 'absolute', top: 8, left: 0, pointerEvents: 'none', display: { xs: 'block', md: 'none' } }}>
       CD—25 · Software Engineer
     </HorizSpec>

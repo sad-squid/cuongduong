@@ -23,7 +23,10 @@
     "tagline1": "nói điều gì đó,",
     "tagline2": "làm điều gì đó",
     "locationCity": "Tokyo, JP",
-    "speaks": "nói"
+    "speaks": "nói",
+    "pastLivesLabel": "kiếp trước",
+    "pastLives": "nhà thơ slam · thợ bắt cua vùng bayou · thợ gia công kim loại · barista",
+    "currentlyLine": "kỹ sư phần mềm cấp cao tại smartnews · đang học tiếng trung · cuối tuần nướng bánh"
   },
   "about": {
     "overline": "giới thiệu",
