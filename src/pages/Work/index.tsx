@@ -266,6 +266,7 @@ function Timeline({
       <Box
         ref={trackRef}
         onPointerDown={onTrackPointerDown}
+        data-swipe-ignore
         sx={{
           position: 'relative',
           height: 56,

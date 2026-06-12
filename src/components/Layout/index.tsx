@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { Box, Container, Typography, IconButton, Tooltip } from '@mui/material'
 import { LightMode, DarkMode } from '@mui/icons-material'
-import { Link, Outlet, useLocation } from '@tanstack/react-router'
+import { Link, Outlet, useLocation, useNavigate } from '@tanstack/react-router'
 import { SPACE_MONO } from '@/theme'
 import { useThemeToggle, useColors } from '@/theme/ThemeContext'
 import { CliSearch, SearchBackdrop } from '@/components/CliSearch'
@@ -14,6 +14,58 @@ const PAGE_LINKS = [
   { to: '/work', label: 'work' },
   { to: '/about', label: 'about' },
 ] as const
+
+const SWIPE_ORDER = ['/', '/work', '/about', '/notes'] as const
+
+// Horizontal flick on touch devices moves between pages. Guards: single
+// finger, away from screen edges (browser back/forward gestures), not on
+// draggable widgets, mostly horizontal, and quick.
+function useSwipeNavigation(enabled: boolean) {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const pathRef = useRef(location.pathname)
+
+  useEffect(() => {
+    pathRef.current = location.pathname
+  }, [location.pathname])
+
+  useEffect(() => {
+    if (!enabled) return
+    let start: { x: number; y: number; t: number } | null = null
+
+    const onTouchStart = (e: TouchEvent) => {
+      start = null
+      if (e.touches.length !== 1) return
+      const touch = e.touches[0]
+      const EDGE = 24
+      if (touch.clientX < EDGE || touch.clientX > window.innerWidth - EDGE) return
+      const target = e.target as Element | null
+      if (target?.closest('[data-swipe-ignore], [role="slider"], input, textarea')) return
+      start = { x: touch.clientX, y: touch.clientY, t: performance.now() }
+    }
+
+    const onTouchEnd = (e: TouchEvent) => {
+      if (!start) return
+      const touch = e.changedTouches[0]
+      const dx = touch.clientX - start.x
+      const dy = touch.clientY - start.y
+      const elapsed = performance.now() - start.t
+      start = null
+      if (elapsed > 600 || Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 2) return
+      const idx = SWIPE_ORDER.indexOf(pathRef.current as (typeof SWIPE_ORDER)[number])
+      if (idx === -1) return
+      const next = SWIPE_ORDER[idx + (dx < 0 ? 1 : -1)]
+      if (next) navigate({ to: next })
+    }
+
+    window.addEventListener('touchstart', onTouchStart, { passive: true })
+    window.addEventListener('touchend', onTouchEnd, { passive: true })
+    return () => {
+      window.removeEventListener('touchstart', onTouchStart)
+      window.removeEventListener('touchend', onTouchEnd)
+    }
+  }, [enabled, navigate])
+}
 
 const MOTIF_BASE_MS = 3500
 const MOTIF_PER_CHAR_MS = 70
@@ -296,6 +348,7 @@ export function Layout() {
   const openSearch = useCallback(() => setSearchOpen(true), [])
   const closeSearch = useCallback(() => setSearchOpen(false), [])
   const [debugOpen, setDebugOpen] = useState(false)
+  useSwipeNavigation(!searchOpen)
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
