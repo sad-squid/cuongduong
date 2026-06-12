@@ -133,7 +133,8 @@
     "motifLol": "時は矢のごとく飛ぶ。ハエはバナナのごとく飛ぶ。",
     "themeLight": "ライトモード",
     "themeDark": "ダークモード",
-    "colophonLine": "fraunces・dm sans・space mono で組版 — 東京にて印刷"
+    "colophonLine": "fraunces・dm sans・space mono で組版 — 東京にて印刷",
+    "colophonLineDark": "space grotesk・dm sans・space mono で組版 — 東京にてコンパイル"
   },
   "search": {
     "placeholder": "きみの行く道！",

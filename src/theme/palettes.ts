@@ -11,18 +11,18 @@ export type ThemePalette = {
   dustyRose: string
 }
 
-// "Night edition" — warm ink on near-black paper
+// "Night edition" — the original handcrafted cyber zen: grey, pink, coral (default)
 export const darkCyber: ThemePalette = {
-  bg: '#1B1916',
-  surface: '#242019',
-  coral: '#E8603C',
-  teal: '#6FA3C7',
-  rose: '#52483B',
-  roseText: '#B59B7F',
-  cream: '#EFE9DC',
-  beige: '#C9C0AE',
-  warmCoral: '#E07856',
-  dustyRose: '#A98B72',
+  bg: '#1A1A1B',
+  surface: '#262630',
+  coral: '#FF5533',
+  teal: '#3BB8D0',
+  rose: '#864854',
+  roseText: '#BA7F8A',
+  cream: '#F0EEE9',
+  beige: '#DCD7C9',
+  warmCoral: '#F06E61',
+  dustyRose: '#B58484',
 }
 
 // "Paper edition" — vermillion + stamp blue ink on warm paper (default)

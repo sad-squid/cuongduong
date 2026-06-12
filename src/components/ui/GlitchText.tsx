@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { Box } from '@mui/material'
-import { useColors } from '@/theme/ThemeContext'
+import { useColors, useThemeToggle } from '@/theme/ThemeContext'
 import type { ThemePalette } from '@/theme/palettes'
 
 // --- Utils ---
@@ -18,9 +18,10 @@ const hexToRgba = (hex: string, alpha: number) => {
   return `rgba(${r},${g},${b},${alpha.toFixed(2)})`
 }
 
-// 2–3 ink plates: vermillion, stamp blue, and the text ink itself — offset
-// layers read as risograph misregistration rather than digital corruption
-const buildGlitchPalette = (c: ThemePalette) => [c.coral, c.teal, c.cream]
+// Night edition glitches in the full neon set; paper edition prints 3 ink
+// plates whose offsets read as risograph misregistration
+const buildGlitchPalette = (c: ThemePalette, isDark: boolean) =>
+  isDark ? [c.coral, c.teal, c.dustyRose, c.warmCoral, c.rose] : [c.coral, c.teal, c.cream]
 
 // --- Glitch state generation ---
 
@@ -35,13 +36,15 @@ interface GlitchParams {
 const generateParams = (): GlitchParams => ({
   movementIntensity: rand(0.3, 1.0),
   colorIntensity: rand(0.3, 1.0),
-  layerCount: randInt(2, 3),
+  layerCount: randInt(2, 6),
   baseObscureChance: rand(0, 0.12),
   scanlineIntensity: rand(0.2, 1.0),
 })
 
-const generateShadows = (params: GlitchParams, intensity = 1, palette: string[] = []): string => {
-  const { movementIntensity, colorIntensity, layerCount } = params
+const generateShadows = (params: GlitchParams, intensity = 1, palette: string[] = [], digital = false): string => {
+  const { movementIntensity, colorIntensity } = params
+  // ink plates offset cleanly and stay few; digital corruption blurs and stacks
+  const layerCount = digital ? params.layerCount : Math.min(params.layerCount, 3)
   const shadows: string[] = []
 
   const minColor = palette[randInt(0, 2)]
@@ -55,9 +58,9 @@ const generateShadows = (params: GlitchParams, intensity = 1, palette: string[] 
     const maxOffset = 3 + movementIntensity * 8
     const x = rand(-maxOffset, maxOffset)
     const y = rand(-maxOffset * 0.4, maxOffset * 0.4)
-    const alpha = rand(0.12, 0.55) * colorIntensity * intensity
-    // ink plates offset, they don't blur
-    shadows.push(`${x.toFixed(1)}px ${y.toFixed(1)}px 0 ${hexToRgba(color, Math.max(0.05 * intensity, alpha))}`)
+    const alpha = rand(0.08, 0.5) * colorIntensity * intensity
+    const blur = digital && Math.random() > 0.7 ? rand(0, 2) : 0
+    shadows.push(`${x.toFixed(1)}px ${y.toFixed(1)}px ${blur.toFixed(1)}px ${hexToRgba(color, Math.max(0.05 * intensity, alpha))}`)
   }
 
   return shadows.join(', ')
@@ -71,16 +74,16 @@ interface ScanLine {
   offsetX: number
 }
 
-const generateScanLines = (intensity: number, palette: string[], bg: string): ScanLine[] => {
-  // sparse bands: bg-colored = ink skips, tinted = roller marks
-  const count = randInt(1, Math.ceil(1 + intensity * 3))
+const generateScanLines = (intensity: number, palette: string[], bg: string, digital = false): ScanLine[] => {
+  // night: dense vhs scanlines; paper: sparse ink skips and roller marks
+  const count = digital ? randInt(1, Math.ceil(2 + intensity * 4)) : randInt(1, Math.ceil(1 + intensity * 3))
   const lines: ScanLine[] = []
 
   for (let i = 0; i < count; i++) {
     const isTinted = Math.random() > 0.5
     lines.push({
       top: rand(0, 95),
-      height: rand(1, 3 + intensity * 5),
+      height: digital ? rand(1, 4 + intensity * 8) : rand(1, 3 + intensity * 5),
       opacity: Math.min(1, rand(0.3, 0.7 + intensity * 0.3)),
       color: isTinted
         ? hexToRgba(palette[randInt(0, 2)], Math.min(1, rand(0.05, 0.2) * intensity))
@@ -139,7 +142,8 @@ export const GlitchText = ({
   sticky = false,
 }: GlitchTextProps) => {
   const colors = useColors()
-  const glitchPalette = useMemo(() => buildGlitchPalette(colors), [colors])
+  const { isDark } = useThemeToggle()
+  const glitchPalette = useMemo(() => buildGlitchPalette(colors, isDark), [colors, isDark])
   const [glitching, setGlitching] = useState(false)
   const [textShadow, setTextShadow] = useState('none')
   const [baseOpacity, setBaseOpacity] = useState(1)
@@ -200,8 +204,8 @@ export const GlitchText = ({
 
     const tick = () => {
       const p = paramsRef.current
-      setTextShadow(generateShadows(p, intensity, glitchPalette))
-      setScanLineState(generateScanLines(p.scanlineIntensity * scanlineBoost, glitchPalette, colors.bg))
+      setTextShadow(generateShadows(p, intensity, glitchPalette, isDark))
+      setScanLineState(generateScanLines(p.scanlineIntensity * scanlineBoost, glitchPalette, colors.bg, isDark))
 
       if (Math.random() < p.baseObscureChance) {
         setBaseOpacity(rand(0, 0.15))

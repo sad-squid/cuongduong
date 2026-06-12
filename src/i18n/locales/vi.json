@@ -133,7 +133,8 @@
     "motifLol": "thời gian bay như mũi tên. ruồi trái cây bay như chuối.",
     "themeLight": "Chế độ sáng",
     "themeDark": "Chế độ tối",
-    "colophonLine": "sắp chữ bằng fraunces, dm sans & space mono — in tại tokyo"
+    "colophonLine": "sắp chữ bằng fraunces, dm sans & space mono — in tại tokyo",
+    "colophonLineDark": "sắp chữ bằng space grotesk, dm sans & space mono — biên dịch tại tokyo"
   },
   "search": {
     "placeholder": "ồ, những nơi bạn sẽ đến!",

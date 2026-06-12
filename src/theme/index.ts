@@ -45,8 +45,13 @@ export const buildTheme = (isDark: boolean) => {
     },
     typography: {
       fontFamily: DM_SANS,
-      h1: { fontFamily: FRAUNCES, fontWeight: 600, letterSpacing: '-0.01em' },
-      h2: { fontFamily: FRAUNCES, fontWeight: 600, letterSpacing: '-0.005em' },
+      // night edition sets display in Space Grotesk; paper edition in Fraunces
+      h1: isDark
+        ? { fontFamily: SPACE_GROTESK, fontWeight: 700, letterSpacing: '-0.03em' }
+        : { fontFamily: FRAUNCES, fontWeight: 600, letterSpacing: '-0.01em' },
+      h2: isDark
+        ? { fontFamily: SPACE_GROTESK, fontWeight: 700, letterSpacing: '-0.02em' }
+        : { fontFamily: FRAUNCES, fontWeight: 600, letterSpacing: '-0.005em' },
       h3: { fontFamily: SPACE_GROTESK, fontWeight: 500, letterSpacing: '-0.015em' },
       h4: { fontFamily: SPACE_GROTESK, fontWeight: 500 },
       h5: { fontFamily: SPACE_GROTESK, fontWeight: 500 },
@@ -149,9 +154,10 @@ export const buildTheme = (isDark: boolean) => {
           root: {
             border: `1px solid ${c.rose}`,
             backgroundImage: 'none',
-            transition: 'border-color 0.2s ease',
+            transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
             '&:hover': {
               borderColor: c.coral,
+              boxShadow: isDark ? `0 0 20px ${c.coral}15` : 'none',
             },
           },
         },
@@ -185,6 +191,6 @@ export const buildTheme = (isDark: boolean) => {
   })
 }
 
-const theme = buildTheme(false)
+const theme = buildTheme(true)
 
 export { SPACE_MONO, SPACE_GROTESK, FRAUNCES, theme }

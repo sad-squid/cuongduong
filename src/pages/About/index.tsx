@@ -3,7 +3,7 @@ import { GlitchText } from '@/components/ui/GlitchText'
 import { CropMarks } from '@/components/ui/PrintMarks'
 import { FRAUNCES, SPACE_GROTESK, SPACE_MONO } from '@/theme'
 import { cellEntrance } from '@/theme/animations'
-import { useColors } from '@/theme/ThemeContext'
+import { useThemeToggle } from '@/theme/ThemeContext'
 import { Trans, useTranslation } from 'react-i18next'
 import { REVISION, EDITIONS, INKS } from '@/data/site'
 
@@ -26,7 +26,7 @@ const Section = ({ header, delay = 0, children }: SectionProps) => (
 )
 
 export function AboutPage() {
-  const c = useColors()
+  const { isDark, palette: c } = useThemeToggle()
   const { t } = useTranslation()
 
   const skills: Array<[string, string, string]> = [
@@ -40,14 +40,14 @@ export function AboutPage() {
 
   const awards = [t('about.award1'), t('about.award2')]
 
-  // ink fades with fluency
-  const langs: Array<{ code: string; text: string; ink: number }> = [
-    { code: 'EN', text: t('about.langEn'), ink: 1 },
-    { code: 'VI', text: t('about.langVi'), ink: 1 },
-    { code: 'JA', text: t('about.langJa'), ink: 0.8 },
-    { code: 'ZH', text: t('about.langZh'), ink: 0.6 },
-    { code: 'KO', text: t('about.langKr'), ink: 0.45 },
-    { code: 'FR', text: t('about.langFr'), ink: 0.3 },
+  // night: colored tiles; paper: one ink fading with fluency
+  const langs: Array<{ code: string; text: string; ink: number; tile: string }> = [
+    { code: 'EN', text: t('about.langEn'), ink: 1, tile: c.coral },
+    { code: 'VI', text: t('about.langVi'), ink: 1, tile: c.teal },
+    { code: 'JA', text: t('about.langJa'), ink: 0.8, tile: c.roseText },
+    { code: 'ZH', text: t('about.langZh'), ink: 0.6, tile: c.warmCoral },
+    { code: 'KO', text: t('about.langKr'), ink: 0.45, tile: c.dustyRose },
+    { code: 'FR', text: t('about.langFr'), ink: 0.3, tile: c.rose },
   ]
 
   return (
@@ -269,7 +269,9 @@ export function AboutPage() {
             {skills.map(([label, items, tag], i) => {
               const spans = [3, 3, 2, 2, 2, 6]
               const variants = ['border', 'bar', 'tint', 'border', 'bar', 'tint'] as const
-              const accent = c.coral
+              // night edition keeps the handcrafted six-accent set; paper prints one ink
+              const accents = [c.coral, c.teal, c.roseText, c.warmCoral, c.dustyRose, c.rose]
+              const accent = isDark ? accents[i] : c.coral
               const variant = variants[i]
               const code = `SK.${tag}`
 
@@ -380,7 +382,7 @@ export function AboutPage() {
         {/* Languages */}
         <Section header={t('about.langsHeader')} delay={400}>
           <Stack spacing={1}>
-            {langs.map(({ code, text, ink }) => (
+            {langs.map(({ code, text, ink, tile }) => (
               <Box
                 key={code}
                 sx={{
@@ -392,8 +394,8 @@ export function AboutPage() {
               >
                 <Box
                   sx={{
-                    backgroundColor: c.cream,
-                    opacity: ink,
+                    backgroundColor: isDark ? tile : c.cream,
+                    opacity: isDark ? 1 : ink,
                     color: c.bg,
                     fontFamily: SPACE_MONO,
                     fontSize: '0.65rem',
