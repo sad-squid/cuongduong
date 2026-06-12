@@ -1,6 +1,5 @@
 import { type ReactNode } from 'react'
 import { Box, Typography } from '@mui/material'
-import { Link } from '@tanstack/react-router'
 import { SPACE_MONO } from '@/theme'
 import type { ThemePalette } from '@/theme/palettes'
 import { REVISION } from '@/data/site'
@@ -163,29 +162,9 @@ export const BaseDecals = ({ c }: { c: ThemePalette }) => (
         WebkitMaskImage: 'radial-gradient(ellipse 65% 45% at 50% 50%, black 10%, transparent 60%)',
       }}
     />
-    <Typography
-      component={Link}
-      to="/colophon"
-      sx={{
-        position: 'absolute',
-        top: 8,
-        right: 0,
-        fontFamily: SPACE_MONO,
-        fontSize: '0.5rem',
-        fontWeight: 400,
-        letterSpacing: '0.12em',
-        textTransform: 'uppercase',
-        color: 'text.primary',
-        opacity: 0.35,
-        lineHeight: 1.4,
-        whiteSpace: 'nowrap',
-        textDecoration: 'none',
-        transition: 'color 0.15s, opacity 0.15s',
-        '&:hover': { color: c.coral, opacity: 1 },
-      }}
-    >
+    <HorizSpec sx={{ position: 'absolute', top: 8, right: 0, pointerEvents: 'none' }}>
       {`CD—25 / ${REVISION}`}
-    </Typography>
+    </HorizSpec>
     <Folio sx={{ position: 'absolute', bottom: 8, left: 0 }}>P.01 / Index</Folio>
     <HorizSpec sx={{ position: 'absolute', top: 8, left: 0, pointerEvents: 'none', display: { xs: 'block', md: 'none' } }}>
       CD—25 · Software Engineer

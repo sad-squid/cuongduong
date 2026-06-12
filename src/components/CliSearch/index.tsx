@@ -6,7 +6,7 @@ import { useColors } from '@/theme/ThemeContext'
 import { useTranslation } from 'react-i18next'
 
 interface SearchItem {
-  key: 'home' | 'work' | 'about' | 'notes' | 'colophon'
+  key: 'home' | 'work' | 'about' | 'notes'
   path: string
   keywords: string[]
   description: string
@@ -15,9 +15,8 @@ interface SearchItem {
 const SEARCH_ITEMS: SearchItem[] = [
   { key: 'home', path: '/', keywords: ['index', 'hero', 'landing', 'main'], description: '~/' },
   { key: 'work', path: '/work', keywords: ['projects', 'portfolio', 'case studies'], description: '~/work' },
-  { key: 'about', path: '/about', keywords: ['bio', 'cuong', 'who', 'info', 'resume'], description: '~/about' },
+  { key: 'about', path: '/about', keywords: ['bio', 'cuong', 'who', 'info', 'resume', 'site', 'design'], description: '~/about' },
   { key: 'notes', path: '/notes', keywords: ['blog', 'writing', 'posts', 'essays'], description: '~/notes' },
-  { key: 'colophon', path: '/colophon', keywords: ['design', 'type', 'build', 'rev', 'edition', 'credits'], description: '~/colophon' },
 ]
 
 function filterItems(query: string, labelFor: (k: SearchItem['key']) => string): SearchItem[] {

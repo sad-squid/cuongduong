@@ -96,6 +96,22 @@ export const buildTheme = (isDark: boolean) => {
             outline: `2px solid ${c.coral}`,
             outlineOffset: '2px',
           },
+          // Cross-fade page navigations (View Transitions API; no-op where unsupported)
+          '@keyframes vtFadeOut': {
+            to: { opacity: 0 },
+          },
+          '@keyframes vtFadeIn': {
+            from: { opacity: 0 },
+            to: { opacity: 1 },
+          },
+          '@media (prefers-reduced-motion: no-preference)': {
+            '::view-transition-old(root)': {
+              animation: 'vtFadeOut 0.15s ease-in both',
+            },
+            '::view-transition-new(root)': {
+              animation: 'vtFadeIn 0.3s ease-out both',
+            },
+          },
           '@media (prefers-reduced-motion: reduce)': {
             '*, *::before, *::after': {
               animationDuration: '0.001ms !important',

@@ -26,7 +26,7 @@
     "speaks": "nói",
     "pastLivesLabel": "kiếp trước",
     "pastLives": "nhà thơ slam · thợ bắt cua vùng bayou · thợ gia công kim loại · barista",
-    "currentlyLine": "kỹ sư phần mềm cấp cao tại smartnews · đang học tiếng trung · cuối tuần nướng bánh"
+    "currentlyLine": "kỹ sư phần mềm cấp cao tại smartnews · đang học tiếng nhật · đang dần quen với tokyo"
   },
   "about": {
     "overline": "giới thiệu",
@@ -122,8 +122,7 @@
     "home": "trang chủ",
     "work": "công việc",
     "about": "giới thiệu",
-    "notes": "ghi chú",
-    "colophon": "ấn bản"
+    "notes": "ghi chú"
   },
   "layout": {
     "motifCake": "chiếc bánh là lời nói dối",
@@ -157,32 +156,20 @@
     "statusDrafting": "đang viết",
     "statusInProof": "đang kiểm bản"
   },
-  "colophon": {
-    "overline": "thông tin ấn bản",
-    "title": "ấn bản",
-    "subtitle": "trang này được làm ra như thế nào.",
-    "editionsHeader": "lịch sử ấn bản",
-    "ed1": "gatsby, cam san hô trên nền tối. ấn bản đầu tiên — tuyệt bản từ lâu.",
-    "ed2": "cập nhật dependency cho một trang web không ai ghé. đã lưu trữ.",
-    "ed3": "xây lại từ đầu bằng react + vite. sắp chữ lại trên nền giấy, 2026. bạn đang ở đây.",
-    "designHeader": "thiết kế",
-    "designBody": "một cái tên, in qua ba bản kẽm — tiếng anh, tiếng việt, tiếng trung. khi các bản kẽm không khớp hẳn với nhau, đó không phải lỗi của máy in. các màu mực:",
+  "site": {
+    "siteHeader": "trang này",
+    "siteBody": "một cái tên, in qua ba bản kẽm — tiếng anh, tiếng việt, tiếng trung. khi các bản kẽm không khớp hẳn với nhau, đó không phải lỗi của máy in. các màu mực:",
+    "siteEd1": "gatsby, cam san hô trên nền tối. ấn bản đầu tiên — tuyệt bản từ lâu.",
+    "siteEd2": "cập nhật dependency cho một trang web không ai ghé. đã lưu trữ.",
+    "siteEd3": "xây lại từ đầu bằng react + vite. sắp chữ lại trên nền giấy, 2026. bạn đang ở đây.",
+    "siteBuild1": "react 19 + typescript + vite; theme mui, tanstack router.",
+    "siteBuild2": "sắp chữ bằng ba ngôn ngữ — en, vi, ja — qua i18next.",
+    "siteBuild3": "script playwright kiểm bản từng trang ở ba độ rộng trước khi xuất bản.",
+    "siteBuild4": "hook pre-push từ chối mọi thứ không qua được lint và build.",
+    "siteBuild5": "tôn trọng reduced-motion, forced-colors và prefers-contrast. ai cũng nhận được cùng một trang.",
     "inkVermillion": "đỏ chu sa",
     "inkStampBlue": "xanh con dấu",
     "inkInk": "mực",
-    "inkPaper": "giấy",
-    "typeHeader": "kiểu chữ",
-    "typeFraunces": "chữ hiển thị. gánh trọn các dấu thanh.",
-    "typeDm": "chữ nội dung.",
-    "typeMono": "dấu kiểm bản, chú thích, và chính dòng này.",
-    "buildHeader": "ghi chú kỹ thuật",
-    "build1": "react 19 + typescript + vite; theme mui, tanstack router.",
-    "build2": "sắp chữ bằng ba ngôn ngữ — en, vi, ja — qua i18next.",
-    "build3": "script playwright kiểm bản từng trang ở ba độ rộng trước khi xuất bản.",
-    "build4": "hook pre-push từ chối mọi thứ không qua được lint và build.",
-    "build5": "tôn trọng reduced-motion, forced-colors và prefers-contrast. ai cũng nhận được cùng một trang.",
-    "devHeader": "đang thực hiện",
-    "devPhotos": "ảnh — một contact sheet từ tokyo. còn đang rửa.",
-    "devNotes": "ghi chú — những bài đầu tiên đang kiểm bản."
+    "inkPaper": "giấy"
   }
 }

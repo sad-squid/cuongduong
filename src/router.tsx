@@ -4,7 +4,6 @@ import { HomePage } from '@/pages/Home'
 import { AboutPage } from '@/pages/About'
 import { WorkPage } from '@/pages/Work'
 import { NotesPage } from '@/pages/Notes'
-import { ColophonPage } from '@/pages/Colophon'
 import { NotFoundPage } from '@/pages/NotFound'
 
 const rootRoute = createRootRoute({
@@ -36,15 +35,9 @@ const notesRoute = createRoute({
   component: NotesPage,
 })
 
-const colophonRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/colophon',
-  component: ColophonPage,
-})
+const routeTree = rootRoute.addChildren([homeRoute, aboutRoute, workRoute, notesRoute])
 
-const routeTree = rootRoute.addChildren([homeRoute, aboutRoute, workRoute, notesRoute, colophonRoute])
-
-export const router = createRouter({ routeTree })
+export const router = createRouter({ routeTree, defaultViewTransition: true })
 
 declare module '@tanstack/react-router' {
   interface Register {

@@ -3,7 +3,7 @@ import { Box, Container, Typography, IconButton, Stack } from '@mui/material'
 import { Link } from '@tanstack/react-router'
 import { GlitchText } from '@/components/ui/GlitchText'
 import { SPACE_MONO } from '@/theme'
-import { cellEntrance } from '@/theme/animations'
+import { cellEntrance, ruleDraw } from '@/theme/animations'
 import { useColors } from '@/theme/ThemeContext'
 import { DateTime } from 'luxon'
 import { useTranslation } from 'react-i18next'
@@ -29,7 +29,6 @@ const NAV_ITEMS = [
   { no: '01', label: 'work', to: '/work' },
   { no: '02', label: 'about', to: '/about' },
   { no: '03', label: 'notes', to: '/notes' },
-  { no: '04', label: 'colophon', to: '/colophon' },
 ] as const
 
 const PREVIOUSLY = [
@@ -156,13 +155,13 @@ export function HomePage() {
             </Box>
           </Box>
 
-          <Rule color={c.cream} sx={{ mb: { xs: 4, md: 5 }, ...cellEntrance(0) }} />
+          <Rule color={c.cream} sx={{ mb: { xs: 4, md: 5 }, ...ruleDraw(150) }} />
 
           {/* ── Specimen hero ── */}
-          <Box sx={{ ...cellEntrance(100) }}>
+          <Box>
             <Typography
               variant="overline"
-              sx={{ color: 'primary.main', display: 'block', mb: 1.5 }}
+              sx={{ color: 'primary.main', display: 'block', mb: 1.5, ...cellEntrance(100) }}
             >
               {t('home.overline')}
             </Typography>
@@ -174,6 +173,7 @@ export function HomePage() {
                 lineHeight: 1.05,
                 mb: { xs: 3, md: 4 },
                 cursor: 'default',
+                ...cellEntrance(180),
               }}
             >
               <GlitchText
@@ -187,7 +187,7 @@ export function HomePage() {
 
             {/* Specimen rows — the same name through three plates */}
             <Box sx={{ mb: { xs: 4, md: 5 } }}>
-              {SPECIMENS.map(({ lang, label, nameKey, ipaKey }) => {
+              {SPECIMENS.map(({ lang, label, nameKey, ipaKey }, i) => {
                 const active = currentLang === lang
                 return (
                   <Box
@@ -200,6 +200,7 @@ export function HomePage() {
                       borderBottom: '1px solid',
                       borderColor: 'divider',
                       '&:first-of-type': { borderTop: '1px solid', borderTopColor: 'divider' },
+                      ...cellEntrance(300 + i * 110),
                     }}
                   >
                     <Typography
@@ -253,6 +254,7 @@ export function HomePage() {
                 lineHeight: 1.8,
                 maxWidth: '36em',
                 mb: { xs: 4, md: 5 },
+                ...cellEntrance(680),
               }}
             >
               {t('home.bio')}
@@ -260,11 +262,11 @@ export function HomePage() {
           </Box>
 
           {/* ── Currently / past lives ── */}
-          <Box sx={{ mb: { xs: 4, md: 5 }, ...cellEntrance(200) }}>
+          <Box sx={{ mb: { xs: 4, md: 5 } }}>
             {[
               { label: t('common.currently'), line: t('home.currentlyLine') },
               { label: t('home.pastLivesLabel'), line: t('home.pastLives') },
-            ].map(({ label, line }) => (
+            ].map(({ label, line }, i) => (
               <Box
                 key={label}
                 sx={{
@@ -272,6 +274,7 @@ export function HomePage() {
                   alignItems: 'baseline',
                   gap: { xs: 1.5, md: 2.5 },
                   py: 0.75,
+                  ...cellEntrance(760 + i * 70),
                 }}
               >
                 <Typography component="span" sx={{ ...monoLabel, flexShrink: 0, width: { xs: 84, md: 96 } }}>
@@ -293,7 +296,7 @@ export function HomePage() {
           </Box>
 
           {/* ── Previously, as footnotes ── */}
-          <Box sx={{ mb: { xs: 4, md: 5 }, ...cellEntrance(300) }}>
+          <Box sx={{ mb: { xs: 4, md: 5 }, ...cellEntrance(920) }}>
             <Typography sx={{ ...monoLabel, display: 'block', mb: 1.5 }}>
               {t('common.previously')}
             </Typography>
@@ -333,9 +336,9 @@ export function HomePage() {
           </Box>
 
           {/* ── Index strip + social ── */}
-          <Box sx={{ ...cellEntrance(400) }}>
+          <Box>
             <Box component="nav" sx={{ mb: { xs: 3, md: 4 } }}>
-              {NAV_ITEMS.map(({ no, label, to }) => (
+              {NAV_ITEMS.map(({ no, label, to }, i) => (
                 <Box
                   key={label}
                   component={Link}
@@ -351,6 +354,7 @@ export function HomePage() {
                     '&:first-of-type': { borderTop: '1px solid', borderTopColor: 'divider' },
                     '&:hover .toc-label': { color: c.coral },
                     '&:hover .toc-arrow': { color: c.coral, transform: 'translateX(4px)' },
+                    ...cellEntrance(1040 + i * 70),
                   }}
                 >
                   <Typography component="span" sx={{ ...monoLabel, color: 'text.secondary', opacity: 0.6 }}>
@@ -402,6 +406,7 @@ export function HomePage() {
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 gap: 2,
+                ...cellEntrance(1280),
               }}
             >
               <Stack direction="row" spacing={1.5}>

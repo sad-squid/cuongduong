@@ -26,7 +26,7 @@
     "speaks": "話せる",
     "pastLivesLabel": "前世",
     "pastLives": "スラム詩人 · ベイユーの蟹漁師 · 金属加工職人 · バリスタ",
-    "currentlyLine": "smartnews シニアソフトウェアエンジニア · 中国語を勉強中 · 週末はパン作り"
+    "currentlyLine": "smartnews シニアソフトウェアエンジニア · 日本語を勉強中 · 東京の暮らしに慣れつつある日々"
   },
   "about": {
     "overline": "紹介",
@@ -122,8 +122,7 @@
     "home": "ホーム",
     "work": "作品",
     "about": "紹介",
-    "notes": "ノート",
-    "colophon": "奥付"
+    "notes": "ノート"
   },
   "layout": {
     "motifCake": "ケーキはうそだ",
@@ -157,32 +156,20 @@
     "statusDrafting": "執筆中",
     "statusInProof": "校正中"
   },
-  "colophon": {
-    "overline": "奥付",
-    "title": "奥付",
-    "subtitle": "このサイトの作りかた。",
-    "editionsHeader": "改版履歴",
-    "ed1": "gatsby、ダークにコーラル。初版 — とうに絶版。",
-    "ed2": "誰も訪れないサイトの依存関係だけ更新。アーカイブ済み。",
-    "ed3": "react + vite でゼロから組み直し。紙の上に再組版、2026年。現在地はここ。",
-    "designHeader": "デザイン",
-    "designBody": "ひとつの名前を、三つの版で刷る — 英語、ベトナム語、中国語。版がぴったり重ならないのは、印刷機のバグではない。インクは以下のとおり:",
+  "site": {
+    "siteHeader": "このサイト",
+    "siteBody": "ひとつの名前を、三つの版で刷る — 英語、ベトナム語、中国語。版がぴったり重ならないのは、印刷機のバグではない。インクは以下のとおり:",
+    "siteEd1": "gatsby、ダークにコーラル。初版 — とうに絶版。",
+    "siteEd2": "誰も訪れないサイトの依存関係だけ更新。アーカイブ済み。",
+    "siteEd3": "react + vite でゼロから組み直し。紙の上に再組版、2026年。現在地はここ。",
+    "siteBuild1": "react 19 + typescript + vite。mui テーマ、tanstack router。",
+    "siteBuild2": "i18next で三言語組版 — en・vi・ja。",
+    "siteBuild3": "playwright のスクリプトが、出荷前に全ページを三つの幅で検版する。",
+    "siteBuild4": "pre-push フックが、lint とビルドを通らないものは一切押し返す。",
+    "siteBuild5": "reduced-motion・forced-colors・prefers-contrast に対応。誰にでも同じページを。",
     "inkVermillion": "朱",
     "inkStampBlue": "印藍",
     "inkInk": "墨",
-    "inkPaper": "紙",
-    "typeHeader": "書体",
-    "typeFraunces": "見出し用。ダイアクリティカルマークを支える。",
-    "typeDm": "本文用。",
-    "typeMono": "検版記号と脚注、そしてこの行。",
-    "buildHeader": "ビルドノート",
-    "build1": "react 19 + typescript + vite。mui テーマ、tanstack router。",
-    "build2": "i18next で三言語組版 — en・vi・ja。",
-    "build3": "playwright のスクリプトが、出荷前に全ページを三つの幅で検版する。",
-    "build4": "pre-push フックが、lint とビルドを通らないものは一切押し返す。",
-    "build5": "reduced-motion・forced-colors・prefers-contrast に対応。誰にでも同じページを。",
-    "devHeader": "制作中",
-    "devPhotos": "写真 — 東京のコンタクトシート。まだ現像中。",
-    "devNotes": "ノート — 最初の数本を校正中。"
+    "inkPaper": "紙"
   }
 }

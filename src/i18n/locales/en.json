@@ -26,7 +26,7 @@
     "speaks": "speaks",
     "pastLivesLabel": "past lives",
     "pastLives": "slam poet · bayou crabber · metal fabricator · barista",
-    "currentlyLine": "senior software engineer at smartnews · learning chinese · baking on weekends"
+    "currentlyLine": "senior software engineer at smartnews · learning japanese · settling into tokyo"
   },
   "about": {
     "overline": "about",
@@ -122,8 +122,7 @@
     "home": "home",
     "work": "work",
     "about": "about",
-    "notes": "notes",
-    "colophon": "colophon"
+    "notes": "notes"
   },
   "layout": {
     "motifCake": "the cake is a lie",
@@ -157,32 +156,20 @@
     "statusDrafting": "drafting",
     "statusInProof": "in proof"
   },
-  "colophon": {
-    "overline": "colophon",
-    "title": "colophon",
-    "subtitle": "how this thing is made.",
-    "editionsHeader": "edition history",
-    "ed1": "gatsby, coral on dark. first edition — long out of print.",
-    "ed2": "dependency bumps to a site nobody visited. archived.",
-    "ed3": "rebuilt from zero in react + vite. reset on paper, 2026. you are here.",
-    "designHeader": "design",
-    "designBody": "one name, printed through three plates — english, vietnamese, chinese. when the plates don’t quite line up, that’s not a bug in the press. the inks:",
+  "site": {
+    "siteHeader": "this site",
+    "siteBody": "one name, printed through three plates — english, vietnamese, chinese. when the plates don’t quite line up, that’s not a bug in the press. the inks:",
+    "siteEd1": "gatsby, coral on dark. first edition — long out of print.",
+    "siteEd2": "dependency bumps to a site nobody visited. archived.",
+    "siteEd3": "rebuilt from zero in react + vite. reset on paper, 2026. you are here.",
+    "siteBuild1": "react 19 + typescript + vite; mui theme, tanstack router.",
+    "siteBuild2": "set in three languages — en, vi, ja — via i18next.",
+    "siteBuild3": "playwright scripts proof every page at three widths before anything ships.",
+    "siteBuild4": "a pre-push hook refuses anything that doesn’t lint and build.",
+    "siteBuild5": "honors reduced-motion, forced-colors, and prefers-contrast. everyone gets the same page.",
     "inkVermillion": "vermillion",
     "inkStampBlue": "stamp blue",
     "inkInk": "ink",
-    "inkPaper": "paper",
-    "typeHeader": "faces",
-    "typeFraunces": "display. carries the diacritics.",
-    "typeDm": "body.",
-    "typeMono": "proof marks, footnotes, and this line.",
-    "buildHeader": "build notes",
-    "build1": "react 19 + typescript + vite; mui theme, tanstack router.",
-    "build2": "set in three languages — en, vi, ja — via i18next.",
-    "build3": "playwright scripts proof every page at three widths before anything ships.",
-    "build4": "a pre-push hook refuses anything that doesn’t lint and build.",
-    "build5": "honors reduced-motion, forced-colors, and prefers-contrast. everyone gets the same page.",
-    "devHeader": "in development",
-    "devPhotos": "photographs — a contact sheet from tokyo. still in the darkroom.",
-    "devNotes": "notes — first pieces in proof."
+    "inkPaper": "paper"
   }
 }
