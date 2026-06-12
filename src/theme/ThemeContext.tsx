@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useMemo, useCallback, type ReactNode } from 'react'
+import { createContext, useContext, useState, useMemo, useCallback, useEffect, type ReactNode } from 'react'
+import { flushSync } from 'react-dom'
 import { ThemeProvider } from '@mui/material/styles'
 import { CssBaseline } from '@mui/material'
 import { buildTheme } from '@/theme'
@@ -28,15 +29,37 @@ export const ThemeContextProvider = ({ children }: { children: ReactNode }) => {
   const [isDark, setIsDark] = useState(() => readBool(STORAGE_KEY_DARK, true))
 
   const toggleColorMode = useCallback(() => {
-    setIsDark((prev) => {
-      const next = !prev
-      localStorage.setItem(STORAGE_KEY_DARK, String(next))
-      return next
+    const apply = () => {
+      setIsDark((prev) => {
+        const next = !prev
+        localStorage.setItem(STORAGE_KEY_DARK, String(next))
+        return next
+      })
+    }
+
+    // Cross-fade the whole edition swap; snap immediately for reduced motion
+    // or browsers without the View Transitions API
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (reduceMotion || !document.startViewTransition) {
+      apply()
+      return
+    }
+    document.documentElement.setAttribute('data-theme-switching', '')
+    const transition = document.startViewTransition(() => {
+      flushSync(apply)
+    })
+    transition.finished.finally(() => {
+      document.documentElement.removeAttribute('data-theme-switching')
     })
   }, [])
 
   const theme = useMemo(() => buildTheme(isDark), [isDark])
   const palette = useMemo(() => getPalette(isDark), [isDark])
+
+  // Keep the browser chrome color in step with the edition
+  useEffect(() => {
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', palette.bg)
+  }, [palette])
 
   const ctx = useMemo<ThemeContextValue>(
     () => ({ isDark, palette, toggleColorMode }),

@@ -116,6 +116,13 @@ export const buildTheme = (isDark: boolean) => {
             '::view-transition-new(root)': {
               animation: 'vtFadeIn 0.3s ease-out both',
             },
+            // theme toggle swaps the whole edition — fade slower than nav
+            'html[data-theme-switching]::view-transition-old(root)': {
+              animation: 'vtFadeOut 0.25s ease-in both',
+            },
+            'html[data-theme-switching]::view-transition-new(root)': {
+              animation: 'vtFadeIn 0.5s ease-out both',
+            },
           },
           '@media (prefers-reduced-motion: reduce)': {
             '*, *::before, *::after': {
