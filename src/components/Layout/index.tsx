@@ -55,7 +55,14 @@ function useSwipeNavigation(enabled: boolean) {
       const idx = SWIPE_ORDER.indexOf(path as (typeof SWIPE_ORDER)[number])
       if (idx === -1) return
       const next = SWIPE_ORDER[idx + (dx < 0 ? 1 : -1)]
-      if (next) navigate({ to: next })
+      if (next) {
+        // tells the view transition to slide with the gesture instead of cross-fading
+        document.documentElement.setAttribute('data-swipe-direction', dx < 0 ? 'left' : 'right')
+        window.setTimeout(() => {
+          document.documentElement.removeAttribute('data-swipe-direction')
+        }, 600)
+        navigate({ to: next })
+      }
     }
 
     window.addEventListener('touchstart', onTouchStart, { passive: true })

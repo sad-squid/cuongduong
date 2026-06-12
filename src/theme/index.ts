@@ -108,6 +108,20 @@ export const buildTheme = (isDark: boolean) => {
             from: { opacity: 0 },
             to: { opacity: 1 },
           },
+          '@keyframes vtSlideOutLeft': {
+            to: { opacity: 0, transform: 'translateX(-12%)' },
+          },
+          '@keyframes vtSlideOutRight': {
+            to: { opacity: 0, transform: 'translateX(12%)' },
+          },
+          '@keyframes vtSlideInFromRight': {
+            from: { opacity: 0, transform: 'translateX(12%)' },
+            to: { opacity: 1, transform: 'translateX(0)' },
+          },
+          '@keyframes vtSlideInFromLeft': {
+            from: { opacity: 0, transform: 'translateX(-12%)' },
+            to: { opacity: 1, transform: 'translateX(0)' },
+          },
           '@media (prefers-reduced-motion: no-preference)': {
             '::view-transition-old(root)': {
               animation: 'vtFadeOut 0.15s ease-in both',
@@ -121,6 +135,19 @@ export const buildTheme = (isDark: boolean) => {
             },
             'html[data-theme-switching]::view-transition-new(root)': {
               animation: 'vtFadeIn 0.5s ease-out both',
+            },
+            // swipe navigation slides in the gesture's direction
+            'html[data-swipe-direction="left"]::view-transition-old(root)': {
+              animation: 'vtSlideOutLeft 0.22s ease-in both',
+            },
+            'html[data-swipe-direction="left"]::view-transition-new(root)': {
+              animation: 'vtSlideInFromRight 0.3s ease-out both',
+            },
+            'html[data-swipe-direction="right"]::view-transition-old(root)': {
+              animation: 'vtSlideOutRight 0.22s ease-in both',
+            },
+            'html[data-swipe-direction="right"]::view-transition-new(root)': {
+              animation: 'vtSlideInFromLeft 0.3s ease-out both',
             },
           },
           '@media (prefers-reduced-motion: reduce)': {
