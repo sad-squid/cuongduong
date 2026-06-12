@@ -5,7 +5,6 @@ import { FRAUNCES, SPACE_GROTESK, SPACE_MONO } from '@/theme'
 import { cellEntrance } from '@/theme/animations'
 import { useThemeToggle } from '@/theme/ThemeContext'
 import { Trans, useTranslation } from 'react-i18next'
-import { REVISION, EDITIONS, INKS } from '@/data/site'
 
 type SectionProps = {
   header: string
@@ -422,101 +421,6 @@ export function AboutPage() {
               </Box>
             ))}
           </Stack>
-        </Section>
-
-        {/* This site */}
-        <Section header={t('site.siteHeader')} delay={500}>
-          <Typography sx={{ color: 'text.secondary', lineHeight: 1.8, maxWidth: '36em', mb: 2.5 }}>
-            {t('site.siteBody')}
-          </Typography>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: { xs: 2, md: 3 }, mb: 3.5 }}>
-            {INKS.map(({ nameKey, hex }) => (
-              <Box key={nameKey} sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
-                <Box
-                  aria-hidden="true"
-                  sx={{
-                    width: 18,
-                    height: 18,
-                    backgroundColor: hex,
-                    border: '1px solid',
-                    borderColor: 'divider',
-                    flexShrink: 0,
-                  }}
-                />
-                <Box>
-                  <Typography sx={{ fontFamily: SPACE_MONO, fontSize: '0.65rem', color: 'text.primary', lineHeight: 1.4 }}>
-                    {t(nameKey)}
-                  </Typography>
-                  <Typography sx={{ fontFamily: SPACE_MONO, fontSize: '0.55rem', color: 'text.secondary', opacity: 0.6, lineHeight: 1.4 }}>
-                    {hex.toLowerCase()}
-                  </Typography>
-                </Box>
-              </Box>
-            ))}
-          </Box>
-          <Box sx={{ mb: 3.5 }}>
-            {EDITIONS.map(({ rev, descKey }) => {
-              const current = rev === REVISION
-              return (
-                <Box
-                  key={rev}
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'baseline',
-                    gap: { xs: 1.5, md: 2.5 },
-                    py: 1,
-                    borderBottom: '1px solid',
-                    borderColor: 'divider',
-                    '&:first-of-type': { borderTop: '1px solid', borderTopColor: 'divider' },
-                  }}
-                >
-                  <Typography
-                    component="span"
-                    sx={{
-                      fontFamily: SPACE_MONO,
-                      fontSize: '0.65rem',
-                      letterSpacing: '0.1em',
-                      textTransform: 'uppercase',
-                      color: current ? c.coral : 'text.secondary',
-                      opacity: current ? 1 : 0.6,
-                      flexShrink: 0,
-                      width: 56,
-                    }}
-                  >
-                    {rev}
-                  </Typography>
-                  <Typography
-                    component="span"
-                    sx={{
-                      fontSize: '0.85rem',
-                      color: current ? 'text.primary' : 'text.secondary',
-                      lineHeight: 1.7,
-                    }}
-                  >
-                    {t(descKey)}
-                  </Typography>
-                </Box>
-              )
-            })}
-          </Box>
-          <Box>
-            {['site.siteBuild1', 'site.siteBuild2', 'site.siteBuild3', 'site.siteBuild4', 'site.siteBuild5'].map((key, i) => (
-              <Typography
-                key={key}
-                sx={{
-                  fontFamily: SPACE_MONO,
-                  fontSize: '0.72rem',
-                  color: 'text.secondary',
-                  lineHeight: 2,
-                }}
-              >
-                <Box component="span" aria-hidden="true" sx={{ color: c.coral, mr: 1, opacity: 0.7 }}>
-                  {String(i + 1).padStart(2, '0')}
-                </Box>
-                {t(key)}
-              </Typography>
-            ))}
-          </Box>
         </Section>
       </Box>
     </Container>

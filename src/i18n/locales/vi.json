@@ -147,30 +147,6 @@
   "notes": {
     "overline": "ghi chú",
     "title": "ghi chú",
-    "intro": "mục lục những bài viết còn dang dở ở nhiều mức độ. chưa có gì lên khuôn in — vài bản nháp đầu tiên:",
-    "item1Title": "đa số dùng được cầu thang",
-    "item1Desc": "tiếp cận như thiết kế phổ quát, không phải ô đánh dấu cho có.",
-    "item2Title": "ba cái tên",
-    "item2Desc": "về việc là cuong, cường, và 志強 — mỗi ngôn ngữ giữ lại điều gì.",
-    "item3Title": "design system là một bài toán ngôn ngữ",
-    "item3Desc": "đặt tên, ngữ pháp, và vì sao các thư viện component thất bại.",
-    "statusDrafting": "đang viết",
-    "statusInProof": "đang kiểm bản"
-  },
-  "site": {
-    "siteHeader": "trang này",
-    "siteBody": "một cái tên, in qua ba bản kẽm — tiếng anh, tiếng việt, tiếng trung. khi các bản kẽm không khớp hẳn với nhau, đó không phải lỗi của máy in. các màu mực:",
-    "siteEd1": "gatsby, cam san hô trên nền tối. ấn bản đầu tiên — tuyệt bản từ lâu.",
-    "siteEd2": "cập nhật dependency cho một trang web không ai ghé. đã lưu trữ.",
-    "siteEd3": "xây lại từ đầu bằng react + vite. sắp chữ lại trên nền giấy, 2026. bạn đang ở đây.",
-    "siteBuild1": "react 19 + typescript + vite; theme mui, tanstack router.",
-    "siteBuild2": "sắp chữ bằng ba ngôn ngữ — en, vi, ja — qua i18next.",
-    "siteBuild3": "script playwright kiểm bản từng trang ở ba độ rộng trước khi xuất bản.",
-    "siteBuild4": "hook pre-push từ chối mọi thứ không qua được lint và build.",
-    "siteBuild5": "tôn trọng reduced-motion, forced-colors và prefers-contrast. ai cũng nhận được cùng một trang.",
-    "inkVermillion": "đỏ chu sa",
-    "inkStampBlue": "xanh con dấu",
-    "inkInk": "mực",
-    "inkPaper": "giấy"
+    "stub": "Ghi chú về khả năng tiếp cận, design system, và việc học ngôn ngữ — lập trình lẫn con người. Bài đầu tiên đang được soạn thảo."
   }
 }

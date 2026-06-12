@@ -147,30 +147,6 @@
   "notes": {
     "overline": "notes",
     "title": "notes",
-    "intro": "an index of pieces in various states of doneness. nothing to press yet — the first proofs:",
-    "item1Title": "most people can use stairs",
-    "item1Desc": "accessibility as universal design, not a compliance checkbox.",
-    "item2Title": "three names",
-    "item2Desc": "on being cuong, cường, and 志強 — what each language keeps.",
-    "item3Title": "design systems are a language problem",
-    "item3Desc": "naming, grammar, and why component libraries fail.",
-    "statusDrafting": "drafting",
-    "statusInProof": "in proof"
-  },
-  "site": {
-    "siteHeader": "this site",
-    "siteBody": "one name, printed through three plates — english, vietnamese, chinese. when the plates don’t quite line up, that’s not a bug in the press. the inks:",
-    "siteEd1": "gatsby, coral on dark. first edition — long out of print.",
-    "siteEd2": "dependency bumps to a site nobody visited. archived.",
-    "siteEd3": "rebuilt from zero in react + vite. reset on paper, 2026. you are here.",
-    "siteBuild1": "react 19 + typescript + vite; mui theme, tanstack router.",
-    "siteBuild2": "set in three languages — en, vi, ja — via i18next.",
-    "siteBuild3": "playwright scripts proof every page at three widths before anything ships.",
-    "siteBuild4": "a pre-push hook refuses anything that doesn’t lint and build.",
-    "siteBuild5": "honors reduced-motion, forced-colors, and prefers-contrast. everyone gets the same page.",
-    "inkVermillion": "vermillion",
-    "inkStampBlue": "stamp blue",
-    "inkInk": "ink",
-    "inkPaper": "paper"
+    "stub": "Notes on accessibility, design systems, and learning languages — programming and human. First post drafting."
   }
 }

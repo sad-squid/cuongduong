@@ -147,30 +147,6 @@
   "notes": {
     "overline": "ノート",
     "title": "ノート",
-    "intro": "仕上がり具合もばらばらな書きかけの索引。刷れるものはまだない — 最初の校正刷り:",
-    "item1Title": "階段はたいていの人が使える",
-    "item1Desc": "チェックボックスではなく、ユニバーサルデザインとしてのアクセシビリティ。",
-    "item2Title": "三つの名前",
-    "item2Desc": "cuong、cường、志強 — それぞれの言語に残るもの。",
-    "item3Title": "デザインシステムは言語の問題",
-    "item3Desc": "命名と文法、そしてコンポーネントライブラリが失敗する理由。",
-    "statusDrafting": "執筆中",
-    "statusInProof": "校正中"
-  },
-  "site": {
-    "siteHeader": "このサイト",
-    "siteBody": "ひとつの名前を、三つの版で刷る — 英語、ベトナム語、中国語。版がぴったり重ならないのは、印刷機のバグではない。インクは以下のとおり:",
-    "siteEd1": "gatsby、ダークにコーラル。初版 — とうに絶版。",
-    "siteEd2": "誰も訪れないサイトの依存関係だけ更新。アーカイブ済み。",
-    "siteEd3": "react + vite でゼロから組み直し。紙の上に再組版、2026年。現在地はここ。",
-    "siteBuild1": "react 19 + typescript + vite。mui テーマ、tanstack router。",
-    "siteBuild2": "i18next で三言語組版 — en・vi・ja。",
-    "siteBuild3": "playwright のスクリプトが、出荷前に全ページを三つの幅で検版する。",
-    "siteBuild4": "pre-push フックが、lint とビルドを通らないものは一切押し返す。",
-    "siteBuild5": "reduced-motion・forced-colors・prefers-contrast に対応。誰にでも同じページを。",
-    "inkVermillion": "朱",
-    "inkStampBlue": "印藍",
-    "inkInk": "墨",
-    "inkPaper": "紙"
+    "stub": "アクセシビリティ、デザインシステム、そして言語学習（プログラミングと人間の両方）についての覚書。最初の記事を執筆中。"
   }
 }
