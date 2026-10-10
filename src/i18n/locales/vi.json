@@ -51,10 +51,10 @@
       }
     ],
     "story": [
-      "Tôi là một kỹ sư người Mỹ gốc Việt – Hoa, làm việc với web. Tôi sinh ra ở Thành phố Hồ Chí Minh, lớn lên ở Eagan, Minnesota, và học khoa học máy tính cùng hạ tầng công nghệ thông tin tại Đại học Minnesota.",
-      "Trước khi làm phần mềm, tôi từng có một mùa hè đứng dây chuyền dập kim loại ở nơi bố làm việc, và một mùa hè khác kéo lồng cua cùng chú ở Morgan City, Louisiana, bắt đầu từ 3 giờ sáng. Suốt những mùa đông lạnh giá ở Minneapolis, tôi phục vụ cà phê nóng ở Caribou, và buổi tối thì làm bartender.",
-      "Tôi bắt đầu sự nghiệp ở Target, làm việc với hệ thống thiết kế đầu tiên của Target và Target.com, sau đó chuyển sang Zoom và Google, nơi tôi phụ trách khả năng tiếp cận cho trải nghiệm hỗ trợ. Hiện tôi là kỹ sư cấp cao tại SmartNews ở Tokyo.",
-      "Tôi đam mê vun đắp một văn hóa học hỏi lành mạnh và tạo ra không gian đó cho tất cả mọi người."
+      "Mình là người Việt gốc Hoa, sinh ra ở Sài Gòn và lớn lên ở Eagan, bang Minnesota (Mỹ). Mình học khoa học máy tính và hạ tầng CNTT ở Đại học Minnesota, và giờ chủ yếu làm web.",
+      "Trước khi đi làm phần mềm, có mùa hè mình đứng máy dập kim loại ở xưởng nơi bố làm, có mùa hè lại theo chú ra Morgan City, Louisiana kéo lồng cua từ 3 giờ sáng. Những mùa đông lạnh buốt ở Minneapolis, ban ngày mình đứng quầy pha cà phê nóng ở Caribou, tối thì làm bartender.",
+      "Mình bắt đầu đi làm ở Target, làm design system đầu tiên của công ty và Target.com. Sau đó mình chuyển qua Zoom, rồi Google, nơi mình phụ trách mảng accessibility (khả năng tiếp cận) cho trải nghiệm hỗ trợ khách hàng. Hiện mình là senior engineer ở SmartNews tại Tokyo.",
+      "Mình thích vun đắp một môi trường học hỏi lành mạnh, nơi ai cũng thấy thoải mái để học và để hỏi."
     ],
     "languagesHeading": "Ngôn ngữ",
     "languages": [
@@ -68,7 +68,7 @@
       },
       {
         "name": "Tiếng Nhật",
-        "level": "thành thạo trong công việc"
+        "level": "dùng tốt trong công việc"
       },
       {
         "name": "Tiếng Trung",
@@ -77,14 +77,14 @@
     ],
     "recognitionHeading": "Ghi nhận",
     "recognition": [
-      "Người đóng góp nổi bật về khả năng tiếp cận, Google, 2023",
+      "Người đóng góp nổi bật về accessibility, Google, 2023",
       "Giải nhất hackathon codeRED, Target, 2017, 2018 và 2019",
       "Vô địch cấp bang Minnesota: kịch một màn, hùng biện và diễn thuyết"
     ]
   },
   "work": {
     "title": "Công việc",
-    "intro": "Chín năm, bốn công ty, một mạch xuyên suốt: xây dựng cho người dùng thật, và để mọi thứ tốt hơn lúc tôi đến.",
+    "intro": "Chín năm, bốn công ty, một điều không đổi: làm sản phẩm cho người dùng thật, và để lại mọi thứ tốt hơn lúc mình đến.",
     "roles": [
       {
         "company": "SmartNews",
