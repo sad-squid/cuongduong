@@ -15,6 +15,7 @@ export type CrtEvent =
   | { type: 'fireworks'; on: boolean }
   | { type: 'burst'; name: string | null }
   | { type: 'game'; on: boolean }
+  | { type: 'sound' }
 
 type Listener = (event: CrtEvent) => void
 
@@ -229,6 +230,10 @@ export class CrtController {
     }
     this.fireworksPaused = false
     this.launchFireworks()
+  }
+
+  soundChanged() {
+    this.emit({ type: 'sound' })
   }
 
   setGame(on: boolean) {

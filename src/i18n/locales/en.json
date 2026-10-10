@@ -302,6 +302,16 @@
       "face": "BIG GOOFY FACE",
       "toaster": "MEGA TOASTER",
       "duck": "MOTHER DUCK"
-    }
+    },
+    "pause": "Pause the game",
+    "paused": "paused",
+    "resume": "resume",
+    "options": "options",
+    "sound": "sound",
+    "volume": "volume",
+    "shake": "screen shake",
+    "on": "on",
+    "off": "off",
+    "back": "back"
   }
 }

@@ -300,6 +300,16 @@
       "face": "MẶT BỰ NGỐ",
       "toaster": "MÁY NƯỚNG KHỔNG LỒ",
       "duck": "VỊT MẸ"
-    }
+    },
+    "pause": "Tạm dừng trò chơi",
+    "paused": "tạm dừng",
+    "resume": "chơi tiếp",
+    "options": "tùy chọn",
+    "sound": "âm thanh",
+    "volume": "âm lượng",
+    "shake": "rung màn hình",
+    "on": "bật",
+    "off": "tắt",
+    "back": "quay lại"
   }
 }

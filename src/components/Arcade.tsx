@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ArcadeInitials } from '@/components/ArcadeInitials'
+import { ArcadePause } from '@/components/ArcadePause'
 import { useCrt } from '@/crt/context'
 import { bestScore, insertScore, loadScores, qualifies, saveScores, type HighScore } from '@/crt/HighScores'
 import { Invaders, type ActivePower, type InputKind, type InvadersHud, type SoundCue, type WaveInfo } from '@/crt/Invaders'
@@ -50,6 +51,16 @@ const playCue = (sound: SoundApi, cue: SoundCue, pan: number) => {
 
 const debugEnabled = () => import.meta.env.DEV && new URLSearchParams(window.location.search).has('invaders-debug')
 
+const SHAKE_KEY = 'cd-arcade-shake'
+
+const readShake = () => {
+  try {
+    return window.localStorage.getItem(SHAKE_KEY) !== 'off'
+  } catch {
+    return true
+  }
+}
+
 const initialInput = (): InputKind => (window.matchMedia('(pointer: coarse)').matches ? 'touch' : 'mouse')
 
 export const Arcade = ({ onExit }: { onExit: () => void }) => {
@@ -72,6 +83,8 @@ export const Arcade = ({ onExit }: { onExit: () => void }) => {
   const [hintY, setHintY] = useState(0)
   const [powers, setPowers] = useState<ActivePower[]>([])
   const [callout, setCallout] = useState<{ type: PowerType; id: number } | null>(null)
+  const [paused, setPaused] = useState(false)
+  const [shake, setShake] = useState(readShake)
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -105,6 +118,7 @@ export const Arcade = ({ onExit }: { onExit: () => void }) => {
           setWaveCall((was) => ({ ...info, id: (was?.id ?? 0) + 1 }))
           waveTimer = window.setTimeout(() => setWaveCall(null), WAVE_MS)
         },
+        onPause: setPaused,
         onSound: (cue, pan) => {
           if (cue !== 'over') {
             playCue(crt.sound, cue, pan)
@@ -118,6 +132,7 @@ export const Arcade = ({ onExit }: { onExit: () => void }) => {
       crt.reduceMotion,
     )
     gameRef.current = game
+    game.setShake(readShake())
     game.start()
     rootRef.current?.focus()
     const timer = window.setTimeout(() => setHint(false), 3000)
@@ -145,7 +160,29 @@ export const Arcade = ({ onExit }: { onExit: () => void }) => {
     }
   }, [crt])
 
+  const resume = () => {
+    gameRef.current?.unpause()
+    window.requestAnimationFrame(() => rootRef.current?.focus())
+  }
+
+  const toggleShake = (on: boolean) => {
+    setShake(on)
+    gameRef.current?.setShake(on)
+    try {
+      window.localStorage.setItem(SHAKE_KEY, on ? 'on' : 'off')
+    } catch {
+      return
+    }
+  }
+
+  const pauseOrExit = () => {
+    const game = gameRef.current
+    if (phase === 'play' && game && !game.isPaused) game.pause()
+    else if (phase !== 'play') onExit()
+  }
+
   const restart = () => {
+    setPaused(false)
     setPhase('play')
     gameRef.current?.start()
     rootRef.current?.focus()
@@ -170,6 +207,7 @@ export const Arcade = ({ onExit }: { onExit: () => void }) => {
     const stop = (e: TouchEvent) => e.stopPropagation()
     const hold = (e: TouchEvent) => {
       e.stopPropagation()
+      if ((e.target as Element | null)?.closest?.('input')) return
       if (e.cancelable) e.preventDefault()
     }
     root.addEventListener('touchstart', stop, { passive: true })
@@ -187,7 +225,13 @@ export const Arcade = ({ onExit }: { onExit: () => void }) => {
       if (e.defaultPrevented && e.key === 'Escape') return
       if (e.key === 'Escape') {
         e.preventDefault()
-        onExit()
+        const game = gameRef.current
+        if (phase !== 'play' || !game) onExit()
+        else if (game.isPaused) {
+          game.unpause()
+          window.requestAnimationFrame(() => rootRef.current?.focus())
+        }
+        else game.pause()
         return
       }
       if (phase !== 'table' || (e.key !== 'Enter' && e.key !== ' ')) return
@@ -220,8 +264,16 @@ export const Arcade = ({ onExit }: { onExit: () => void }) => {
             <i key={i} className={i < hud.lives ? 'on' : undefined} />
           ))}
         </span>
-        <button type="button" className="arcade-close" aria-label={t('arcade.close')} onClick={onExit}>
-          <span className="key">esc</span>×
+        <button type="button" className="arcade-close" aria-label={phase === 'play' ? t('arcade.pause') : t('arcade.close')} onClick={pauseOrExit}>
+          <span className="key">esc</span>
+          {phase === 'play' ? (
+            <span className="pause-icon" aria-hidden="true">
+              <i />
+              <i />
+            </span>
+          ) : (
+            '×'
+          )}
         </button>
       </div>
       <ul className="arcade-powers" aria-label={t('arcade.powers')}>
@@ -261,6 +313,7 @@ export const Arcade = ({ onExit }: { onExit: () => void }) => {
       <p className="sr-only" aria-live="polite">
         {waveCall ? `${t('arcade.wave')} ${waveCall.wave}` : ''}
       </p>
+      {paused && phase === 'play' ? <ArcadePause shake={shake} onShake={toggleShake} onResume={resume} onExit={onExit} /> : null}
       {phase === 'entry' ? (
         <div className="arcade-over">
           <ArcadeInitials score={result.score} onDone={record} />

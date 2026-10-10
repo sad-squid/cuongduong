@@ -76,6 +76,7 @@ export type InvadersEvents = {
   onTear: (strength: number) => void
   onWave: (info: WaveInfo) => void
   onSound: (cue: SoundCue, pan: number) => void
+  onPause: (paused: boolean) => void
 }
 
 type Art = { xs: Float32Array; ys: Float32Array; ci: Uint8Array; colors: string[]; w: number; h: number; pitch: number; image: HTMLCanvasElement }
@@ -287,6 +288,10 @@ export class Invaders {
   private raf = 0
   private last = 0
   private running = false
+  private paused = false
+  private shakeOn = true
+  private pausedAt = 0
+  private pausedMs = 0
 
   constructor(canvas: HTMLCanvasElement, events: InvadersEvents, input: InputKind, reduceMotion: boolean) {
     this.canvas = canvas
@@ -325,7 +330,8 @@ export class Invaders {
     this.words = []
     this.rockets = []
     this.shipX = this.w / 2
-    this.newWave(performance.now())
+    this.paused = false
+    this.newWave(this.now())
     this.hud()
     this.sendPowers(true)
     this.resume()
@@ -348,7 +354,7 @@ export class Invaders {
 
   give(type: PowerType) {
     if (this.over) return
-    this.apply(type, performance.now())
+    this.apply(type, this.now())
   }
 
   drop(type: PowerType) {
@@ -358,12 +364,12 @@ export class Invaders {
   jump(wave: number) {
     if (this.over) return
     this.wave = Math.max(1, Math.floor(wave))
-    this.newWave(performance.now())
+    this.newWave(this.now())
     this.hud()
   }
 
   enrage() {
-    this.rageOne(performance.now())
+    this.rageOne(this.now())
   }
 
   setGod(on: boolean) {
@@ -390,6 +396,37 @@ export class Invaders {
       if (foe.rage) enraged++
     }
     return { foes, bullets: this.bn, shots: this.shots.length, particles: this.n, words: this.words.length, enraged, wave: this.wave, formation: this.plan.formation, p95: p95(this.frameTimes), work95: p95(this.workTimes) }
+  }
+
+  setShake(on: boolean) {
+    this.shakeOn = on
+    if (!on) this.shakeUntil = 0
+  }
+
+  get isPaused() {
+    return this.paused
+  }
+
+  pause() {
+    if (this.paused || this.over || !this.running) return
+    this.paused = true
+    this.pausedAt = performance.now()
+    cancelAnimationFrame(this.raf)
+    this.raf = 0
+    this.onBlur()
+    this.events.onPause(true)
+  }
+
+  unpause() {
+    if (!this.paused) return
+    this.paused = false
+    this.pausedMs += performance.now() - this.pausedAt
+    this.events.onPause(false)
+    this.resume()
+  }
+
+  private now() {
+    return (this.paused ? this.pausedAt : performance.now()) - this.pausedMs
   }
 
   private resume() {
@@ -544,7 +581,7 @@ export class Invaders {
   }
 
   private shake(amp: number, ms: number) {
-    if (this.reduceMotion) return
+    if (this.reduceMotion || !this.shakeOn) return
     if (this.clock < this.shakeUntil && this.shakeAmp > amp) return
     this.shakeAmp = amp
     this.shakeUntil = this.clock + ms
@@ -1904,8 +1941,9 @@ export class Invaders {
     this.last = now
     this.clock += dt * 1000
     const t0 = performance.now()
-    this.update(now, dt)
-    this.paint(now)
+    const game = now - this.pausedMs
+    this.update(game, dt)
+    this.paint(game)
     const slot = this.frameIndex++ % PERF_FRAMES
     this.frameTimes[slot] = gap
     this.workTimes[slot] = performance.now() - t0
@@ -1917,7 +1955,7 @@ export class Invaders {
   }
 
   private onKeyDown = (e: KeyboardEvent) => {
-    if (this.over || e.metaKey || e.ctrlKey || e.altKey || typing(e.target)) return
+    if (this.over || this.paused || e.metaKey || e.ctrlKey || e.altKey || typing(e.target)) return
     const key = e.key.toLowerCase()
     if (key === 'arrowleft' || key === 'a') this.keys.left = true
     else if (key === 'arrowright' || key === 'd') this.keys.right = true
@@ -1939,7 +1977,7 @@ export class Invaders {
     e.preventDefault()
     const kind: InputKind = e.pointerType === 'mouse' ? 'mouse' : 'touch'
     this.setInput(kind)
-    if (this.over) return
+    if (this.over || this.paused) return
     if (kind === 'touch' && e.clientY < this.h * 0.4) return
     this.canvas.setPointerCapture?.(e.pointerId)
     this.pointer = { follow: true, firing: true, x: e.clientX, y: e.clientY, id: e.pointerId }
@@ -1970,16 +2008,20 @@ export class Invaders {
 
   private onResize = () => {
     this.setup()
-    this.paint(performance.now())
+    this.paint(this.now())
   }
 
   private onVisibility = () => {
     if (document.hidden) {
+      if (!this.over) {
+        this.pause()
+        return
+      }
       cancelAnimationFrame(this.raf)
       this.raf = 0
       this.onBlur()
       return
     }
-    if (this.running && (!this.over || this.n > 0)) this.resume()
+    if (this.running && !this.paused && (!this.over || this.n > 0)) this.resume()
   }
 }

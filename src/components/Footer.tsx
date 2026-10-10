@@ -7,6 +7,7 @@ import { setLanguage } from '@/router'
 import { LINKS } from '@/content/names'
 import { IconDoor } from './Doors'
 import { DotIcon } from './DotIcon'
+import { levelToVolume, readLevel, writeLevel } from '@/crt/soundLevel'
 
 const FireworksButton = () => {
   const crt = useCrt()
@@ -77,18 +78,7 @@ const LangCycle = ({ current }: { current: Language }) => {
   )
 }
 
-const LEVEL_KEY = 'cd-sound-level'
-const MAX_VOLUME = 0.6
 const POP_MS = 2400
-
-const readLevel = () => {
-  try {
-    const stored = Number(window.localStorage.getItem(LEVEL_KEY))
-    return Number.isFinite(stored) && stored > 0 && stored <= 100 ? stored : 50
-  } catch {
-    return 50
-  }
-}
 
 const SoundControl = () => {
   const crt = useCrt()
@@ -100,8 +90,18 @@ const SoundControl = () => {
   const held = useRef(false)
 
   useEffect(() => {
-    crt.sound.setSettings({ volume: (level / 100) * MAX_VOLUME })
+    crt.sound.setSettings({ volume: levelToVolume(level) })
   }, [crt, level])
+
+  useEffect(
+    () =>
+      crt.subscribe((event) => {
+        if (event.type !== 'sound') return
+        setOn(crt.sound.enabled)
+        setLevel(readLevel())
+      }),
+    [crt],
+  )
 
   useEffect(() => () => window.clearTimeout(timer.current), [])
 
@@ -140,11 +140,7 @@ const SoundControl = () => {
 
   const slide = (value: number) => {
     setLevel(value)
-    try {
-      window.localStorage.setItem(LEVEL_KEY, String(value))
-    } catch {
-      return
-    }
+    writeLevel(value)
     if (value === 0 && on) enable(false)
     else if (value > 0 && !on) enable(true)
     else if (value > 0) crt.sound.play('tick')

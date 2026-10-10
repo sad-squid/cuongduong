@@ -1067,6 +1067,91 @@ html:has(.screen.playing) {
   margin-right: 0.5ch;
 }
 
+.pause-icon {
+  display: inline-flex;
+  gap: 3px;
+  vertical-align: -1px;
+}
+
+.pause-icon i {
+  width: 3px;
+  height: 10px;
+  background-image: radial-gradient(circle, currentColor 0 0.8px, transparent 1.1px);
+  background-size: 3px 2.5px;
+}
+
+@media (hover: none), (pointer: coarse) {
+  .arcade-close {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-grid;
+    place-items: center;
+    padding: 0;
+  }
+
+  .pause-icon i {
+    width: 4px;
+    height: 14px;
+    background-size: 4px 3px;
+  }
+}
+
+.arcade-over.arcade-pause {
+  pointer-events: auto;
+  background: color-mix(in srgb, var(--bg) 78%, transparent);
+}
+
+.arcade-menu {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  min-width: min(280px, 80vw);
+}
+
+.arcade-option {
+  all: unset;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  min-height: 44px;
+  padding: 6px 12px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--beige);
+  cursor: pointer;
+  background-image: radial-gradient(circle, rgb(220 215 201 / 0.4) 0 0.7px, transparent 1px);
+  background-size: 3px 3px;
+  background-repeat: repeat-x;
+  background-position: 0 100%;
+}
+
+.arcade-option b {
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.arcade-option[aria-pressed='true'] b {
+  color: #fff1ec;
+  text-shadow: var(--glow-1);
+}
+
+.arcade-option:hover,
+.arcade-option:focus-visible {
+  color: var(--cream);
+}
+
+.arcade-option:focus-visible {
+  outline: 2px solid var(--warm-coral);
+  outline-offset: 2px;
+}
+
+.arcade-volume {
+  cursor: default;
+}
+
 @media (hover: none), (pointer: coarse) {
   .arcade-close .key {
     display: none;
