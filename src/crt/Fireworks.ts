@@ -1,4 +1,4 @@
-import { HOLE, SPRITES, type Sprite } from './sprites'
+import { HOLE, SPRITES, type ColorMode, type Sprite } from './sprites'
 import { COLORS } from './tokens'
 
 const SHOW_MS = 15000
@@ -22,15 +22,33 @@ let sampler: CanvasRenderingContext2D | null = null
 
 const rgb = (hex: string) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16))
 
-export const sampleSprite = (sprite: Sprite, height: number, pitch: number): Sampled => {
-  const key = `${sprite.name}:${Math.round(height)}:${pitch}`
+const nearest = (refs: number[][], r: number, g: number, b: number) => {
+  let best = 0
+  let dist = Infinity
+  for (let k = 0; k < refs.length; k++) {
+    const m = (refs[k][0] + r) / 2
+    const dr = refs[k][0] - r
+    const dg = refs[k][1] - g
+    const db = refs[k][2] - b
+    const d = (2 + m / 256) * dr * dr + 4 * dg * dg + (2 + (255 - m) / 256) * db * db
+    if (d < dist) {
+      dist = d
+      best = k
+    }
+  }
+  return best
+}
+
+export const sampleSprite = (sprite: Sprite, height: number, pitch: number, mode: ColorMode = 'full'): Sampled => {
+  const key = `${sprite.name}:${Math.round(height)}:${pitch}:${mode}`
   const hit = sampled.get(key)
   if (hit) return hit
   const scale = height / sprite.h
   const W = Math.ceil(sprite.w * scale)
   const H = Math.ceil(height)
   if (!sampler) sampler = document.createElement('canvas').getContext('2d', { willReadFrequently: true })
-  const out: Sampled = { xs: new Float32Array(0), ys: new Float32Array(0), colors: sprite.palette, ci: new Uint8Array(0), w: W, h: H }
+  const colors = mode === 'full' ? sprite.palette : sprite[mode]
+  const out: Sampled = { xs: new Float32Array(0), ys: new Float32Array(0), colors, ci: new Uint8Array(0), w: W, h: H }
   const c = sampler
   if (!c) return out
   c.canvas.width = W
@@ -47,19 +65,11 @@ export const sampleSprite = (sprite: Sprite, height: number, pitch: number): Sam
     for (let x = pitch / 2; x < W; x += pitch) {
       const o = (Math.floor(y) * W + Math.floor(x)) * 4
       if (data[o + 3] < 160) continue
-      let best = 0
-      let dist = Infinity
-      for (let k = 0; k < refs.length; k++) {
-        const d = (refs[k][0] - data[o]) ** 2 + (refs[k][1] - data[o + 1]) ** 2 + (refs[k][2] - data[o + 2]) ** 2
-        if (d < dist) {
-          dist = d
-          best = k
-        }
-      }
-      if (sprite.palette[best] === HOLE) continue
+      const own = nearest(refs, data[o], data[o + 1], data[o + 2])
+      if (sprite.palette[own] === HOLE) continue
       xs.push(x - W / 2)
       ys.push(y - H / 2)
-      ci.push(best)
+      ci.push(own)
     }
   }
   out.xs = Float32Array.from(xs)

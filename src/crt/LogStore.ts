@@ -89,8 +89,8 @@ export class LogStore {
       if (i <= line.length) {
         this.partial = line.slice(0, i) + (i < line.length ? '_' : '')
         this.publish()
-        i += 2
-        this.typer = window.setTimeout(step, 22 + Math.random() * 26)
+        i += 3
+        this.typer = window.setTimeout(step, 14 + Math.random() * 16)
         return
       }
       this.done = [...this.done, line].slice(-VISIBLE)
@@ -98,7 +98,7 @@ export class LogStore {
       this.current = null
       this.typing = false
       this.publish()
-      this.typer = window.setTimeout(() => this.pump(), 380)
+      this.typer = window.setTimeout(() => this.pump(), 160)
     }
     step()
   }

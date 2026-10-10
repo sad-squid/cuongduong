@@ -3,6 +3,8 @@ export type Sprite = {
   w: number
   h: number
   palette: string[]
+  ega: string[]
+  pico: string[]
   draw: (c: CanvasRenderingContext2D) => void
 }
 
@@ -39,77 +41,93 @@ const shine = (c: CanvasRenderingContext2D, x: number, y: number, rx: number, ry
   ell(c, '#FFFFFF', x - rx * 0.3, y - ry * 0.35, glint, glint)
 }
 
-const blob = (c: CanvasRenderingContext2D, skin: string, blush: string) => {
-  ell(c, skin, 50, 60, 44, 36)
-  ell(c, blush, 23, 69, 8, 4.5)
-  ell(c, blush, 77, 69, 8, 4.5)
-  shine(c, 36, 58, 4.2, 5.2, 1.4)
-  shine(c, 64, 58, 4.2, 5.2, 1.4)
-  stroke(c, HOLE, 2.2, (p) => {
-    p.moveTo(44, 67)
-    p.quadraticCurveTo(47, 71, 50, 67.5)
-    p.quadraticCurveTo(53, 71, 56, 67)
+const face = (c: CanvasRenderingContext2D, y: number, blush: string | null) => {
+  if (blush) {
+    ell(c, blush, 25, y + 10, 7.5, 4)
+    ell(c, blush, 75, y + 10, 7.5, 4)
+  }
+  shine(c, 37, y, 4.2, 5.2, 1.4)
+  shine(c, 63, y, 4.2, 5.2, 1.4)
+  stroke(c, HOLE, 2, (p) => {
+    p.moveTo(45, y + 9)
+    p.quadraticCurveTo(47.5, y + 12, 50, y + 9.5)
+    p.quadraticCurveTo(52.5, y + 12, 55, y + 9)
   })
+}
+
+const chibi = (c: CanvasRenderingContext2D, skin: string, headY: number) => {
+  ell(c, skin, 38, 113, 9, 5)
+  ell(c, skin, 62, 113, 9, 5)
+  ell(c, skin, 50, 96, 24, 17)
+  ell(c, skin, 26, 94, 7, 6, -0.6)
+  ell(c, skin, 74, 94, 7, 6, 0.6)
+  ell(c, skin, 50, headY, 45, 33)
 }
 
 export const SPRITES: Sprite[] = [
   {
     name: 'chiikawa',
     w: 100,
-    h: 100,
+    h: 120,
     palette: ['#F4F1EA', '#F2A7B5', '#FFFFFF', HOLE],
+    ega: ['#FFFFFF', '#FF55FF', '#FFFFFF', HOLE],
+    pico: ['#FFF1E8', '#FF77A8', '#FFF1E8', HOLE],
     draw: (c) => {
-      ell(c, '#F4F1EA', 24, 30, 11, 11)
-      ell(c, '#F4F1EA', 76, 30, 11, 11)
-      ell(c, '#F2A7B5', 24, 30, 5, 5)
-      ell(c, '#F2A7B5', 76, 30, 5, 5)
-      blob(c, '#F4F1EA', '#F2A7B5')
+      ell(c, '#F4F1EA', 27, 24, 9, 8.5)
+      ell(c, '#F4F1EA', 73, 24, 9, 8.5)
+      chibi(c, '#F4F1EA', 56)
+      face(c, 56, '#F2A7B5')
     },
   },
   {
     name: 'hachiware',
     w: 100,
-    h: 100,
+    h: 120,
     palette: ['#F4F1EA', '#7E9BC4', '#F2A7B5', '#FFFFFF', HOLE],
+    ega: ['#FFFFFF', '#5555FF', '#FF55FF', '#FFFFFF', HOLE],
+    pico: ['#FFF1E8', '#29ADFF', '#FF77A8', '#FFF1E8', HOLE],
     draw: (c) => {
-      poly(c, '#7E9BC4', [10, 44, 16, 10, 40, 28])
-      poly(c, '#7E9BC4', [90, 44, 84, 10, 60, 28])
-      poly(c, '#F2A7B5', [17, 36, 19, 18, 32, 29])
-      poly(c, '#F2A7B5', [83, 36, 81, 18, 68, 29])
-      blob(c, '#F4F1EA', '#F2A7B5')
+      poly(c, '#7E9BC4', [10, 52, 15, 10, 42, 34])
+      poly(c, '#7E9BC4', [90, 52, 85, 10, 58, 34])
+      poly(c, '#F2A7B5', [16, 42, 18, 22, 32, 35])
+      poly(c, '#F2A7B5', [84, 42, 82, 22, 68, 35])
+      chibi(c, '#F4F1EA', 58)
       c.save()
       c.beginPath()
-      c.ellipse(50, 60, 44, 36, 0, 0, Math.PI * 2)
+      c.ellipse(50, 58, 45, 33, 0, 0, Math.PI * 2)
       c.clip()
       c.fillStyle = '#7E9BC4'
       c.beginPath()
       c.moveTo(0, 0)
-      c.lineTo(100, 0)
-      c.lineTo(100, 54)
-      c.quadraticCurveTo(72, 50, 50, 30)
-      c.quadraticCurveTo(28, 50, 0, 54)
+      c.lineTo(48.5, 0)
+      c.quadraticCurveTo(46, 40, 0, 56)
+      c.closePath()
+      c.moveTo(100, 0)
+      c.lineTo(51.5, 0)
+      c.quadraticCurveTo(54, 40, 100, 56)
       c.closePath()
       c.fill()
       c.restore()
+      face(c, 60, '#F2A7B5')
     },
   },
   {
     name: 'usagi',
     w: 100,
-    h: 110,
+    h: 130,
     palette: ['#F6E3A1', '#F2A7B5', '#FFFFFF', HOLE],
+    ega: ['#FFFF55', '#FF55FF', '#FFFFFF', HOLE],
+    pico: ['#FFEC27', '#FF77A8', '#FFF1E8', HOLE],
     draw: (c) => {
-      ell(c, '#F6E3A1', 34, 28, 8, 27, -0.12)
-      ell(c, '#F6E3A1', 66, 28, 8, 27, 0.12)
-      ell(c, '#F2A7B5', 34, 30, 3.5, 19, -0.12)
-      ell(c, '#F2A7B5', 66, 30, 3.5, 19, 0.12)
-      ell(c, '#F6E3A1', 50, 72, 42, 34)
-      ell(c, '#F2A7B5', 24, 80, 7, 4)
-      ell(c, '#F2A7B5', 76, 80, 7, 4)
-      ell(c, HOLE, 37, 70, 3.2, 3.2)
-      ell(c, HOLE, 63, 70, 3.2, 3.2)
-      ell(c, HOLE, 50, 84, 7, 8)
-      ell(c, '#F2A7B5', 50, 88, 4, 3)
+      ell(c, '#F6E3A1', 40, 26, 7, 25, -0.06)
+      ell(c, '#F6E3A1', 60, 26, 7, 25, 0.06)
+      c.translate(0, 10)
+      chibi(c, '#F6E3A1', 56)
+      ell(c, HOLE, 38, 54, 3, 3)
+      ell(c, HOLE, 62, 54, 3, 3)
+      ell(c, HOLE, 50, 67, 7, 8)
+      ell(c, '#F2A7B5', 50, 71, 4, 3)
+      c.translate(0, -10)
     },
   },
   {
@@ -117,6 +135,8 @@ export const SPRITES: Sprite[] = [
     w: 110,
     h: 104,
     palette: ['#F7D046', '#E8573F', '#FFFFFF', '#6B625A', HOLE],
+    ega: ['#FFFF55', '#FF5555', '#FFFFFF', '#555555', HOLE],
+    pico: ['#FFEC27', '#FF004D', '#FFF1E8', '#5F574F', HOLE],
     draw: (c) => {
       const ear = (base: number[], tip: number[]) => {
         poly(c, '#6B625A', base)
@@ -149,6 +169,8 @@ export const SPRITES: Sprite[] = [
     w: 110,
     h: 90,
     palette: ['#5FA052', '#F4F1EA', '#B5503E', '#3F7A38', HOLE],
+    ega: ['#00AA00', '#FFFFFF', '#AA5500', '#555555', HOLE],
+    pico: ['#008751', '#FFF1E8', '#AB5236', '#1D2B53', HOLE],
     draw: (c) => {
       ell(c, '#5FA052', 55, 56, 50, 30)
       ell(c, '#5FA052', 34, 30, 22, 19)
@@ -177,6 +199,8 @@ export const SPRITES: Sprite[] = [
     w: 100,
     h: 120,
     palette: ['#9AD3C8', '#5E968D', '#D2F1EA', '#FFFFFF', HOLE],
+    ega: ['#55FFFF', '#00AAAA', '#FFFFFF', '#FFFFFF', HOLE],
+    pico: ['#29ADFF', '#83769C', '#C2C3C7', '#FFF1E8', HOLE],
     draw: (c) => {
       ell(c, '#9AD3C8', 50, 30, 34, 27)
       poly(c, '#9AD3C8', [16, 30, 84, 30, 88, 84, 78, 108, 22, 108, 12, 84])
@@ -217,6 +241,8 @@ export const SPRITES: Sprite[] = [
     w: 100,
     h: 100,
     palette: ['#E3A857', '#F4E7CF', HOLE],
+    ega: ['#AA5500', '#FFFFFF', HOLE],
+    pico: ['#FFA300', '#FFF1E8', HOLE],
     draw: (c) => {
       poly(c, '#E3A857', [10, 50, 16, 4, 44, 30])
       poly(c, '#E3A857', [90, 50, 84, 4, 56, 30])
@@ -246,6 +272,8 @@ export const SPRITES: Sprite[] = [
     w: 100,
     h: 110,
     palette: ['#D9534F', '#A8393A', '#9ED6E8', '#FFFFFF'],
+    ega: ['#FF5555', '#AA0000', '#55FFFF', '#FFFFFF'],
+    pico: ['#FF004D', '#7E2553', '#29ADFF', '#FFF1E8'],
     draw: (c) => {
       c.fillStyle = '#A8393A'
       c.beginPath()
@@ -271,6 +299,8 @@ export const SPRITES: Sprite[] = [
     w: 110,
     h: 100,
     palette: ['#F4A7C4', '#E25B6E', '#C9416A', '#FFFFFF', HOLE],
+    ega: ['#FF55FF', '#FF5555', '#AA0000', '#FFFFFF', HOLE],
+    pico: ['#FF77A8', '#FF004D', '#7E2553', '#FFF1E8', HOLE],
     draw: (c) => {
       ell(c, '#C9416A', 30, 88, 20, 11, -0.2)
       ell(c, '#C9416A', 80, 88, 20, 11, 0.2)
@@ -288,3 +318,6 @@ export const SPRITES: Sprite[] = [
     },
   },
 ]
+
+
+export type ColorMode = 'full' | 'ega' | 'pico'
