@@ -4,6 +4,7 @@ import { Footer } from '@/components/Footer'
 import { CommandPalette } from '@/components/CommandPalette'
 import { CrtController } from '@/crt/CrtController'
 import { CrtContext, prefersReducedMotion } from '@/crt/context'
+import { startLiveFavicon } from '@/crt/favicon'
 
 const SWIPE_ORDER = ['/', '/about', '/work'] as const
 
@@ -61,6 +62,8 @@ export const Layout = () => {
       crt.unmount()
     }
   }, [crt])
+
+  useEffect(() => startLiveFavicon(crt), [crt])
 
   useEffect(() => {
     if (firstPath.current === path) return
