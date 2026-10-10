@@ -1,4 +1,4 @@
-import { HOLE, SPRITES, type ColorMode, type Sprite } from './sprites'
+import { HOLE, SPRITES, type ColorMode, type GridSprite, type Sprite } from './sprites'
 import { COLORS } from './tokens'
 
 const SHOW_MS = 15000
@@ -8,14 +8,14 @@ const GRAVITY = 220
 const SHELL_COLORS = [COLORS.warmCoral, COLORS.teal, COLORS.cream, COLORS.dustyRose, '#F7D046', COLORS.coral]
 
 type Rocket = { x: number; y: number; fromY: number; toY: number; start: number; burst: Burst; trail: number }
-type Burst = { kind: 'sprite'; sprite: Sprite } | { kind: 'shell'; colors: number[] }
+type Burst = { kind: 'sprite'; sprite: Sprite | GridSprite } | { kind: 'shell'; colors: number[] }
 
 export type FireworksEvents = {
   onBurst: (x: number, y: number, name: string | null) => void
   onEnd: () => void
 }
 
-type Sampled = { xs: Float32Array; ys: Float32Array; colors: string[]; ci: Uint8Array; w: number; h: number }
+type Sampled = { xs: Float32Array; ys: Float32Array; colors: string[]; ci: Uint8Array; w: number; h: number; pitch: number }
 
 const sampled = new Map<string, Sampled>()
 let sampler: CanvasRenderingContext2D | null = null
@@ -39,16 +39,43 @@ const nearest = (refs: number[][], r: number, g: number, b: number) => {
   return best
 }
 
-export const sampleSprite = (sprite: Sprite, height: number, pitch: number, mode: ColorMode = 'full'): Sampled => {
+const LETTERS = 'ABCDEFGHIJKLMNOP'
+
+const sampleGrid = (sprite: GridSprite, height: number, mode: ColorMode): Sampled => {
+  const rows = sprite.grid.length
+  const cols = sprite.grid[0].length
+  const pitch = Math.min(3.4, height / rows)
+  const xs: number[] = []
+  const ys: number[] = []
+  const ci: number[] = []
+  sprite.grid.forEach((line, r) => {
+    for (let q = 0; q < cols; q++) {
+      const k = LETTERS.indexOf(line[q])
+      if (k < 0) continue
+      xs.push((q - cols / 2) * pitch)
+      ys.push((r - rows / 2) * pitch)
+      ci.push(k)
+    }
+  })
+  const colors = mode === 'full' ? sprite.palette : sprite[mode]
+  return { xs: Float32Array.from(xs), ys: Float32Array.from(ys), colors, ci: Uint8Array.from(ci), w: cols * pitch, h: rows * pitch, pitch }
+}
+
+export const sampleSprite = (sprite: Sprite | GridSprite, height: number, pitch: number, mode: ColorMode = 'full'): Sampled => {
   const key = `${sprite.name}:${Math.round(height)}:${pitch}:${mode}`
   const hit = sampled.get(key)
   if (hit) return hit
+  if ('grid' in sprite) {
+    const art = sampleGrid(sprite, height, mode)
+    sampled.set(key, art)
+    return art
+  }
   const scale = height / sprite.h
   const W = Math.ceil(sprite.w * scale)
   const H = Math.ceil(height)
   if (!sampler) sampler = document.createElement('canvas').getContext('2d', { willReadFrequently: true })
   const colors = mode === 'full' ? sprite.palette : sprite[mode]
-  const out: Sampled = { xs: new Float32Array(0), ys: new Float32Array(0), colors, ci: new Uint8Array(0), w: W, h: H }
+  const out: Sampled = { xs: new Float32Array(0), ys: new Float32Array(0), colors, ci: new Uint8Array(0), w: W, h: H, pitch }
   const c = sampler
   if (!c) return out
   c.canvas.width = W
@@ -260,7 +287,7 @@ export class Fireworks {
     const art = sampleSprite(sprite, this.spriteHeight(), pitch)
     const colors = art.colors.map((hex) => this.colorIndex(hex))
     for (let k = 0; k < art.xs.length; k++) {
-      const i = this.add(x + (Math.random() - 0.5) * 8, y + (Math.random() - 0.5) * 8, 0, 0, 0, colors[art.ci[k]], pitch * 0.6, now)
+      const i = this.add(x + (Math.random() - 0.5) * 8, y + (Math.random() - 0.5) * 8, 0, 0, 0, colors[art.ci[k]], art.pitch * 0.6, now)
       if (i < 0) break
       this.tx[i] = x + art.xs[k]
       this.ty[i] = y + art.ys[k]
