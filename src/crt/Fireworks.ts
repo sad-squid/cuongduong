@@ -1,3 +1,4 @@
+import { DOT } from './tokens'
 import { SPRITES, type GridSprite } from './sprites'
 
 const SHOW_MS = 15000
@@ -9,6 +10,8 @@ type Sampled = { xs: Float32Array; ys: Float32Array; colors: string[]; ci: Uint8
 
 const LETTERS = 'ABCDEFGHIJKLMNOP'
 const BASE_ROWS = 40
+const HELD = 1
+const DUST = 2
 const sampled = new Map<string, Sampled>()
 
 export const sampleSprite = (sprite: GridSprite, height: number): Sampled => {
@@ -231,7 +234,7 @@ export class Fireworks {
       if (i < 0) break
       this.tx[i] = x + art.xs[k]
       this.ty[i] = y + art.ys[k]
-      this.forming[i] = 1
+      this.forming[i] = HELD
       this.release[i] = now + 1300 + Math.random() * 200
     }
     this.events?.onBurst(x, y, sprite.name)
@@ -256,7 +259,7 @@ export class Fireworks {
     })
 
     for (let i = 0; i < this.n; ) {
-      if (this.forming[i]) {
+      if (this.forming[i] === HELD) {
         const age = now - this.born[i]
         if (now < this.release[i]) {
           const p = Math.min(1, age / 450)
@@ -266,7 +269,8 @@ export class Fireworks {
           i++
           continue
         }
-        this.forming[i] = 0
+        this.forming[i] = DUST
+        this.size[i] = DOT
         this.born[i] = now
         const dist = Math.hypot(this.vx[i], this.vy[i]) || 1
         const speed = 50 + Math.random() * 130
@@ -315,13 +319,14 @@ export class Fireworks {
     c.globalAlpha = 0.32
     c.fillRect(0, 0, this.w, this.h)
     const held = new Map<number, Path2D>()
+    const dust = new Map<number, Path2D>()
     const loose = new Map<number, Path2D>()
     for (let i = 0; i < this.n; i++) {
-      const fade = this.forming[i] ? 0.85 + Math.random() * 0.15 : Math.max(0, 1 - (now - this.born[i]) / this.life[i])
+      const fade = this.forming[i] === HELD ? 0.85 + Math.random() * 0.15 : Math.max(0, 1 - (now - this.born[i]) / this.life[i])
       const level = Math.min(3, Math.ceil(fade * 3))
       if (level <= 0) continue
       const key = this.color[i] * 4 + level
-      const buckets = this.forming[i] ? held : loose
+      const buckets = this.forming[i] === HELD ? held : this.forming[i] === DUST ? dust : loose
       let path = buckets.get(key)
       if (!path) {
         path = new Path2D()
@@ -330,17 +335,18 @@ export class Fireworks {
       const s = this.size[i]
       path.rect(this.x[i] - s / 2, this.y[i] - s / 2, s, s)
     }
-    const fill = (buckets: Map<number, Path2D>) => {
+    const fill = (buckets: Map<number, Path2D>, alpha: number) => {
       for (const [key, path] of buckets) {
         c.fillStyle = this.palette[key >> 2]
-        c.globalAlpha = (key & 3) / 3
+        c.globalAlpha = ((key & 3) / 3) * alpha
         c.fill(path)
       }
     }
     c.globalCompositeOperation = 'lighter'
-    fill(loose)
+    fill(loose, 1)
     c.globalCompositeOperation = 'source-over'
-    fill(held)
+    fill(dust, 0.6)
+    fill(held, 1)
     c.globalCompositeOperation = 'source-over'
     c.globalAlpha = 1
   }
