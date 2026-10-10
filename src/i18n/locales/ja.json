@@ -213,12 +213,12 @@
       "laser": "レーザー",
       "hanabi": "花火",
       "shield": "シールド",
-      "slow": "スロー",
       "wow": "MUCH WOW",
       "homing": "ホーミング",
       "glitch": "GLITCH",
-      "tiny": "ちびっこ",
-      "mirror": "あべこべ"
+      "wingmen": "僚機",
+      "big": "ビッグショット",
+      "chain": "連鎖"
     }
   }
 }

@@ -213,12 +213,12 @@
       "laser": "LASER",
       "hanabi": "PHÁO HOA",
       "shield": "KHIÊN",
-      "slow": "CHẬM",
       "wow": "MUCH WOW",
       "homing": "ĐẠN ĐUỔI",
       "glitch": "GLITCH",
-      "tiny": "TÍ HON",
-      "mirror": "NGƯỢC"
+      "wingmen": "YỂM TRỢ",
+      "big": "ĐẠN TO",
+      "chain": "DÂY CHUYỀN"
     }
   }
 }

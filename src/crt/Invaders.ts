@@ -17,8 +17,28 @@ const LASER_TICK = 160
 const GLITCH_MS = 380
 const CAPSULE_SPEED = 72
 const GRAVITY = 160
-const SLOW = 0.4
-const SHIP = ['....C....', '...BBB...', '...BBB...', '.BBBBBBB.', 'BBBBBBBBB', 'BBBBBBBBB', 'BB.....BB']
+const WING_GAP = 34
+const CHAIN_LINKS = 3
+const ARC_MS = 450
+const SQUID = [
+  '.....XXX.....',
+  '....XXXXX....',
+  '...XXXXXXX...',
+  '..XXXXXXXXX..',
+  '..XXXXXXXXX..',
+  '.XXXXXXXXXXX.',
+  '.XX..XXX..XX.',
+  '.X..XXXXX..X.',
+  '.XXTXXXXXXXX.',
+  '..XXXXXXXXX..',
+  '..X.X.X.X.X..',
+  '..X.X.X.X.X..',
+  '.X..X...X..X.',
+]
+const SLEEP = [...SQUID.slice(0, 6), '.XXXXXXXXXXX.', '.X..XXXXX..X.', '.XXXXXXXXXXX.', ...SQUID.slice(9)]
+const HEAD_ROWS = 10
+const TENTACLE_ROW = 10
+const INK = '#6B6761'
 
 export type InputKind = 'mouse' | 'touch'
 
@@ -40,7 +60,9 @@ export type InvadersEvents = {
 
 type Art = { xs: Float32Array; ys: Float32Array; ci: Uint8Array; colors: string[]; w: number; h: number; pitch: number; image: HTMLCanvasElement }
 
-type Shot = { x: number; y: number; vx: number; hanabi: boolean }
+type Shot = { x: number; y: number; vx: number; hanabi: boolean; big: boolean }
+
+type Arc = { xs: number[]; ys: number[]; born: number }
 
 type Capsule = { type: PowerType; x: number; y: number }
 
@@ -133,6 +155,8 @@ export class Invaders {
   private shots: Shot[] = []
   private bombs: { x: number; y: number }[] = []
   private capsules: Capsule[] = []
+  private arcs: Arc[] = []
+  private wings = [0, 0]
   private lastShot = 0
   private bombClock = 0
   private keys = { left: false, right: false, fire: false }
@@ -146,6 +170,7 @@ export class Invaders {
   private nextWaveAt = 0
   private invulnerableUntil = 0
   private shipDown = false
+  private sway = 0
   private clock = 0
   private powers = new Map<PowerType, number>()
   private hanabiArmed = false
@@ -199,6 +224,7 @@ export class Invaders {
     this.killsSinceDrop = 0
     this.glitchUntil = 0
     this.capsules = []
+    this.arcs = []
     this.shipX = this.w / 2
     this.newWave(performance.now())
     this.hud()
@@ -319,6 +345,7 @@ export class Invaders {
         for (const [kind, until] of this.powers) if (!oldest || until < (this.powers.get(oldest) ?? 0)) oldest = kind
         if (oldest) this.powers.delete(oldest)
       }
+      if (type === 'wingmen' && !this.powers.has('wingmen')) this.wings = [this.shipX - this.w * 0.6, this.shipX + this.w * 0.6]
       this.powers.set(type, this.clock + POWERS[type].ms)
     }
     const cream = this.colorIndex(COLORS.cream)
@@ -388,9 +415,45 @@ export class Invaders {
     this.killsSinceDrop++
     if (this.killsSinceDrop >= PITY_KILLS || Math.random() < dropChance(this.wave)) {
       this.killsSinceDrop = 0
-      this.capsules.push({ type: pickPower(this.input === 'touch'), x, y })
+      this.capsules.push({ type: pickPower(), x, y })
     }
     if (!this.alive.some((a) => a === 1)) this.nextWaveAt = now + NEXT_WAVE_MS
+  }
+
+  private strike(index: number, now: number) {
+    const from = this.invaderAt(index)
+    this.kill(index, now)
+    if (!this.has('chain')) return
+    const near: { i: number; d: number }[] = []
+    for (let i = 0; i < this.alive.length; i++) {
+      if (!this.alive[i]) continue
+      const at = this.invaderAt(i)
+      near.push({ i, d: Math.hypot(at.x - from.x, at.y - from.y) })
+    }
+    near.sort((a, b) => a.d - b.d)
+    for (const { i } of near.slice(0, CHAIN_LINKS)) {
+      const to = this.invaderAt(i)
+      this.arcs.push(this.arc(from.x, from.y, to.x, to.y, now))
+      this.kill(i, now)
+    }
+  }
+
+  private arc(x0: number, y0: number, x1: number, y1: number, now: number): Arc {
+    const length = Math.hypot(x1 - x0, y1 - y0)
+    const steps = Math.max(2, Math.round(length / 4))
+    const nx = -(y1 - y0) / (length || 1)
+    const ny = (x1 - x0) / (length || 1)
+    const xs: number[] = []
+    const ys: number[] = []
+    let drift = 0
+    for (let k = 0; k <= steps; k++) {
+      const t = k / steps
+      drift += (Math.random() - 0.5) * 5
+      const bend = Math.sin(t * Math.PI) * drift
+      xs.push(x0 + (x1 - x0) * t + nx * bend)
+      ys.push(y0 + (y1 - y0) * t + ny * bend)
+    }
+    return { xs, ys, born: now }
   }
 
   private hanabiAt(x: number, y: number, now: number) {
@@ -426,25 +489,30 @@ export class Invaders {
     }
   }
 
-  private pitch() {
-    return this.has('tiny') ? this.shipPitch * 0.5 : this.shipPitch
-  }
-
-  private shipPoints(fn: (x: number, y: number, kind: string) => void) {
-    const p = this.pitch()
-    const half = (SHIP[0].length * p) / 2
-    const top = this.shipY + (SHIP.length * (this.shipPitch - p)) / 2
-    SHIP.forEach((line, r) => {
+  private squidPoints(grid: string[], cx: number, top: number, p: number, sway: number, fn: (x: number, y: number, kind: string) => void) {
+    const half = (grid[0].length * p) / 2
+    grid.forEach((line, r) => {
+      const shift = r >= TENTACLE_ROW ? Math.sin(this.clock / 90 + r * 1.3) * sway * p * 0.6 : 0
       for (let q = 0; q < line.length; q++) {
-        if (line[q] !== '.') fn(this.shipX - half + q * p + p / 2, top + r * p, line[q])
+        if (line[q] !== '.') fn(cx - half + q * p + p / 2 + shift, top + r * p, line[q])
       }
     })
   }
 
+  private shipPoints(fn: (x: number, y: number, kind: string) => void) {
+    this.squidPoints(SQUID, this.shipX, this.shipY, this.shipPitch, 0, fn)
+  }
+
   private shipBox() {
-    const p = this.pitch()
-    const top = this.shipY + (SHIP.length * (this.shipPitch - p)) / 2
-    return { half: (SHIP[0].length * p) / 2, top, bottom: top + SHIP.length * p }
+    const p = this.shipPitch
+    return { half: 4.5 * p, top: this.shipY, bottom: this.shipY + HEAD_ROWS * p }
+  }
+
+  private dropTear(now: number) {
+    const p = this.shipPitch
+    const x = this.shipX - (SQUID[0].length * p) / 2 + 3 * p + p / 2
+    const coral = this.colorIndex(COLORS.warmCoral)
+    this.add(x, this.shipY + 8 * p, (Math.random() - 0.5) * 10, 40, 1400, coral, p * 0.8, now)
   }
 
   private hitShip(now: number) {
@@ -460,14 +528,13 @@ export class Invaders {
       return
     }
     const cream = this.colorIndex(COLORS.cream)
-    const coral = this.colorIndex(COLORS.warmCoral)
+    const ink = this.colorIndex(INK)
     this.shipPoints((x, y) => {
-      for (let k = 0; k < 2; k++) {
-        const a = Math.random() * Math.PI * 2
-        const v = 60 + Math.random() * 200
-        this.add(x, y, Math.cos(a) * v, Math.sin(a) * v - 60, 700 + Math.random() * 600, k ? coral : cream, 1.8, now)
-      }
+      const a = Math.random() * Math.PI * 2
+      const v = 60 + Math.random() * 180
+      this.add(x, y, Math.cos(a) * v, Math.sin(a) * v - 60, 600 + Math.random() * 500, Math.random() < 0.6 ? cream : ink, 1.8, now)
     })
+    this.dropTear(now)
     this.events.onHit(this.shipX, this.shipY)
     this.lives = Math.max(0, this.lives - 1)
     this.bombs = []
@@ -497,8 +564,7 @@ export class Invaders {
     let count = 0
     for (let i = 0; i < this.alive.length; i++) count += this.alive[i]
     const frac = count / this.alive.length
-    const base = Math.max(0.035, (0.05 + 0.5 * frac * frac) * Math.pow(0.86, this.wave - 1))
-    return this.has('slow') ? base / SLOW : base
+    return Math.max(0.035, (0.05 + 0.5 * frac * frac) * Math.pow(0.86, this.wave - 1))
   }
 
   private stepFormation() {
@@ -564,7 +630,7 @@ export class Invaders {
       }
       hits.sort((a, b) => this.invaderAt(b).y - this.invaderAt(a).y)
       const first = hits.length ? this.invaderAt(hits[0]) : null
-      for (const i of hits) this.kill(i, now)
+      for (const i of hits) if (this.alive[i]) this.strike(i, now)
       if (first && this.hanabiArmed) {
         this.hanabiArmed = false
         this.hanabiAt(first.x, first.y, now)
@@ -574,14 +640,17 @@ export class Invaders {
       return
     }
     const rapid = this.has('rapid')
-    const volley = this.has('spread') ? 3 : 1
+    const wingmen = this.has('wingmen')
+    const volley = (this.has('spread') ? 3 : 1) + (wingmen ? 2 : 0)
     const max = (rapid ? 6 : 1) * volley
     if (this.shots.length + volley > max || now - this.lastShot < (rapid ? RAPID_COOLDOWN : SHOT_COOLDOWN)) return
     const speed = this.shotSpeed()
     const hanabi = this.hanabiArmed
     this.hanabiArmed = false
-    const spread = volley === 3 ? [-0.2, 0, 0.2] : [0]
-    spread.forEach((k, i) => this.shots.push({ x: this.shipX, y: this.shipY - 4, vx: k * speed, hanabi: hanabi && i === Math.floor(spread.length / 2) }))
+    const big = this.has('big')
+    const spread = this.has('spread') ? [-0.2, 0, 0.2] : [0]
+    spread.forEach((k, i) => this.shots.push({ x: this.shipX, y: this.shipY - 4, vx: k * speed, hanabi: hanabi && i === Math.floor(spread.length / 2), big }))
+    if (wingmen) for (const x of this.wings) this.shots.push({ x, y: this.shipY + 4 * this.shipPitch, vx: 0, hanabi: false, big })
     this.lastShot = now
     if (hanabi) this.sendPowers(true)
     this.events.onShot()
@@ -607,18 +676,22 @@ export class Invaders {
     if (this.powers.size) this.sendPowers()
     const playing = !this.over && !this.nextWaveAt
     if (!this.over) {
+      const before = this.shipX
       const speed = Math.max(300, this.field * 0.6)
-      const mirror = this.has('mirror')
       if (this.pointer.follow) {
-        const target = mirror ? 2 * this.left + this.field - this.pointer.x : this.pointer.x
-        const delta = target - this.shipX
+        const delta = this.pointer.x - this.shipX
         const step = Math.min(Math.abs(delta), Math.abs(delta) * Math.min(1, dt * 18), speed * 2.4 * dt)
         this.shipX += Math.sign(delta) * step
       } else {
-        const move = ((this.keys.right ? 1 : 0) - (this.keys.left ? 1 : 0)) * (mirror ? -1 : 1)
+        const move = (this.keys.right ? 1 : 0) - (this.keys.left ? 1 : 0)
         this.shipX += move * speed * dt
       }
       this.shipX = Math.min(this.left + this.field, Math.max(this.left, this.shipX))
+      const moving = dt > 0 ? Math.min(1, Math.abs(this.shipX - before) / dt / 220) : 0
+      this.sway += (moving - this.sway) * Math.min(1, dt * 8)
+      const lag = Math.min(1, dt * 7)
+      this.wings[0] += (this.shipX - WING_GAP - this.wings[0]) * lag
+      this.wings[1] += (this.shipX + WING_GAP - this.wings[1]) * lag
       this.fire(now, sinceWave)
       if (this.has('wow') && !this.reduceMotion) {
         const tint = this.colorIndex(Math.random() < 0.5 ? COLORS.warmCoral : COLORS.cream)
@@ -655,15 +728,31 @@ export class Invaders {
         if (shot.hanabi) this.hanabiAt(shot.x, Math.max(shot.y, 60), now)
         return false
       }
+      if (shot.big) {
+        const dust = this.colorIndex(Math.random() < 0.25 ? COLORS.warmCoral : COLORS.beige)
+        for (let k = 0; k < 2; k++) this.add(shot.x + (Math.random() - 0.5) * 12, shot.y + 10, (Math.random() - 0.5) * 60, 20 + Math.random() * 40, 420 + Math.random() * 300, dust, 1.6, now)
+        for (const dx of [-7, 0, 7]) {
+          for (const dy of [-7, 0, 7]) {
+            const hit = this.invaderHit(shot.x + dx, shot.y + dy)
+            if (hit < 0) continue
+            const at = this.invaderAt(hit)
+            this.strike(hit, now)
+            if (shot.hanabi) {
+              shot.hanabi = false
+              this.hanabiAt(at.x, at.y, now)
+            }
+          }
+        }
+        return true
+      }
       const hit = this.invaderHit(shot.x, shot.y)
       if (hit < 0) return true
       const at = this.invaderAt(hit)
-      this.kill(hit, now)
+      this.strike(hit, now)
       if (shot.hanabi) this.hanabiAt(at.x, at.y, now)
       return false
     })
 
-    const slow = this.has('slow') ? SLOW : 1
     if (playing && sinceWave > READY_MS) {
       this.stepClock += dt
       const interval = this.interval()
@@ -671,7 +760,7 @@ export class Invaders {
         this.stepClock = 0
         this.stepFormation()
       }
-      this.bombClock += dt * slow
+      this.bombClock += dt
       const rate = 0.55 + 0.22 * this.wave
       const cap = Math.min(6, 1 + this.wave)
       if (this.bombClock > 1 / rate && this.bombs.length < cap) {
@@ -680,7 +769,7 @@ export class Invaders {
       }
     }
 
-    const bombSpeed = this.h * 0.3 * Math.min(1.8, Math.pow(1.07, this.wave - 1)) * slow
+    const bombSpeed = this.h * 0.3 * Math.min(1.8, Math.pow(1.07, this.wave - 1))
     const box = this.shipBox()
     const safe = this.has('wow')
     this.bombs = this.bombs.filter((bomb) => {
@@ -704,6 +793,8 @@ export class Invaders {
       }
       return true
     })
+
+    this.arcs = this.arcs.filter((arc) => now - arc.born < ARC_MS)
 
     for (let i = 0; i < this.n; ) {
       const age = now - this.born[i]
@@ -731,15 +822,7 @@ export class Invaders {
     const c = this.ctx
     if (!c) return
     c.setTransform(this.dpr, 0, 0, this.dpr, 0, 0)
-    if (this.has('slow') && !this.reduceMotion) {
-      c.globalCompositeOperation = 'destination-out'
-      c.globalAlpha = 0.42
-      c.fillRect(0, 0, this.w, this.h)
-      c.globalCompositeOperation = 'source-over'
-      c.globalAlpha = 1
-    } else {
-      c.clearRect(0, 0, this.w, this.h)
-    }
+    c.clearRect(0, 0, this.w, this.h)
 
     const sinceWave = now - this.waveStart
     const form = Math.min(1, sinceWave / FORM_MS)
@@ -756,25 +839,66 @@ export class Invaders {
     }
     c.globalAlpha = 1
 
-    const blink = now < this.invulnerableUntil && Math.floor(now / 110) % 2 === 0
-    if (!this.shipDown && !blink) {
+    const hurt = now < this.invulnerableUntil
+    const blink = hurt && Math.floor(now / 110) % 2 === 0
+    if (!blink) {
       const body = new Path2D()
-      const tip = new Path2D()
-      const s = this.pitch() * 0.7
-      this.shipPoints((x, y, kind) => (kind === 'C' ? tip : body).rect(x - s / 2, y - s / 2, s, s))
+      const tear = new Path2D()
+      const p = this.shipPitch
+      const s = p * 0.7
+      const sway = this.reduceMotion || this.shipDown ? 0 : this.sway
+      this.squidPoints(this.shipDown ? SLEEP : SQUID, this.shipX, this.shipY, p, sway, (x, y, kind) => {
+        if (kind === 'T' && hurt) return
+        ;(kind === 'T' ? tear : body).rect(x - s / 2, y - s / 2, s, s)
+      })
       const sparkle = this.has('wow') && !this.reduceMotion && Math.floor(now / 120) % 2 === 0
+      c.globalAlpha = this.shipDown ? 0.55 : 1
       c.fillStyle = sparkle ? COLORS.beige : COLORS.cream
       c.fill(body)
       c.fillStyle = COLORS.warmCoral
-      c.fill(tip)
+      c.fill(tear)
+      c.globalAlpha = 1
+    }
+
+    if (this.has('wingmen') && !this.shipDown) {
+      const minis = new Path2D()
+      const tears = new Path2D()
+      const p = this.shipPitch * 0.45
+      const sway = this.reduceMotion ? 0 : this.sway
+      for (const wx of this.wings) {
+        this.squidPoints(SQUID, wx, this.shipY + 4 * this.shipPitch, p, sway, (x, y, kind) => (kind === 'T' ? tears : minis).rect(x - p * 0.4, y - p * 0.4, p * 0.8, p * 0.8))
+      }
+      c.fillStyle = COLORS.beige
+      c.fill(minis)
+      c.fillStyle = COLORS.warmCoral
+      c.fill(tears)
+    }
+
+    if (this.arcs.length) {
+      const arcs = new Path2D()
+      const sparks = new Path2D()
+      let fade = 1
+      for (const arc of this.arcs) {
+        fade = Math.min(fade, 1 - (now - arc.born) / ARC_MS)
+        for (let k = 0; k < arc.xs.length; k++) {
+          arcs.rect(arc.xs[k] - 1.2, arc.ys[k] - 1.2, 2.4, 2.4)
+          if (k % 3 === 0) sparks.rect(arc.xs[k] - 1 + (Math.random() - 0.5) * 6, arc.ys[k] - 1 + (Math.random() - 0.5) * 6, 1.6, 1.6)
+        }
+      }
+      c.globalAlpha = Math.max(0.3, fade)
+      c.fillStyle = COLORS.cream
+      c.fill(arcs)
+      c.fillStyle = COLORS.warmCoral
+      c.fill(sparks)
+      c.globalAlpha = 1
     }
 
     if (this.has('shield') && !this.shipDown) {
       const ring = new Path2D()
-      const cy = this.shipY + (SHIP.length * this.shipPitch) / 2
+      const cy = this.shipY + (SQUID.length * this.shipPitch) / 2
       for (let k = 0; k < 12; k++) {
         const a = (k / 12) * Math.PI * 2 + (this.reduceMotion ? 0 : this.clock / 500)
-        ring.rect(this.shipX + Math.cos(a) * 20 - 1, cy + Math.sin(a) * 16 - 1, 2, 2)
+        ring.rect(this.shipX + Math.cos(a) * this.shipPitch * 9 - 1, cy + Math.sin(a) * this.shipPitch * 8 - 1, 2, 2)
       }
       c.fillStyle = COLORS.beige
       c.globalAlpha = 0.85
@@ -807,12 +931,29 @@ export class Invaders {
     }
 
     const shots = new Path2D()
+    const inkTrail = new Path2D()
     const hanabiShots = new Path2D()
     for (const shot of this.shots) {
       const path = shot.hanabi ? hanabiShots : shots
+      if (shot.big) {
+        for (let gx = -2; gx <= 2; gx++) {
+          for (let gy = -3; gy <= 3; gy++) {
+            if (Math.abs(gx) + Math.abs(gy) > 3) continue
+            path.rect(shot.x + gx * 3.4 - 1.2, shot.y + gy * 3.4 - 1.2, 2.4, 2.4)
+          }
+        }
+        continue
+      }
       const tilt = shot.vx / this.shotSpeed()
-      for (let k = 0; k < 4; k++) path.rect(shot.x - 1 + tilt * k * 4, shot.y + k * 4, 2, 2)
+      path.rect(shot.x - 1, shot.y - 3, 2, 2)
+      path.rect(shot.x - 3, shot.y - 1, 2, 2)
+      path.rect(shot.x + 1, shot.y - 1, 2, 2)
+      path.rect(shot.x - 1, shot.y + 1, 2, 2)
+      inkTrail.rect(shot.x - 1 + tilt * 6, shot.y + 5, 2, 2)
+      inkTrail.rect(shot.x - 1 + tilt * 10, shot.y + 9, 1.6, 1.6)
     }
+    c.fillStyle = INK
+    c.fill(inkTrail)
     c.fillStyle = COLORS.cream
     c.fill(shots)
     c.fillStyle = COLORS.warmCoral

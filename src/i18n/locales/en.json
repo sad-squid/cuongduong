@@ -215,12 +215,12 @@
       "laser": "LASER",
       "hanabi": "花火",
       "shield": "SHIELD",
-      "slow": "SLOW-MO",
       "wow": "MUCH WOW",
       "homing": "HOMING",
       "glitch": "GLITCH",
-      "tiny": "TINY",
-      "mirror": "MIRROR"
+      "wingmen": "WINGMEN",
+      "big": "BIG SHOT",
+      "chain": "CHAIN"
     }
   }
 }
