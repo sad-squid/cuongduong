@@ -4,6 +4,7 @@ import { Fireworks } from './Fireworks'
 import type { NameField } from './NameField'
 import { BLAST, type Tear } from './tokens'
 import { createSound } from './Sound'
+import { CreditsShow } from './CreditsShow'
 
 export type CrtEvent =
   | { type: 'activity' }
@@ -54,6 +55,8 @@ export class CrtController {
   private lowPower = false
   private revealed = false
   private fireworksPaused = false
+  private show: CreditsShow | null = null
+  private lastTune = false
 
   constructor(reduceMotion: boolean) {
     this.reduceMotion = reduceMotion
@@ -77,6 +80,7 @@ export class CrtController {
     this.transit.setup()
     this.fireworks = new Fireworks(fireworksCanvas)
     this.fireworks.setup()
+    if (import.meta.env.DEV) (window as unknown as { __crt?: CrtController }).__crt = this
     if (this.revealed) {
       this.lattice.enable()
       this.scheduleIdleTear()
@@ -187,27 +191,46 @@ export class CrtController {
     return this.fireworks?.isRunning ?? false
   }
 
-  launchFireworks(endless = false) {
-    if (this.reduceMotion || !this.fireworks) return
+  get creditsShow() {
+    return this.show
+  }
+
+  launchFireworks(endless = false, tune = false) {
+    if (this.reduceMotion || !this.fireworks || this.fireworks.isRunning) return
+    const show = tune ? new CreditsShow(this.sound, this.fireworks) : null
     const started = this.fireworks.play(
       {
-        onLaunch: (x) => this.sound.play('rocket', { pan: this.pan(x), intensity: 0.7 }),
-        onBurst: (x, y, name) => {
-          this.sound.play(name ? 'sprite' : 'burst', { pan: this.pan(x), intensity: 0.35 })
-          this.sound.play('generate', { pan: this.pan(x), duration: name ? 0.55 : 0.4, intensity: name ? 1 : 0.6 + Math.random() * 0.4 })
+        onLaunch: (x) => (show ? null : this.sound.play('rocket', { pan: this.pan(x), intensity: 0.7 })),
+        onBurst: (x, y, name, at) => {
+          if (show) show.trace?.bursts.push(at)
+          else {
+            this.sound.play(name ? 'sprite' : 'burst', { pan: this.pan(x), intensity: 0.35 })
+            this.sound.play('generate', { pan: this.pan(x), duration: name ? 0.55 : 0.4, intensity: name ? 1 : 0.6 + Math.random() * 0.4 })
+          }
           this.lattice?.impulse(x, y, 180, 5)
           this.emit({ type: 'burst', name })
         },
-        onEnd: () => this.emit({ type: 'fireworks', on: false }),
+        onEnd: () => {
+          show?.stop()
+          if (this.show === show) this.show = null
+          this.emit({ type: 'fireworks', on: false })
+        },
       },
       this.lowPower,
       endless,
+      show?.now,
     )
-    if (started) this.emit({ type: 'fireworks', on: true })
+    if (!started) return
+    this.lastTune = tune
+    this.show = show
+    show?.start()
+    this.emit({ type: 'fireworks', on: true })
   }
 
   finaleFireworks() {
-    this.fireworks?.finale()
+    this.lastTune = false
+    if (this.show) this.show.finale()
+    else this.fireworks?.finale()
   }
 
   stopFireworks() {
@@ -229,7 +252,7 @@ export class CrtController {
       return
     }
     this.fireworksPaused = false
-    this.launchFireworks()
+    this.launchFireworks(this.lastTune, this.lastTune)
   }
 
   soundChanged() {

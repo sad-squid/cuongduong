@@ -1,3 +1,5 @@
+import { noiseBuffer, pulseWave as musicPulse, type Band } from './music'
+
 export type SoundName =
   | 'blast'
   | 'tear'
@@ -47,7 +49,13 @@ export type SoundApi = {
   play(name: SoundName, opts?: PlayOptions): void
   setVariant(name: SoundName, variant: Variant): void
   setSettings(next: Partial<ChainSettings>): void
+  audioClock(): { time: number; latency: number } | null
+  musicBus(echoTime: number): MusicBus | null
 }
+
+export type MusicBus = { band: Band; stop(fade: number): void }
+
+const MUSIC_LEVEL = 1.6
 
 export const SOUND_NAMES: readonly SoundName[] = [
   'blast',
@@ -701,6 +709,7 @@ type Engine = {
   apply(s: ChainSettings): void
   voice(name: SoundName, variant: Variant, t: number, opts: PlayOptions): { gain: GainNode; end: number }
   room(variant: Variant, t: number): RoomHandle
+  musicInput(): GainNode
 }
 
 const createEngine = (ctx: BaseAudioContext, initial: ChainSettings): Engine => {
@@ -896,7 +905,38 @@ const createEngine = (ctx: BaseAudioContext, initial: ChainSettings): Engine => 
     }
   }
 
-  return { ctx, master, ready, apply, voice, room }
+  let musicIn: GainNode | null = null
+  const musicInput = (): GainNode => {
+    if (musicIn !== null) return musicIn
+    const input = ctx.createGain()
+    const lp = ctx.createBiquadFilter()
+    lp.type = 'lowpass'
+    lp.frequency.value = 5200
+    lp.Q.value = 0.5
+    const verb = ctx.createConvolver()
+    const len = Math.floor(ctx.sampleRate * 2.2)
+    const ir = ctx.createBuffer(2, len, ctx.sampleRate)
+    for (let ch = 0; ch < 2; ch++) {
+      const d = ir.getChannelData(ch)
+      for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3.2)
+    }
+    verb.buffer = ir
+    const wet = ctx.createGain()
+    wet.gain.value = 0.3
+    const squash = ctx.createDynamicsCompressor()
+    squash.threshold.value = -20
+    squash.ratio.value = 3
+    const out = ctx.createGain()
+    out.gain.value = MUSIC_LEVEL
+    input.connect(lp)
+    lp.connect(squash)
+    lp.connect(verb).connect(wet).connect(squash)
+    squash.connect(out).connect(master)
+    musicIn = input
+    return input
+  }
+
+  return { ctx, master, ready, apply, voice, room, musicInput }
 }
 
 type Live = { name: SoundName; gain: GainNode; start: number; end: number }
@@ -913,6 +953,58 @@ export const createSound = (initial: Partial<ChainSettings> = {}): SoundApi => {
   let muted = false
   let live: Live[] = []
   const lastAt: Partial<Record<SoundName, number>> = {}
+
+  let noise: AudioBuffer | null = null
+  const waves = new Map<number, PeriodicWave>()
+
+  const musicBus = (echoTime: number): MusicBus | null => {
+    if (!enabled || engine === null || ctx === null || ctx.state !== 'running') return null
+    const c = ctx
+    const bus = c.createGain()
+    bus.connect(engine.musicInput())
+    const echo = c.createDelay(1)
+    echo.delayTime.value = echoTime
+    const fb = c.createGain()
+    fb.gain.value = 0.32
+    const wet = c.createGain()
+    wet.gain.value = 0.22
+    const tone = c.createBiquadFilter()
+    tone.type = 'lowpass'
+    tone.frequency.value = 2400
+    echo.connect(tone).connect(fb).connect(echo)
+    tone.connect(wet).connect(bus)
+    noise ??= noiseBuffer(c)
+    const band: Band = {
+      ctx: c,
+      bus,
+      echo,
+      noise,
+      pulse: (duty) => {
+        const hit = waves.get(duty)
+        if (hit) return hit
+        const wave = musicPulse(c, duty)
+        waves.set(duty, wave)
+        return wave
+      },
+    }
+    let stopped = false
+    return {
+      band,
+      stop: (fade) => {
+        if (stopped) return
+        stopped = true
+        bus.gain.cancelScheduledValues(c.currentTime)
+        bus.gain.setTargetAtTime(0, c.currentTime, fade / 4)
+        window.setTimeout(() => {
+          echo.disconnect()
+          tone.disconnect()
+          fb.disconnect()
+          wet.disconnect()
+          bus.disconnect()
+        }, fade * 1000 + 300)
+      },
+    }
+  }
 
   const masterLevel = (): number => (enabled && !muted ? settings.volume : 0)
 
@@ -1028,6 +1120,8 @@ export const createSound = (initial: Partial<ChainSettings> = {}): SoundApi => {
       syncRoom()
     },
     play,
+    audioClock: () => (enabled && ctx !== null && ctx.state === 'running' ? { time: ctx.currentTime, latency: ctx.outputLatency || ctx.baseLatency || 0 } : null),
+    musicBus,
     setVariant: (name: SoundName, variant: Variant) => {
       variants[name] = variant
     },

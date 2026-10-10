@@ -36,10 +36,10 @@ export const Credits = () => {
     const off = crt.subscribe((event) => {
       if (event.type !== 'fireworks' || event.on || playingRef.current || crt.fireworksHeld) return
       window.clearTimeout(timer)
-      timer = window.setTimeout(() => (playingRef.current || crt.fireworksHeld ? null : crt.launchFireworks(!doneRef.current)), RELAUNCH_MS)
+      timer = window.setTimeout(() => (playingRef.current || crt.fireworksHeld ? null : crt.launchFireworks(!doneRef.current, !doneRef.current)), RELAUNCH_MS)
     })
     crt.holdFireworks(false)
-    const launch = window.setTimeout(() => crt.launchFireworks(!doneRef.current), 400)
+    const launch = window.setTimeout(() => crt.launchFireworks(!doneRef.current, !doneRef.current), 400)
     return () => {
       off()
       window.clearTimeout(timer)
