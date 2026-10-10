@@ -11,7 +11,6 @@ export type Sprite = {
   w: number
   h: number
   palette: string[]
-  pico: string[]
   draw: (c: CanvasRenderingContext2D) => void
 }
 
@@ -55,7 +54,6 @@ export const SPRITES: (Sprite | GridSprite)[] = [
     w: 110,
     h: 90,
     palette: ['#5FA052', '#F4F1EA', '#B5503E', '#3F7A38', HOLE],
-    pico: ['#008751', '#FFF1E8', '#AB5236', '#1D2B53', HOLE],
     draw: (c) => {
       ell(c, '#5FA052', 55, 56, 50, 30)
       ell(c, '#5FA052', 34, 30, 22, 19)
@@ -84,7 +82,6 @@ export const SPRITES: (Sprite | GridSprite)[] = [
     w: 100,
     h: 100,
     palette: ['#E3A857', '#F4E7CF', HOLE],
-    pico: ['#FFA300', '#FFF1E8', HOLE],
     draw: (c) => {
       poly(c, '#E3A857', [10, 50, 16, 4, 44, 30])
       poly(c, '#E3A857', [90, 50, 84, 4, 56, 30])
@@ -114,7 +111,6 @@ export const SPRITES: (Sprite | GridSprite)[] = [
     w: 100,
     h: 110,
     palette: ['#D9534F', '#A8393A', '#9ED6E8', '#FFFFFF'],
-    pico: ['#FF004D', '#7E2553', '#29ADFF', '#FFF1E8'],
     draw: (c) => {
       c.fillStyle = '#A8393A'
       c.beginPath()

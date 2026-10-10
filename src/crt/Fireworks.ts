@@ -4,7 +4,15 @@ const SHOW_MS = 15000
 const RISE_MS = 900
 const MAX = 14000
 const GRAVITY = 220
-const SHELL_COLORS = ['#FF004D', '#FFA300', '#FFEC27', '#29ADFF', '#FF77A8', '#FFF1E8', '#00E436']
+const SHELL_COLORS = ['#F0EEE9', '#DCD7C9', '#C9C4B8', '#9A958B']
+const SPRITE_ROWS = 40
+const GRAY = ['#45423E', '#6B6761', '#9A958B', '#C9C4B8', '#F0EEE9']
+
+const toGray = (hex: string) => {
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255)
+  const lum = Math.pow(0.2126 * r + 0.7152 * g + 0.0722 * b, 1.8)
+  return GRAY[[0.25, 0.45, 0.65, 0.85].filter((t) => lum > t).length]
+}
 
 type Rocket = { x: number; y: number; fromY: number; toY: number; start: number; burst: Burst; trail: number }
 type Burst = { kind: 'sprite'; sprite: Sprite | GridSprite } | { kind: 'shell'; colors: number[] }
@@ -43,7 +51,7 @@ const LETTERS = 'ABCDEFGHIJKLMNOP'
 const sampleGrid = (sprite: GridSprite, height: number): Sampled => {
   const rows = sprite.grid.length
   const cols = sprite.grid[0].length
-  const pitch = Math.min(3.4, height / rows)
+  const pitch = height / rows
   const xs: number[] = []
   const ys: number[] = []
   const ci: number[] = []
@@ -60,8 +68,8 @@ const sampleGrid = (sprite: GridSprite, height: number): Sampled => {
   return { xs: Float32Array.from(xs), ys: Float32Array.from(ys), colors, ci: Uint8Array.from(ci), w: cols * pitch, h: rows * pitch, pitch }
 }
 
-export const sampleSprite = (sprite: Sprite | GridSprite, height: number, pitch: number): Sampled => {
-  const key = `${sprite.name}:${Math.round(height)}:${pitch}`
+export const sampleSprite = (sprite: Sprite | GridSprite, height: number): Sampled => {
+  const key = `${sprite.name}:${Math.round(height)}`
   const hit = sampled.get(key)
   if (hit) return hit
   if ('grid' in sprite) {
@@ -73,7 +81,8 @@ export const sampleSprite = (sprite: Sprite | GridSprite, height: number, pitch:
   const W = Math.ceil(sprite.w * scale)
   const H = Math.ceil(height)
   if (!sampler) sampler = document.createElement('canvas').getContext('2d', { willReadFrequently: true })
-  const colors = sprite.pico
+  const colors = sprite.palette.map(toGray)
+  const pitch = height / SPRITE_ROWS
   const out: Sampled = { xs: new Float32Array(0), ys: new Float32Array(0), colors, ci: new Uint8Array(0), w: W, h: H, pitch }
   const c = sampler
   if (!c) return out
@@ -240,7 +249,7 @@ export class Fireworks {
       if (Math.abs(x - lastX) < this.w * 0.15) x = this.w - x
       toY = this.h * (0.12 + Math.random() * 0.2)
     }
-    this.rockets.push({ x, y: this.h + 10, fromY: this.h + 10, toY, start: now, burst, trail: this.colorIndex('#FFA300') })
+    this.rockets.push({ x, y: this.h + 10, fromY: this.h + 10, toY, start: now, burst, trail: this.colorIndex('#9A958B') })
   }
 
   private spriteHeight() {
@@ -269,7 +278,7 @@ export class Fireworks {
     for (let k = 0; k < spark; k++) {
       const a = Math.random() * Math.PI * 2
       const v = 60 + Math.random() * 120
-      this.add(x, y, Math.cos(a) * v, Math.sin(a) * v, 500 + Math.random() * 400, this.colorIndex('#FFF1E8'), 1.6, now)
+      this.add(x, y, Math.cos(a) * v, Math.sin(a) * v, 500 + Math.random() * 400, this.colorIndex('#F0EEE9'), 1.6, now)
     }
     if (burst.kind === 'shell') {
       const count = this.lowPower ? 50 : 100
@@ -282,11 +291,10 @@ export class Fireworks {
       return
     }
     const { sprite } = burst
-    const pitch = this.lowPower ? 4 : 3
-    const art = sampleSprite(sprite, this.spriteHeight(), pitch)
+    const art = sampleSprite(sprite, this.spriteHeight())
     const colors = art.colors.map((hex) => this.colorIndex(hex))
     for (let k = 0; k < art.xs.length; k++) {
-      const i = this.add(x + (Math.random() - 0.5) * 8, y + (Math.random() - 0.5) * 8, 0, 0, 0, colors[art.ci[k]], art.pitch * 0.6, now)
+      const i = this.add(x + (Math.random() - 0.5) * 8, y + (Math.random() - 0.5) * 8, 0, 0, 0, colors[art.ci[k]], art.pitch * 0.75, now)
       if (i < 0) break
       this.tx[i] = x + art.xs[k]
       this.ty[i] = y + art.ys[k]
