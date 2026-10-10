@@ -9,7 +9,7 @@ const Arcade = lazy(() => import('@/components/Arcade').then((m) => ({ default: 
 
 type Role = { label: string; value: string }
 
-const CAST = ['chiikawa', 'hachiware', 'usagi', 'pikachu', 'handsome_squidward', 'kirby', 'pepe', 'doge', 'crewmate', 'gigachad', 'trollface']
+const CAST = ['chiikawa', 'hachiware', 'usagi', 'pikachu', 'handsome_squidward', 'kirby', 'pepe', 'doge', 'crewmate', 'gigachad', 'trollface', 'creeper', 'space_invader', 'nyan_cat', 'leaf']
 const SPEED = 42
 const RELAUNCH_MS = 2600
 
