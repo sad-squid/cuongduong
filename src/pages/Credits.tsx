@@ -92,7 +92,7 @@ export const Credits = () => {
     if (playing) return
     const onKey = (e: KeyboardEvent) => {
       if (e.defaultPrevented || e.metaKey || e.ctrlKey || (e.key !== 'Enter' && e.key !== ' ')) return
-      if ((e.target as Element | null)?.closest?.('button, a, input')) return
+      if ((e.target as Element | null)?.closest?.('button, input, textarea, .credits a')) return
       if (!skip()) return
       e.preventDefault()
       startRef.current?.focus()
