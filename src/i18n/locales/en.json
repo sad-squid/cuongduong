@@ -12,7 +12,10 @@
     "fireworks": "fireworks",
     "languageCycle": "Language: {{current}}. Switch to {{next}}",
     "scrollTo": "Scroll to {{page}}",
-    "sound": "sound"
+    "sound": "sound",
+    "soundOn": "sound on",
+    "soundOff": "sound off",
+    "volume": "volume"
   },
   "palette": {
     "label": "Command palette",

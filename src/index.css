@@ -336,11 +336,10 @@ textarea {
   position: sticky;
   bottom: 0;
   z-index: 3;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  gap: 20px 40px;
+  gap: 48px;
   padding: 36px 24px 36px;
   background: linear-gradient(to top, var(--bg) 0%, var(--bg) 62%, transparent 100%);
   font-family: var(--font-mono);
@@ -350,7 +349,16 @@ textarea {
 
 .doors {
   display: flex;
-  gap: 24px;
+  align-items: center;
+  gap: 16px;
+}
+
+.doors.links {
+  justify-self: end;
+}
+
+.doors.settings {
+  justify-self: start;
 }
 
 .door {
@@ -383,15 +391,17 @@ textarea {
   height: 22px;
 }
 
-.lang-wrap {
+.lang-wrap,
+.sound-wrap {
   position: relative;
   display: inline-flex;
 }
 
-.lang-flash {
+.crt-pop {
   position: absolute;
   bottom: calc(100% + 6px);
   left: 50%;
+  z-index: 4;
   padding: 3px 8px 2px;
   font-family: var(--font-mono);
   font-size: 12px;
@@ -400,17 +410,104 @@ textarea {
   white-space: nowrap;
   color: #fff1ec;
   text-shadow: var(--glow-1);
-  background-color: rgb(26 26 27 / 0.9);
+  background-color: rgb(26 26 27 / 0.92);
   background-image: var(--scanline-fill), radial-gradient(circle, rgb(240 110 97 / 0.8) 0 0.7px, transparent 1px);
   background-size: auto, 3px 3px;
   background-repeat: repeat, repeat-x;
   background-position: 0 0, 0 100%;
   translate: -50% 0;
-  pointer-events: none;
-  animation: lang-flash 1.7s steps(24, end) both;
 }
 
-@keyframes lang-flash {
+.lang-flash {
+  pointer-events: none;
+  animation: crt-flash 1.7s steps(24, end) both;
+}
+
+.sound-pop {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 6px 10px 8px;
+  animation: crt-on 260ms steps(8, end) both;
+}
+
+.sound-pop.closing {
+  animation: crt-off 220ms steps(6, end) both;
+}
+
+.volume {
+  position: relative;
+  width: 104px;
+  height: 18px;
+}
+
+.volume::before {
+  content: '';
+  position: absolute;
+  inset: 6px 0;
+  background-image: radial-gradient(circle, rgb(220 215 201 / 0.4) 0 0.9px, transparent 1.3px);
+  background-size: 6px 6px;
+  pointer-events: none;
+}
+
+.volume::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 0;
+  width: var(--fill);
+  height: 6px;
+  background-image: radial-gradient(circle, var(--warm-coral) 0 1.3px, transparent 1.7px);
+  background-size: 6px 6px;
+  filter: drop-shadow(0 0 2px rgb(240 110 97 / 0.7));
+  pointer-events: none;
+}
+
+.volume input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.volume:has(input:focus-visible) {
+  outline: 2px solid var(--warm-coral);
+  outline-offset: 2px;
+}
+
+@keyframes crt-on {
+  0% {
+    opacity: 0;
+    transform: scale(1.1, 0.06);
+    filter: brightness(2.4);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1, 1);
+    filter: brightness(1.6);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1, 1);
+    filter: brightness(1);
+  }
+}
+
+@keyframes crt-off {
+  0% {
+    opacity: 1;
+    transform: scale(1, 1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.04, 0.04);
+    filter: brightness(1.8);
+  }
+}
+
+@keyframes crt-flash {
   0% {
     opacity: 0;
     transform: scale(1.1, 0.06);
@@ -436,7 +533,16 @@ textarea {
 }
 
 @media (max-width: 720px) {
-  .lang-flash {
+  .doors.settings {
+    position: relative;
+  }
+
+  .lang-wrap,
+  .sound-wrap {
+    position: static;
+  }
+
+  .crt-pop {
     left: auto;
     right: 4px;
     translate: none;
@@ -445,11 +551,16 @@ textarea {
 
 @media (prefers-reduced-motion: reduce) {
   .lang-flash {
-    animation: lang-flash-still 1.7s step-end both;
+    animation: crt-flash-still 1.7s step-end both;
+  }
+
+  .sound-pop,
+  .sound-pop.closing {
+    animation: none;
   }
 }
 
-@keyframes lang-flash-still {
+@keyframes crt-flash-still {
   100% {
     opacity: 0;
   }
@@ -1181,10 +1292,6 @@ html:has(.screen.playing) body {
   }
 
   .footer {
-    display: grid;
-    grid-template-columns: auto auto;
-    justify-content: space-between;
-    align-items: center;
     gap: 12px;
     padding: 14px 12px calc(6px + env(safe-area-inset-bottom, 0px));
   }
@@ -1194,8 +1301,16 @@ html:has(.screen.playing) body {
     outline-offset: -2px;
   }
 
-  .doors.links {
+  .doors {
     gap: 0;
+  }
+
+  .doors.links {
+    justify-self: start;
+  }
+
+  .doors.settings {
+    justify-self: end;
   }
 
   .icon-door,

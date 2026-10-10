@@ -12,7 +12,10 @@
     "fireworks": "pháo hoa",
     "languageCycle": "Ngôn ngữ: {{current}}. Chuyển sang {{next}}",
     "scrollTo": "Cuộn đến {{page}}",
-    "sound": "âm thanh"
+    "sound": "âm thanh",
+    "soundOn": "bật âm thanh",
+    "soundOff": "tắt âm thanh",
+    "volume": "âm lượng"
   },
   "palette": {
     "label": "Bảng lệnh",

@@ -12,7 +12,10 @@
     "fireworks": "花火",
     "languageCycle": "言語：{{current}}。{{next}}に切り替え",
     "scrollTo": "{{page}}へスクロール",
-    "sound": "音"
+    "sound": "音",
+    "soundOn": "サウンド オン",
+    "soundOff": "サウンド オフ",
+    "volume": "音量"
   },
   "palette": {
     "label": "コマンドパレット",
