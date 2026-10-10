@@ -190,12 +190,52 @@
     "site": "cuongduong.dev",
     "roles": [
       {
-        "label": "デザイン・コード・文章",
-        "value": "Cuong Duong（コン）"
+        "label": "監督",
+        "value": "sad-squid"
       },
       {
-        "label": "制作協力",
-        "value": "Claude（Anthropic）"
+        "label": "製作",
+        "value": "sad-squid"
+      },
+      {
+        "label": "プロダクト方針",
+        "value": "sad-squid"
+      },
+      {
+        "label": "デザイン",
+        "value": "sad-squid"
+      },
+      {
+        "label": "エンジニアリング",
+        "value": "sad-squid"
+      },
+      {
+        "label": "文章",
+        "value": "sad-squid"
+      },
+      {
+        "label": "サウンドデザイン",
+        "value": "sad-squid"
+      },
+      {
+        "label": "QA（ほぼスマホ）",
+        "value": "sad-squid"
+      },
+      {
+        "label": "スタント",
+        "value": "sad-squid"
+      },
+      {
+        "label": "ケータリング",
+        "value": "sad-squid"
+      },
+      {
+        "label": "AIペアプログラマー",
+        "value": "Claude（Anthropic）、Codex（OpenAI）"
+      },
+      {
+        "label": "スペシャルサンクス",
+        "value": "スペースインベーダーをリクエストしてくれた彼女"
       },
       {
         "label": "書体",
@@ -210,7 +250,8 @@
     "castNote": "キャラクターの権利は各作者に帰属します。許可はもらっていませんが、愛を込めて描きました",
     "thanks": "最後まで見てくれてありがとう",
     "start": "press start",
-    "home": "ホームに戻る"
+    "home": "ホームに戻る",
+    "speed": "2×"
   },
   "arcade": {
     "label": "インベーダー",

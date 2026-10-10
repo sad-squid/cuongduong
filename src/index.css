@@ -846,7 +846,11 @@ html:has(.screen.playing) {
 .credits {
   position: fixed;
   inset: 0;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
   font-family: var(--font-mono);
   text-align: center;
   mask-image: linear-gradient(to bottom, transparent 0, #000 16%, #000 76%, transparent 90%);
@@ -861,13 +865,42 @@ html:has(.screen.playing) {
 }
 
 .credits-roll {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  padding: 0 24px;
-  transform: translateY(100vh);
-  will-change: transform;
+  padding: 100svh 24px 60svh;
+}
+
+.credits-speed {
+  all: unset;
+  position: fixed;
+  top: calc(18px + env(safe-area-inset-top, 0px));
+  right: calc(18px + env(safe-area-inset-right, 0px));
+  z-index: 4;
+  padding: 6px 10px;
+  min-width: 24px;
+  min-height: 24px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  cursor: pointer;
+  background-image: radial-gradient(circle, rgb(220 215 201 / 0.55) 0 0.7px, transparent 1px);
+  background-size: 3px 3px;
+  background-repeat: repeat-x;
+  background-position: 0 100%;
+}
+
+.credits-speed:hover,
+.credits-speed:focus-visible,
+.credits-speed.on {
+  color: #fff1ec;
+  text-shadow: var(--glow-1);
+  background-image: var(--scanline-fill), radial-gradient(circle, rgb(240 110 97 / 0.9) 0 0.7px, transparent 1px);
+  background-size: auto, 3px 3px;
+  background-repeat: repeat, repeat-x;
+}
+
+.credits-speed:focus-visible {
+  outline: 2px solid var(--warm-coral);
+  outline-offset: 2px;
 }
 
 .credits.static {
@@ -879,8 +912,7 @@ html:has(.screen.playing) {
 }
 
 .credits.static .credits-roll {
-  position: static;
-  transform: none;
+  padding: 0 24px;
 }
 
 .credits-site {

@@ -186,7 +186,7 @@ export class CrtController {
     return this.fireworks?.isRunning ?? false
   }
 
-  launchFireworks() {
+  launchFireworks(endless = false) {
     if (this.reduceMotion || !this.fireworks) return
     const started = this.fireworks.play(
       {
@@ -200,8 +200,13 @@ export class CrtController {
         onEnd: () => this.emit({ type: 'fireworks', on: false }),
       },
       this.lowPower,
+      endless,
     )
     if (started) this.emit({ type: 'fireworks', on: true })
+  }
+
+  finaleFireworks() {
+    this.fireworks?.finale()
   }
 
   stopFireworks() {

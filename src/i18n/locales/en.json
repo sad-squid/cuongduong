@@ -191,12 +191,52 @@
     "site": "cuongduong.dev",
     "roles": [
       {
-        "label": "design, code, words",
-        "value": "Cuong Duong"
+        "label": "directed by",
+        "value": "sad-squid"
       },
       {
-        "label": "built with",
-        "value": "Claude (Anthropic)"
+        "label": "produced by",
+        "value": "sad-squid"
+      },
+      {
+        "label": "product direction",
+        "value": "sad-squid"
+      },
+      {
+        "label": "design",
+        "value": "sad-squid"
+      },
+      {
+        "label": "engineering",
+        "value": "sad-squid"
+      },
+      {
+        "label": "words",
+        "value": "sad-squid"
+      },
+      {
+        "label": "sound design",
+        "value": "sad-squid"
+      },
+      {
+        "label": "QA, mostly on a phone",
+        "value": "sad-squid"
+      },
+      {
+        "label": "stunts",
+        "value": "sad-squid"
+      },
+      {
+        "label": "catering",
+        "value": "sad-squid"
+      },
+      {
+        "label": "AI pair programmers",
+        "value": "Claude (Anthropic), Codex (OpenAI)"
+      },
+      {
+        "label": "special thanks",
+        "value": "my girlfriend, for requesting space invaders"
       },
       {
         "label": "type",
@@ -211,7 +251,8 @@
     "castNote": "characters belong to their creators; drawn here with love, not permission",
     "thanks": "thanks for watching",
     "start": "press start",
-    "home": "back home"
+    "home": "back home",
+    "speed": "2×"
   },
   "arcade": {
     "label": "Invaders",

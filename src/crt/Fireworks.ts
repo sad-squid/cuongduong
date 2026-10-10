@@ -2,6 +2,21 @@ import { DOT } from './tokens'
 import { SPRITES, type GridSprite } from './sprites'
 
 const SHOW_MS = 15000
+const CYCLE_MS = 12000
+const CYCLE: [number, 'shell' | 'sprite'][] = [
+  [300, 'shell'],
+  [1300, 'sprite'],
+  [2700, 'shell'],
+  [3500, 'sprite'],
+  [5000, 'shell'],
+  [5300, 'shell'],
+  [6200, 'sprite'],
+  [8000, 'sprite'],
+  [9000, 'shell'],
+  [10000, 'sprite'],
+  [11800, 'sprite'],
+]
+const FINALE = [0, 200, 400, 600]
 const RISE_MS = 900
 const MAX = 14000
 const GRAVITY = 220
@@ -79,6 +94,10 @@ export class Fireworks {
   private rockets: Rocket[] = []
   private schedule: { at: number; burst: Burst }[] = []
   private start = 0
+  private until = SHOW_MS
+  private cycles = 0
+  private sprites: GridSprite[] = []
+  private nextSprite = 0
   private last = 0
   private raf = 0
   private events: FireworksEvents | null = null
@@ -103,42 +122,56 @@ export class Fireworks {
     this.h = r.height
   }
 
-  play(events: FireworksEvents, lowPower: boolean) {
+  play(events: FireworksEvents, lowPower: boolean, endless = false) {
     if (this.events || !this.ctx) return false
     this.events = events
     this.lowPower = lowPower
     this.n = 0
     this.rockets = []
     this.palette = []
-    const sprites = shuffle(SPRITES).slice(0, 6)
-    const shell = (): Burst => {
-      const a = Math.floor(Math.random() * SHELL_COLORS.length)
-      const b = Math.floor(Math.random() * SHELL_COLORS.length)
-      return { kind: 'shell', colors: [this.colorIndex(SHELL_COLORS[a]), this.colorIndex(SHELL_COLORS[b])] }
+    this.sprites = endless ? shuffle(SPRITES) : shuffle(SPRITES).slice(0, 6)
+    this.nextSprite = 0
+    this.cycles = 0
+    this.schedule = []
+    if (endless) {
+      this.until = Infinity
+      this.queueCycle()
+    } else {
+      this.until = SHOW_MS
+      this.queueCycle()
+      this.queueFinale(12900)
     }
-    const plan: [number, Burst | 'sprite'][] = [
-      [300, shell()],
-      [1300, 'sprite'],
-      [2700, shell()],
-      [3500, 'sprite'],
-      [5000, shell()],
-      [5300, shell()],
-      [6200, 'sprite'],
-      [8000, 'sprite'],
-      [9000, shell()],
-      [10000, 'sprite'],
-      [11800, 'sprite'],
-      [12900, shell()],
-      [13100, shell()],
-      [13300, shell()],
-      [13500, shell()],
-    ]
-    let next = 0
-    this.schedule = plan.map(([at, burst]) => ({ at, burst: burst === 'sprite' ? { kind: 'sprite', sprite: sprites[next++ % sprites.length] } : burst }))
     this.start = performance.now()
     this.last = this.start
     this.raf = requestAnimationFrame(this.frame)
     return true
+  }
+
+  finale() {
+    if (!this.events || this.until !== Infinity) return
+    const t = performance.now() - this.start
+    this.schedule = this.schedule.filter((item) => item.at - RISE_MS <= t)
+    this.queueFinale(t + RISE_MS)
+    this.until = t
+  }
+
+  private shell(): Burst {
+    const a = Math.floor(Math.random() * SHELL_COLORS.length)
+    const b = Math.floor(Math.random() * SHELL_COLORS.length)
+    return { kind: 'shell', colors: [this.colorIndex(SHELL_COLORS[a]), this.colorIndex(SHELL_COLORS[b])] }
+  }
+
+  private queueCycle() {
+    const base = this.cycles * CYCLE_MS
+    this.cycles++
+    for (const [at, kind] of CYCLE) {
+      const burst: Burst = kind === 'shell' ? this.shell() : { kind: 'sprite', sprite: this.sprites[this.nextSprite++ % this.sprites.length] }
+      this.schedule.push({ at: base + at, burst })
+    }
+  }
+
+  private queueFinale(from: number) {
+    for (const offset of FINALE) this.schedule.push({ at: from + offset, burst: this.shell() })
   }
 
   stop() {
@@ -248,6 +281,7 @@ export class Fireworks {
     const dt = Math.min(0.05, (now - this.last) / 1000)
     this.last = now
     const t = now - this.start
+    if (this.until === Infinity && this.schedule.length < 3) this.queueCycle()
     while (this.schedule.length && this.schedule[0].at - RISE_MS <= t) this.launch(this.schedule.shift()!.burst, now)
 
     this.rockets = this.rockets.filter((rocket) => {
@@ -305,7 +339,7 @@ export class Fireworks {
     }
 
     this.paint(now)
-    if (t > SHOW_MS && !this.schedule.length && !this.rockets.length && this.n === 0) {
+    if (t > this.until && !this.schedule.length && !this.rockets.length && this.n === 0) {
       this.stop()
       return
     }

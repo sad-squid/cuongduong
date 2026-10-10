@@ -20,12 +20,15 @@ export const Credits = () => {
   useDocumentTitle(t('credits.title'))
   const [playing, setPlaying] = useState(false)
   const [done, setDone] = useState(crt.reduceMotion)
+  const [auto, setAuto] = useState(!crt.reduceMotion)
+  const [fast, setFast] = useState(false)
+  const doneRef = useRef(crt.reduceMotion)
+  const autoRef = useRef(!crt.reduceMotion)
+  const rateRef = useRef(1)
   const playingRef = useRef(false)
   const viewRef = useRef<HTMLElement>(null)
-  const rollRef = useRef<HTMLDivElement>(null)
   const finalRef = useRef<HTMLDivElement>(null)
   const startRef = useRef<HTMLButtonElement>(null)
-  const animRef = useRef<Animation | null>(null)
   const roles = t('credits.roles', { returnObjects: true }) as Role[]
 
   useEffect(() => {
@@ -33,10 +36,10 @@ export const Credits = () => {
     const off = crt.subscribe((event) => {
       if (event.type !== 'fireworks' || event.on || playingRef.current || crt.fireworksHeld) return
       window.clearTimeout(timer)
-      timer = window.setTimeout(() => (playingRef.current || crt.fireworksHeld ? null : crt.launchFireworks()), RELAUNCH_MS)
+      timer = window.setTimeout(() => (playingRef.current || crt.fireworksHeld ? null : crt.launchFireworks(!doneRef.current)), RELAUNCH_MS)
     })
     crt.holdFireworks(false)
-    const launch = window.setTimeout(() => crt.launchFireworks(), 400)
+    const launch = window.setTimeout(() => crt.launchFireworks(!doneRef.current), 400)
     return () => {
       off()
       window.clearTimeout(timer)
@@ -45,42 +48,75 @@ export const Credits = () => {
     }
   }, [crt])
 
+  const finish = useCallback(() => {
+    if (doneRef.current) return
+    doneRef.current = true
+    autoRef.current = false
+    setDone(true)
+    crt.finaleFireworks()
+  }, [crt])
+
+  const endOf = (view: HTMLElement) => {
+    const final = finalRef.current
+    const footer = document.querySelector('.footer')?.getBoundingClientRect().height ?? 0
+    const max = view.scrollHeight - view.clientHeight
+    if (!final) return max
+    return Math.min(max, final.offsetTop + final.offsetHeight / 2 - (view.clientHeight - footer) / 2)
+  }
+
   useEffect(() => {
     const view = viewRef.current
-    const roll = rollRef.current
-    const final = finalRef.current
-    if (crt.reduceMotion || !view || !roll || !final) return
-    const run = () => {
-      const previous = animRef.current
-      const progress = previous?.effect?.getComputedTiming().progress ?? 0
-      const finished = previous?.playState === 'finished'
-      previous?.cancel()
-      const height = view.clientHeight
-      const footer = document.querySelector('.footer')?.getBoundingClientRect().height ?? 0
-      const from = height
-      const to = (height - footer) / 2 - (final.offsetTop + final.offsetHeight / 2)
-      const duration = ((from - to) / SPEED) * 1000
-      const anim = roll.animate([{ transform: `translateY(${from}px)` }, { transform: `translateY(${to}px)` }], { duration, easing: 'linear', fill: 'forwards' })
-      anim.onfinish = () => setDone(true)
-      if (finished) anim.finish()
-      else anim.currentTime = progress * duration
-      animRef.current = anim
+    if (crt.reduceMotion || !view) return
+    let raf = 0
+    let last = performance.now()
+    let pos = view.scrollTop
+    let expected = view.scrollTop
+    const tick = (now: number) => {
+      const dt = Math.min(0.05, (now - last) / 1000)
+      last = now
+      if (!autoRef.current) return
+      const end = endOf(view)
+      pos = Math.min(end, pos + SPEED * rateRef.current * dt)
+      view.scrollTop = pos
+      expected = view.scrollTop
+      if (pos >= end) return finish()
+      raf = requestAnimationFrame(tick)
     }
-    run()
-    window.addEventListener('resize', run)
+    const manual = () => {
+      if (!autoRef.current) return
+      autoRef.current = false
+      cancelAnimationFrame(raf)
+      setAuto(false)
+    }
+    const onScroll = () => {
+      if (autoRef.current && Math.abs(view.scrollTop - expected) > 4) manual()
+      if (!autoRef.current && view.scrollTop >= endOf(view) - 2) finish()
+    }
+    const onKey = (e: KeyboardEvent) => {
+      if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End'].includes(e.key)) manual()
+    }
+    if (autoRef.current) raf = requestAnimationFrame(tick)
+    view.addEventListener('scroll', onScroll, { passive: true })
+    view.addEventListener('wheel', manual, { passive: true })
+    view.addEventListener('touchstart', manual, { passive: true })
+    window.addEventListener('keydown', onKey)
     return () => {
-      window.removeEventListener('resize', run)
-      animRef.current?.cancel()
-      animRef.current = null
+      cancelAnimationFrame(raf)
+      view.removeEventListener('scroll', onScroll)
+      view.removeEventListener('wheel', manual)
+      view.removeEventListener('touchstart', manual)
+      window.removeEventListener('keydown', onKey)
     }
-  }, [crt, i18n.resolvedLanguage])
+  }, [crt, finish, i18n.resolvedLanguage])
 
   const skip = useCallback(() => {
-    const anim = animRef.current
-    if (!anim || anim.playState === 'finished') return false
-    anim.finish()
+    const view = viewRef.current
+    if (!view || doneRef.current) return false
+    autoRef.current = false
+    view.scrollTop = endOf(view)
+    finish()
     return true
-  }, [])
+  }, [finish])
 
   useEffect(() => {
     if (playing) return
@@ -94,6 +130,12 @@ export const Credits = () => {
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [playing, skip])
+
+  const toggleFast = () => {
+    const next = !fast
+    rateRef.current = next ? 2 : 1
+    setFast(next)
+  }
 
   const start = () => {
     playingRef.current = true
@@ -113,7 +155,7 @@ export const Credits = () => {
 
   useEffect(() => () => crt.setGame(false), [crt])
 
-  const className = ['credits', crt.reduceMotion ? 'static' : null, done ? 'done' : null, playing ? 'hidden' : null].filter(Boolean).join(' ')
+  const className = ['credits', crt.reduceMotion ? 'static' : null, done || !auto ? 'done' : null, playing ? 'hidden' : null].filter(Boolean).join(' ')
 
   return (
     <>
@@ -121,10 +163,9 @@ export const Credits = () => {
         ref={viewRef}
         className={className}
         aria-hidden={playing}
-        onPointerDown={(e) => ((e.target as Element).closest('button, a') ? null : skip())}
       >
         <h1 className="sr-only">{t('credits.title')}</h1>
-        <div ref={rollRef} className="credits-roll">
+        <div className="credits-roll">
           <p className="credits-site">{t('credits.site')}</p>
           {roles.map((role) => (
             <div key={role.label} className="credits-pair">
@@ -152,6 +193,11 @@ export const Credits = () => {
           </div>
         </div>
       </section>
+      {auto && !done && !playing ? (
+        <button type="button" className={fast ? 'credits-speed on' : 'credits-speed'} aria-pressed={fast} onClick={toggleFast}>
+          {t('credits.speed')}
+        </button>
+      ) : null}
       {playing ? (
         <Suspense fallback={null}>
           <Arcade onExit={exit} />

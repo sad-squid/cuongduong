@@ -190,12 +190,52 @@
     "site": "cuongduong.dev",
     "roles": [
       {
-        "label": "thiết kế, code, chữ",
-        "value": "Dương Trí Cường"
+        "label": "đạo diễn",
+        "value": "sad-squid"
       },
       {
-        "label": "cùng làm với",
-        "value": "Claude (Anthropic)"
+        "label": "sản xuất",
+        "value": "sad-squid"
+      },
+      {
+        "label": "định hướng sản phẩm",
+        "value": "sad-squid"
+      },
+      {
+        "label": "thiết kế",
+        "value": "sad-squid"
+      },
+      {
+        "label": "kỹ thuật",
+        "value": "sad-squid"
+      },
+      {
+        "label": "nội dung",
+        "value": "sad-squid"
+      },
+      {
+        "label": "thiết kế âm thanh",
+        "value": "sad-squid"
+      },
+      {
+        "label": "QA, chủ yếu trên điện thoại",
+        "value": "sad-squid"
+      },
+      {
+        "label": "đóng thế",
+        "value": "sad-squid"
+      },
+      {
+        "label": "hậu cần ăn uống",
+        "value": "sad-squid"
+      },
+      {
+        "label": "trợ lý lập trình AI",
+        "value": "Claude (Anthropic), Codex (OpenAI)"
+      },
+      {
+        "label": "cảm ơn đặc biệt",
+        "value": "bạn gái mình, người đã đòi có space invaders"
       },
       {
         "label": "phông chữ",
@@ -210,7 +250,8 @@
     "castNote": "các nhân vật thuộc về tác giả của họ; vẽ ở đây bằng tình yêu, chưa xin phép",
     "thanks": "cảm ơn bạn đã xem đến cuối",
     "start": "press start",
-    "home": "về trang chủ"
+    "home": "về trang chủ",
+    "speed": "2×"
   },
   "arcade": {
     "label": "Invaders",
