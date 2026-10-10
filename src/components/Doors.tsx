@@ -1,12 +1,13 @@
 import { Link } from '@tanstack/react-router'
 import { useCrt } from '@/crt/context'
 import { useScramble } from './useScramble'
+import { DotIcon } from './DotIcon'
 
 type Labels = { label: string }
 
 export const IconDoor = ({ icon, name, href }: { icon: 'github' | 'linkedin'; name: string; href: string }) => (
   <a className="icon-door" href={href} aria-label={name}>
-    <span className={`dot-icon dot-icon-${icon}`} aria-hidden="true" />
+    <DotIcon icon={icon} />
   </a>
 )
 

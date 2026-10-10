@@ -329,20 +329,6 @@ textarea {
   display: block;
   width: 22px;
   height: 22px;
-  background: radial-gradient(circle, currentColor 0 0.95px, transparent 1.2px) 0 0 / 2px 2px;
-  mask: center / contain no-repeat;
-}
-
-.dot-icon-github {
-  mask-image: url('/icons/github.svg');
-}
-
-.dot-icon-linkedin {
-  mask-image: url('/icons/linkedin.svg');
-}
-
-.dot-icon-fireworks {
-  mask-image: url('/icons/fireworks.svg');
 }
 
 button.icon-door {

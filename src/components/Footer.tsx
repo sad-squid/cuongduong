@@ -4,6 +4,7 @@ import { LANGUAGE_META, SUPPORTED_LANGUAGES, toLanguage, type Language } from '@
 import { useCrt } from '@/crt/context'
 import { LINKS } from '@/content/names'
 import { IconDoor, RouteDoor } from './Doors'
+import { DotIcon } from './DotIcon'
 import { useScramble } from './useScramble'
 
 const LangButton = ({ code, current }: { code: Language; current: boolean }) => {
@@ -51,7 +52,7 @@ const FireworksButton = () => {
       aria-pressed={running}
       onClick={() => crt.launchFireworks()}
     >
-      <span className="dot-icon dot-icon-fireworks" aria-hidden="true" />
+      <DotIcon icon="fireworks" />
     </button>
   )
 }
