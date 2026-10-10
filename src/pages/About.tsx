@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next'
+import { PointTitle } from '@/components/PointTitle'
 import { useReveal } from '@/crt/useReveal'
 
-type NameRow = { lang: string; label: string; value: string; ipa: string }
+type NameRow = { lang: string; label: string; value: string; say: string }
 type LanguageRow = { name: string; level: string }
 
 export const About = () => {
@@ -15,7 +16,7 @@ export const About = () => {
   return (
     <article className="page split">
       <header className="page-aside">
-        <h1 className="page-title">{t('about.title')}</h1>
+        <PointTitle titleKey="about.title" />
         <section aria-labelledby="about-name">
           <h2 id="about-name" className="section-label">{t('about.nameHeading')}</h2>
           <dl className="names">
@@ -24,7 +25,7 @@ export const About = () => {
                 <dt className="mono-muted">{row.label}</dt>
                 <dd>
                   <span lang={row.lang} className="name-value">{row.value}</span>
-                  <span className="mono-muted ipa">{row.ipa}</span>
+                  {row.say ? <span className="name-say">{row.say}</span> : null}
                 </dd>
               </div>
             ))}

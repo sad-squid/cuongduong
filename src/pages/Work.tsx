@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import { PointTitle } from '@/components/PointTitle'
 import { useReveal } from '@/crt/useReveal'
 
 type Role = { company: string; role: string; dates: string; points: string[] }
@@ -11,7 +12,7 @@ export const Work = () => {
   return (
     <article className="page split">
       <header className="page-aside">
-        <h1 className="page-title">{t('work.title')}</h1>
+        <PointTitle titleKey="work.title" />
         <p className="page-intro">{t('work.intro')}</p>
       </header>
 

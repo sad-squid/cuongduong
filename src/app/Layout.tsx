@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Outlet, useRouterState } from '@tanstack/react-router'
+import { Outlet } from '@tanstack/react-router'
 import { Footer } from '@/components/Footer'
 import { CommandPalette } from '@/components/CommandPalette'
 import { CrtController } from '@/crt/CrtController'
@@ -8,15 +8,15 @@ import { CrtContext, prefersReducedMotion } from '@/crt/context'
 export const Layout = () => {
   const [crt] = useState(() => new CrtController(prefersReducedMotion()))
   const latticeRef = useRef<HTMLCanvasElement>(null)
+  const transitRef = useRef<HTMLCanvasElement>(null)
   const [revealed, setRevealed] = useState(false)
   const [lowPower, setLowPower] = useState(false)
-  const path = useRouterState({ select: (s) => s.location.pathname })
-  const previousPath = useRef(path)
 
   useEffect(() => {
     const canvas = latticeRef.current
-    if (!canvas) return
-    crt.mount(canvas)
+    const transit = transitRef.current
+    if (!canvas || !transit) return
+    crt.mount(canvas, transit)
     const off = crt.subscribe((event) => {
       if (event.type === 'reveal') setRevealed(event.on)
       if (event.type === 'lowPower') setLowPower(event.on)
@@ -26,12 +26,6 @@ export const Layout = () => {
       crt.unmount()
     }
   }, [crt])
-
-  useEffect(() => {
-    if (previousPath.current === path) return
-    previousPath.current = path
-    crt.tear(1.4, true)
-  }, [crt, path])
 
   const className = ['screen', revealed ? 'revealed' : null, lowPower ? 'low-power' : null].filter(Boolean).join(' ')
 
@@ -46,6 +40,7 @@ export const Layout = () => {
         </main>
         <Footer />
         <div className="scanlines" aria-hidden="true" />
+        <canvas ref={transitRef} className="transit" aria-hidden="true" />
         <CommandPalette />
       </div>
     </CrtContext.Provider>

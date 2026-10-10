@@ -30,13 +30,12 @@ export const NotFound = () => {
     loadNameFonts().then(() => {
       if (cancelled) return
       field.setup()
-      field.generate(SIGNALS[0], true, crt.latticeAnchor())
+      crt.introduce(field, SIGNALS[0])
     })
     return () => {
       cancelled = true
       crt.setSnow(false)
-      crt.setField(null)
-      field.destroy()
+      crt.release(field)
       fieldRef.current = null
     }
   }, [crt])

@@ -2,29 +2,13 @@ import { Link } from '@tanstack/react-router'
 import { useCrt } from '@/crt/context'
 import { useScramble } from './useScramble'
 
-type Labels = { label: string; short?: string }
+type Labels = { label: string }
 
-const Label = ({ text, short }: { text: string; short: string | undefined }) =>
-  short ? (
-    <>
-      <span className="label-long">{text}</span>
-      <span className="label-short" aria-hidden="true">
-        {short}
-      </span>
-    </>
-  ) : (
-    text
-  )
-
-export const ExternalDoor = ({ label, short, name, href }: Labels & { name: string; href: string }) => {
-  const crt = useCrt()
-  const [text, trigger] = useScramble(label, crt.reduceMotion)
-  return (
-    <a className="door" href={href} aria-label={name} onPointerEnter={trigger} onFocus={trigger}>
-      <Label text={text} short={short} />
-    </a>
-  )
-}
+export const IconDoor = ({ icon, name, href }: { icon: 'github' | 'linkedin'; name: string; href: string }) => (
+  <a className="icon-door" href={href} aria-label={name}>
+    <span className={`dot-icon dot-icon-${icon}`} aria-hidden="true" />
+  </a>
+)
 
 export const RouteDoor = ({ label, to }: Labels & { to: '/' | '/about' | '/work' }) => {
   const crt = useCrt()

@@ -26,7 +26,7 @@ const blogRedirectRoute = createRoute({
 
 const routeTree = rootRoute.addChildren([homeRoute, aboutRoute, workRoute, notesRoute, blogRedirectRoute])
 
-export const router = createRouter({ routeTree, defaultViewTransition: true })
+export const router = createRouter({ routeTree })
 
 declare module '@tanstack/react-router' {
   interface Register {

@@ -1,8 +1,7 @@
-import { useRouterState } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useCrt } from '@/crt/context'
 import { LINKS, SITE_LANGS, toSiteLang, type SiteLang } from '@/content/names'
-import { ExternalDoor, RouteDoor } from './Doors'
+import { IconDoor, RouteDoor } from './Doors'
 import { useScramble } from './useScramble'
 
 const LANG_LABELS: Record<SiteLang, string> = { en: 'EN', ja: '日本語', vi: 'Tiếng Việt' }
@@ -36,18 +35,17 @@ const LangButton = ({ code, current }: { code: SiteLang; current: boolean }) => 
 export const Footer = () => {
   const { t, i18n } = useTranslation()
   const lang = toSiteLang(i18n.resolvedLanguage)
-  const path = useRouterState({ select: (s) => s.location.pathname })
 
   return (
     <footer className="footer">
       <nav className="doors" aria-label={t('footer.pages')}>
-        {path === '/' ? null : <RouteDoor label={t('footer.home')} to="/" />}
+        <RouteDoor label={t('footer.home')} to="/" />
         <RouteDoor label={t('footer.about')} to="/about" />
         <RouteDoor label={t('footer.work')} to="/work" />
       </nav>
       <nav className="doors" aria-label={t('footer.elsewhere')}>
-        <ExternalDoor label="github" short="gh" name="GitHub" href={LINKS.github} />
-        <ExternalDoor label="linkedin" short="in" name="LinkedIn" href={LINKS.linkedin} />
+        <IconDoor icon="github" name="GitHub" href={LINKS.github} />
+        <IconDoor icon="linkedin" name="LinkedIn" href={LINKS.linkedin} />
       </nav>
       <div className="langs" role="group" aria-label={t('footer.language')}>
         {SITE_LANGS.map((code) => (

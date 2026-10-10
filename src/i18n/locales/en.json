@@ -32,19 +32,19 @@
         "lang": "en",
         "label": "English",
         "value": "Cuong Tri Duong",
-        "ipa": "/kɔŋ/ /tɹi/ /dɔŋ/"
+        "say": "Kong Tree Dong"
       },
       {
         "lang": "vi",
         "label": "Tiếng Việt",
         "value": "Dương Trí Cường",
-        "ipa": "/zɨəŋ˧˧/ /ʈʂi˧˥/ /kuəŋ˨˩/"
+        "say": ""
       },
       {
         "lang": "zh",
         "label": "中文",
         "value": "楊志強",
-        "ipa": "/jɑŋ˧˥/ /ʈʂɻ̩˥˩/ /tɕʰjɑŋ˧˥/"
+        "say": "Yáng Zhìqiáng"
       }
     ],
     "story": [

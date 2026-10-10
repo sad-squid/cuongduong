@@ -1,4 +1,5 @@
 import { Lattice, type HitTarget } from './Lattice'
+import { Transit } from './Transit'
 import type { NameField } from './NameField'
 import { BLAST, type Tear } from './tokens'
 
@@ -18,6 +19,8 @@ export class CrtController {
   readonly reduceMotion: boolean
   private lattice: Lattice | null = null
   private field: NameField | null = null
+  private transit: Transit | null = null
+  private handoff: { points: number[]; at: number } | null = null
   private listeners = new Set<Listener>()
   private lastTear = -Infinity
   private idleTimer = 0
@@ -45,9 +48,11 @@ export class CrtController {
     }
   }
 
-  mount(canvas: HTMLCanvasElement) {
+  mount(canvas: HTMLCanvasElement, transitCanvas: HTMLCanvasElement) {
     this.lattice = new Lattice(canvas, this.reduceMotion, this.sampleFrame)
     this.lattice.setup()
+    this.transit = new Transit(transitCanvas)
+    this.transit.setup()
     window.addEventListener('pointermove', this.onMove, { passive: true })
     window.addEventListener('pointerdown', this.onDown, { passive: true })
     window.addEventListener('pointerout', this.onOut, { passive: true })
@@ -58,6 +63,8 @@ export class CrtController {
   unmount() {
     this.lattice?.destroy()
     this.lattice = null
+    this.transit?.destroy()
+    this.transit = null
     window.clearTimeout(this.idleTimer)
     window.clearTimeout(this.pulseTimer)
     window.removeEventListener('pointermove', this.onMove)
@@ -93,6 +100,26 @@ export class CrtController {
   setField(field: NameField | null) {
     this.field = field
     if (!field) this.lattice?.lift(null)
+  }
+
+  introduce(field: NameField, text: string) {
+    const handoff = this.handoff
+    this.handoff = null
+    const transit = this.transit
+    if (!handoff || !transit || this.reduceMotion || performance.now() - handoff.at > 1500) {
+      field.generate(text, true, this.latticeAnchor())
+      return
+    }
+    field.place(text)
+    const started = performance.now()
+    transit.fly(handoff.points, field.targetsInClient(), () => field.land(performance.now() - started))
+  }
+
+  release(field: NameField) {
+    const points = field.pointsInClient()
+    if (points.length) this.handoff = { points, at: performance.now() }
+    if (this.field === field) this.setField(null)
+    field.destroy()
   }
 
   liftName() {
@@ -211,6 +238,7 @@ export class CrtController {
   }
 
   private onResize = () => {
+    this.transit?.setup()
     this.lattice?.setup()
     this.field?.setup()
     this.liftName()

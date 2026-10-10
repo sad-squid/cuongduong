@@ -1,8 +1,12 @@
 import { COLORS, DOT, NAME_FONT_STACK, PHYSICS, gaussianStream, jitterTear, type Tear } from './tokens'
 
-export type GenerateResult = { points: number; steps: number; ms: number; seed: number }
+export type GenerateResult = { points: number; steps: number; ms: number; seed: number; carried?: boolean }
 
 export type LatticeAnchor = { left: number; top: number; spacing: number }
+
+export type FieldLayout = { align: 'center' | 'left'; inset: number; fontSize: (width: number) => number; weight: number }
+
+const NAME_LAYOUT: FieldLayout = { align: 'center', inset: 0, fontSize: (w) => Math.max(40, Math.min(68, w * 0.11)), weight: 700 }
 
 type FieldCallbacks = {
   onFrame: (t: number) => void
@@ -18,6 +22,7 @@ export class NameField {
   private readonly canvas: HTMLCanvasElement
   private readonly callbacks: FieldCallbacks
   private readonly reduceMotion: boolean
+  private readonly layout: FieldLayout
   private ctx: CanvasRenderingContext2D | null = null
   private sampler: CanvasRenderingContext2D | null = null
   private dpr = 1
@@ -51,14 +56,16 @@ export class NameField {
   private peak = 0
   private disturbedAt = 0
   private blasted = false
+  private hidden = false
   private tear: Tear | null = null
   private text = ''
   rect: DOMRect | null = null
 
-  constructor(canvas: HTMLCanvasElement, reduceMotion: boolean, callbacks: FieldCallbacks) {
+  constructor(canvas: HTMLCanvasElement, reduceMotion: boolean, callbacks: FieldCallbacks, layout: FieldLayout = NAME_LAYOUT) {
     this.canvas = canvas
     this.reduceMotion = reduceMotion
     this.callbacks = callbacks
+    this.layout = layout
   }
 
   get isDiffusing() {
@@ -79,7 +86,7 @@ export class NameField {
     this.h = r.height
     this.rect = r
     this.prevBox = null
-    this.fontSize = Math.max(40, Math.min(68, this.w * 0.11))
+    this.fontSize = this.layout.fontSize(this.w)
     if (this.text) {
       this.retarget(this.text)
       this.snap()
@@ -121,6 +128,30 @@ export class NameField {
     this.duration = first ? 1100 : 600
     this.sigma = first ? 300 : 46
     this.wake()
+  }
+
+  place(text: string) {
+    if (!this.ctx) return
+    this.text = text
+    this.retarget(text)
+    this.snap()
+    this.hidden = true
+    this.prevBox = null
+    this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0)
+    this.ctx.clearRect(0, 0, this.w, this.h)
+  }
+
+  land(ms: number) {
+    this.hidden = false
+    this.paint(1)
+    this.callbacks.onSettled({ points: this.n, steps: 0, ms, seed: 0, carried: true })
+  }
+
+  pointsInClient() {
+    const out: number[] = []
+    if (!this.rect || this.hidden) return out
+    for (let i = 0; i < this.n; i++) out.push(this.px[i] + this.rect.left, this.py[i] + this.rect.top)
+    return out
   }
 
   ejectPoints(fraction: number) {
@@ -218,11 +249,12 @@ export class NameField {
     if (!this.sampler) this.sampler = document.createElement('canvas').getContext('2d', { willReadFrequently: true })
     const x = this.sampler
     if (!x) return []
-    const font = `700 ${this.fontSize}px ${NAME_FONT_STACK}`
+    const font = `${this.layout.weight} ${this.fontSize}px ${NAME_FONT_STACK}`
+    const left = this.layout.align === 'left'
     x.font = font
-    const sw = Math.min(W, Math.ceil(x.measureText(text).width) + 24)
+    const ox = left ? Math.max(0, this.layout.inset - 12) : Math.floor((W - Math.min(W, Math.ceil(x.measureText(text).width) + 24)) / 2)
+    const sw = Math.min(W - ox, Math.ceil(x.measureText(text).width) + 24)
     const sh = Math.min(H, Math.ceil(this.fontSize * 1.8))
-    const ox = Math.floor((W - sw) / 2)
     const oy = Math.floor((H - sh) / 2)
     if (x.canvas.width !== sw || x.canvas.height !== sh) {
       x.canvas.width = sw
@@ -230,10 +262,10 @@ export class NameField {
     }
     x.clearRect(0, 0, sw, sh)
     x.font = font
-    x.textAlign = 'center'
+    x.textAlign = left ? 'left' : 'center'
     x.textBaseline = 'middle'
     x.fillStyle = '#fff'
-    x.fillText(text, W / 2 - ox, H / 2 - oy)
+    x.fillText(text, (left ? this.layout.inset : W / 2) - ox, H / 2 - oy)
     const data = x.getImageData(0, 0, sw, sh).data
     const pts: number[] = []
     for (let y = oy + (oy & 1); y < oy + sh; y += 2) {
@@ -411,7 +443,7 @@ export class NameField {
 
   private paint(alpha: number) {
     const c = this.ctx
-    if (!c || !this.n) return
+    if (!c || !this.n || this.hidden) return
     const d = this.dpr
     const tear = this.tear
     if (tear) jitterTear(tear, performance.now())

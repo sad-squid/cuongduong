@@ -56,7 +56,8 @@ const HomeScreen = () => {
       onSettled: (result) => {
         showStep(null)
         crt.liftName()
-        if (!crt.reduceMotion) {
+        if (result.carried) log.log(true, `carry    ${result.points.toLocaleString('en-US')} points from the previous heading in ${(result.ms / 1000).toFixed(2)}s`)
+        else if (!crt.reduceMotion) {
           const seconds = (result.ms / 1000).toFixed(2)
           const seed = result.seed.toString(16).padStart(4, '0')
           log.log(true, `generate ${result.points.toLocaleString('en-US')} points / ${result.steps} steps / ${seconds}s / seed ${seed}`)
@@ -86,7 +87,7 @@ const HomeScreen = () => {
       field.setup()
       const name = NAMES[NAME_ORDER[nameIndex.current]]
       log.log(true, `request  name -> "${name.text}" (${name.lang}): ${name.note}`)
-      field.generate(name.text, true, crt.latticeAnchor())
+      crt.introduce(field, name.text)
     })
     const off = crt.subscribe((event) => {
       if (event.type === 'activity') log.activity()
@@ -96,8 +97,7 @@ const HomeScreen = () => {
     return () => {
       cancelled = true
       off()
-      field.destroy()
-      crt.setField(null)
+      crt.release(field)
       fieldRef.current = null
     }
   }, [crt, log, tagline])
