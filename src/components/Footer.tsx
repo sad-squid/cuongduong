@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useRouterState } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { LANGUAGE_META, SUPPORTED_LANGUAGES, toLanguage, type Language } from '@/i18n'
@@ -45,16 +45,35 @@ const FireworksButton = () => {
 
 const LangCycle = ({ current }: { current: Language }) => {
   const { t } = useTranslation()
+  const [flash, setFlash] = useState<{ name: string; n: number } | null>(null)
+  const timer = useRef(0)
   const next = SUPPORTED_LANGUAGES[(SUPPORTED_LANGUAGES.indexOf(current) + 1) % SUPPORTED_LANGUAGES.length]
+
+  useEffect(() => () => window.clearTimeout(timer.current), [])
+
+  const cycle = () => {
+    setFlash((was) => ({ name: LANGUAGE_META[next].name, n: (was?.n ?? 0) + 1 }))
+    window.clearTimeout(timer.current)
+    timer.current = window.setTimeout(() => setFlash(null), 1700)
+    setLanguage(next)
+  }
+
   return (
-    <button
-      type="button"
-      className="icon-door lang-cycle"
-      aria-label={t('footer.languageCycle', { current: LANGUAGE_META[current].name, next: LANGUAGE_META[next].name })}
-      onClick={() => setLanguage(next)}
-    >
-      <DotIcon icon="globe" />
-    </button>
+    <span className="lang-wrap">
+      <button
+        type="button"
+        className="icon-door lang-cycle"
+        aria-label={t('footer.languageCycle', { current: LANGUAGE_META[current].name, next: LANGUAGE_META[next].name })}
+        onClick={cycle}
+      >
+        <DotIcon icon="globe" />
+      </button>
+      {flash ? (
+        <span key={flash.n} className="lang-flash" aria-hidden="true">
+          {flash.name}
+        </span>
+      ) : null}
+    </span>
   )
 }
 

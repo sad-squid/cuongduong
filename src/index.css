@@ -383,6 +383,78 @@ textarea {
   height: 22px;
 }
 
+.lang-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.lang-flash {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  padding: 3px 8px 2px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  color: #fff1ec;
+  text-shadow: var(--glow-1);
+  background-color: rgb(26 26 27 / 0.9);
+  background-image: var(--scanline-fill), radial-gradient(circle, rgb(240 110 97 / 0.8) 0 0.7px, transparent 1px);
+  background-size: auto, 3px 3px;
+  background-repeat: repeat, repeat-x;
+  background-position: 0 0, 0 100%;
+  translate: -50% 0;
+  pointer-events: none;
+  animation: lang-flash 1.7s steps(24, end) both;
+}
+
+@keyframes lang-flash {
+  0% {
+    opacity: 0;
+    transform: scale(1.1, 0.06);
+    filter: brightness(2.4);
+  }
+  8% {
+    opacity: 1;
+    transform: scale(1, 1);
+    filter: brightness(1.6);
+  }
+  14% {
+    filter: brightness(1);
+  }
+  82% {
+    opacity: 1;
+    transform: scale(1, 1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.04, 0.04);
+    filter: brightness(1.8);
+  }
+}
+
+@media (max-width: 720px) {
+  .lang-flash {
+    left: auto;
+    right: 4px;
+    translate: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lang-flash {
+    animation: lang-flash-still 1.7s step-end both;
+  }
+}
+
+@keyframes lang-flash-still {
+  100% {
+    opacity: 0;
+  }
+}
+
 button.icon-door {
   all: unset;
   display: inline-flex;
