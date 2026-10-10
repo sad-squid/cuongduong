@@ -20,6 +20,7 @@ const GRAVITY = 160
 const WING_GAP = 34
 const CHAIN_LINKS = 3
 const ARC_MS = 450
+const LASER_SOUND_MS = 320
 const SQUID = [
   '.....XXX.....',
   '....XXXXX....',
@@ -46,6 +47,8 @@ export type InvadersHud = { score: number; wave: number; lives: number }
 
 export type ActivePower = { type: PowerType; left: number }
 
+export type SoundCue = 'shot' | 'laser' | 'kill' | 'boom' | 'hurt' | 'shield' | 'power' | 'glitch' | 'clear' | 'over'
+
 export type InvadersEvents = {
   onHud: (hud: InvadersHud) => void
   onOver: (score: number) => void
@@ -56,6 +59,7 @@ export type InvadersEvents = {
   onPower: (type: PowerType) => void
   onPowers: (active: ActivePower[]) => void
   onGlitch: () => void
+  onSound: (cue: SoundCue, pan: number) => void
 }
 
 type Art = { xs: Float32Array; ys: Float32Array; ci: Uint8Array; colors: string[]; w: number; h: number; pitch: number; image: HTMLCanvasElement }
@@ -179,6 +183,7 @@ export class Invaders {
   private hanabiArmed = false
   private killsSinceDrop = 0
   private laserAt = 0
+  private laserSoundAt = -Infinity
   private glitchUntil = 0
   private powersSent = 0
   private n = 0
@@ -324,6 +329,10 @@ export class Invaders {
     this.events.onHud({ score: this.score, wave: this.wave, lives: this.lives })
   }
 
+  private cue(cue: SoundCue, x = this.shipX) {
+    this.events.onSound(cue, this.w ? (x / this.w) * 1.2 - 0.6 : 0)
+  }
+
   private has(type: PowerType) {
     return this.powers.has(type)
   }
@@ -338,6 +347,7 @@ export class Invaders {
 
   private apply(type: PowerType, now: number) {
     this.events.onPower(type)
+    this.cue(type === 'glitch' ? 'glitch' : 'power')
     if (type === 'hanabi') {
       this.hanabiArmed = true
     } else if (type === 'glitch') {
@@ -413,6 +423,7 @@ export class Invaders {
     this.alive[index] = 0
     this.shatter(art, x, y, now)
     this.events.onHit(x, y)
+    this.cue('kill', x)
     this.score += ROW_POINTS[row] * this.wave
     this.hud()
     this.killsSinceDrop++
@@ -420,7 +431,10 @@ export class Invaders {
       this.killsSinceDrop = 0
       this.capsules.push({ type: pickPower(), x, y })
     }
-    if (!this.alive.some((a) => a === 1)) this.nextWaveAt = now + NEXT_WAVE_MS
+    if (!this.alive.some((a) => a === 1)) {
+      this.nextWaveAt = now + NEXT_WAVE_MS
+      this.cue('clear', x)
+    }
   }
 
   private strike(index: number, now: number) {
@@ -473,6 +487,7 @@ export class Invaders {
       this.add(x, y, Math.cos(a) * v, Math.sin(a) * v, 900 + Math.random() * 700, colors[k % 4], k % 4 === 3 ? 2.2 : 1.8, now)
     }
     this.events.onHit(x, y)
+    this.cue('boom', x)
   }
 
   private shatter(art: Art, x: number, y: number, now: number) {
@@ -522,6 +537,7 @@ export class Invaders {
     if (this.has('shield')) {
       this.powers.delete('shield')
       this.invulnerableUntil = now + 500
+      this.cue('shield')
       const cream = this.colorIndex(COLORS.cream)
       for (let k = 0; k < 30; k++) {
         const a = (k / 30) * Math.PI * 2
@@ -540,6 +556,7 @@ export class Invaders {
     this.dropTear(now)
     this.events.onHit(this.shipX, this.shipY)
     this.lives = Math.max(0, this.lives - 1)
+    this.cue('hurt')
     this.bombs = []
     this.hud()
     if (this.lives === 0) {
@@ -560,6 +577,7 @@ export class Invaders {
     this.hanabiArmed = false
     this.capsules = []
     this.sendPowers(true)
+    this.cue('over')
     this.events.onOver(this.score)
   }
 
@@ -625,6 +643,10 @@ export class Invaders {
     if (this.has('laser')) {
       if (this.clock - this.laserAt < LASER_TICK) return
       this.laserAt = this.clock
+      if (this.clock - this.laserSoundAt >= LASER_SOUND_MS) {
+        this.laserSoundAt = this.clock
+        this.cue('laser')
+      }
       const hits: number[] = []
       for (let i = 0; i < this.alive.length; i++) {
         if (!this.alive[i]) continue
@@ -655,6 +677,7 @@ export class Invaders {
     spread.forEach((k, i) => this.shots.push({ x: this.shipX, y: this.shipY - 4, vx: k * speed, hanabi: hanabi && i === Math.floor(spread.length / 2), big }))
     if (wingmen) for (const x of this.wings) this.shots.push({ x, y: this.shipY + 4 * this.shipPitch, vx: 0, hanabi: false, big })
     this.lastShot = now
+    this.cue('shot')
     if (hanabi) this.sendPowers(true)
     this.events.onShot()
   }

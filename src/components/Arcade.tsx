@@ -1,11 +1,33 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useCrt } from '@/crt/context'
-import { Invaders, type ActivePower, type InputKind, type InvadersHud } from '@/crt/Invaders'
+import { Invaders, type ActivePower, type InputKind, type InvadersHud, type SoundCue } from '@/crt/Invaders'
+import type { PlayOptions, SoundApi, SoundName } from '@/crt/Sound'
 import { POWER_TYPES, type PowerType } from '@/crt/powers'
 
 const BAR = 10
 const CALLOUT_MS = 800
+const OVER_DELAY_MS = 320
+
+const CUES: Record<SoundCue, readonly (readonly [SoundName, PlayOptions])[]> = {
+  shot: [['shot', { intensity: 0.25 }]],
+  laser: [['shot', { intensity: 0.15, duration: 0.2 }]],
+  kill: [
+    ['generate', { intensity: 1, duration: 0.42, landing: false }],
+    ['burst', { intensity: 0.05 }],
+  ],
+  boom: [['burst', { intensity: 0.4 }]],
+  hurt: [['hurt', {}]],
+  shield: [['burst', { intensity: 0.2 }]],
+  power: [['powerup', {}]],
+  glitch: [['tear', { intensity: 0.6 }]],
+  clear: [['clear', { intensity: 0.7 }]],
+  over: [['over', {}]],
+}
+
+const playCue = (sound: SoundApi, cue: SoundCue, pan: number) => {
+  for (const [name, opts] of CUES[cue]) sound.play(name, { ...opts, pan })
+}
 
 const debugEnabled = () => import.meta.env.DEV && new URLSearchParams(window.location.search).has('invaders-debug')
 
@@ -29,6 +51,7 @@ export const Arcade = ({ onExit }: { onExit: () => void }) => {
     const canvas = canvasRef.current
     if (!canvas) return
     let calloutTimer = 0
+    let overTimer = 0
     const game = new Invaders(
       canvas,
       {
@@ -45,6 +68,14 @@ export const Arcade = ({ onExit }: { onExit: () => void }) => {
           calloutTimer = window.setTimeout(() => setCallout(null), CALLOUT_MS)
         },
         onGlitch: () => crt.tear(1.8, true),
+        onSound: (cue, pan) => {
+          if (cue !== 'over') {
+            playCue(crt.sound, cue, pan)
+            return
+          }
+          window.clearTimeout(overTimer)
+          overTimer = window.setTimeout(() => playCue(crt.sound, cue, pan), OVER_DELAY_MS)
+        },
       },
       initialInput(),
       crt.reduceMotion,
@@ -58,6 +89,7 @@ export const Arcade = ({ onExit }: { onExit: () => void }) => {
     return () => {
       window.clearTimeout(timer)
       window.clearTimeout(calloutTimer)
+      window.clearTimeout(overTimer)
       delete debug.__invaders
       game.destroy()
       gameRef.current = null

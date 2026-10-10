@@ -10,6 +10,11 @@ export type SoundName =
   | 'sprite'
   | 'hover'
   | 'toggle'
+  | 'shot'
+  | 'hurt'
+  | 'powerup'
+  | 'over'
+  | 'clear'
 
 export type Variant = 'A' | 'B' | 'C'
 
@@ -56,6 +61,11 @@ export const SOUND_NAMES: readonly SoundName[] = [
   'sprite',
   'hover',
   'toggle',
+  'shot',
+  'hurt',
+  'powerup',
+  'over',
+  'clear',
 ]
 
 export const DEFAULT_SETTINGS: ChainSettings = { volume: 0.3, bits: 10, rate: 18000, tone: 2800 }
@@ -72,6 +82,11 @@ export const DEFAULT_VARIANTS: Record<SoundName, Variant> = {
   sprite: 'A',
   hover: 'A',
   toggle: 'A',
+  shot: 'A',
+  hurt: 'A',
+  powerup: 'A',
+  over: 'A',
+  clear: 'A',
 }
 
 export const DEFAULT_ROOM_VARIANT: Variant = 'A'
@@ -90,6 +105,11 @@ const LIMITS: Record<SoundName, Limit> = {
   sprite: { max: 2, gap: 0.1, steal: true },
   hover: { max: 1, gap: 0.08, steal: false },
   toggle: { max: 1, gap: 0.1, steal: true },
+  shot: { max: 2, gap: 0.12, steal: true },
+  hurt: { max: 1, gap: 0.3, steal: true },
+  powerup: { max: 1, gap: 0.2, steal: true },
+  over: { max: 1, gap: 1, steal: true },
+  clear: { max: 1, gap: 0.5, steal: true },
 }
 
 const MAX_VOICES = 14
@@ -108,6 +128,11 @@ const PITCH_SPREAD: Record<SoundName, number> = {
   sprite: 0.03,
   hover: 0.03,
   toggle: 0.03,
+  shot: 0.03,
+  hurt: 0.03,
+  powerup: 0.03,
+  over: 0.03,
+  clear: 0.03,
 }
 
 const TRIM: Record<SoundName, Record<Variant, number>> = {
@@ -122,6 +147,11 @@ const TRIM: Record<SoundName, Record<Variant, number>> = {
   sprite: { A: 0.57, B: 0.6, C: 0.72 },
   hover: { A: 1.5, B: 2, C: 0.7 },
   toggle: { A: 1.9, B: 2, C: 2 },
+  shot: { A: 0.5, B: 0.4, C: 0.55 },
+  hurt: { A: 0.75, B: 0.75, C: 0.75 },
+  powerup: { A: 0.85, B: 0.85, C: 0.85 },
+  over: { A: 0.85, B: 0.9, C: 1 },
+  clear: { A: 1, B: 1, C: 1 },
 }
 
 type Shape = 'sine' | 'triangle' | 'square' | 'p12' | 'p25'
@@ -213,6 +243,24 @@ const settle = (kit: Kit, t: number, d: number, bed: number, grain: number, lp: 
 const landing = (kit: Kit, at: number): void => {
   tok(kit, at, 240, 0.2, 0.05)
   tup(kit, 'triangle', 140, 70, at, 0.32, 0.08, 600, 0.006)
+}
+
+const note = (kit: Kit, t: number, f: number, peak: number, release: number, square = 0.35, lp = 1300): void => {
+  tup(kit, 'triangle', f, f * 0.995, t, peak, release, lp, 0.006)
+  if (square > 0) tup(kit, 'p25', f, f * 0.995, t, peak * square, release * 0.8, lp * 0.6, 0.006)
+}
+
+const arp = (kit: Kit, t: number, notes: readonly number[], step: number, peak: number, release: number, last: number, square?: number, lp?: number): number => {
+  notes.forEach((f, i) => note(kit, t + i * step, f, peak, i === notes.length - 1 ? last : release, square, lp))
+  return (notes.length - 1) * step + last * 1.7
+}
+
+const thump = (kit: Kit, t: number, from: number, to: number, peak: number, release: number, crunch: number): void => {
+  boom(kit, t, from, to, peak, release)
+  fz(kit, 'brown', t, peak * 0.8, release * 0.6, 'lowpass', 380, 0.6, 0.006)
+  const o = kit.osc('square', from * 1.6, t, t + release * 1.7 + 0.02)
+  o.frequency.exponentialRampToValueAtTime(to * 1.4, t + release * 0.8)
+  o.connect(kit.filt('lowpass', 520, 0.7)).connect(kit.env(kit.out, t, crunch, 0.004, release * 0.8))
 }
 
 const SOUNDS: Record<SoundName, Record<Variant, SoundFn>> = {
@@ -434,12 +482,79 @@ const SOUNDS: Record<SoundName, Record<Variant, SoundFn>> = {
       return 0.15
     },
   },
+  shot: {
+    A: (kit, t) => SOUNDS.rocket.A(kit, t),
+    B: (kit, t) => SOUNDS.rocket.B(kit, t),
+    C: (kit, t) => SOUNDS.rocket.C(kit, t),
+  },
+  hurt: {
+    A: (kit, t) => {
+      thump(kit, t, 120, 42, 0.62, 0.2, 0.2)
+      grit(kit, t + 0.012, 0.42, 0.16, 1300)
+      return 0.38
+    },
+    B: (kit, t) => {
+      thump(kit, t, 110, 40, 0.58, 0.18, 0.12)
+      const o = kit.osc('square', 150, t, t + 0.2)
+      o.frequency.exponentialRampToValueAtTime(70, t + 0.16)
+      kit.flutter(o.frequency, t, t + 0.2, 28, 12)
+      o.connect(kit.filt('lowpass', 650, 0.8)).connect(kit.env(kit.out, t, 0.22, 0.004, 0.1))
+      grit(kit, t + 0.01, 0.35, 0.14, 1100)
+      return 0.36
+    },
+    C: (kit, t) => {
+      thump(kit, t, 115, 55, 0.5, 0.1, 0.14)
+      thump(kit, t + 0.1, 90, 38, 0.5, 0.16, 0.12)
+      grit(kit, t + 0.02, 0.38, 0.2, 1200)
+      return 0.42
+    },
+  },
+  powerup: {
+    A: (kit, t) => {
+      tok(kit, t, 300, 0.1, 0.025)
+      return arp(kit, t, [196, 247, 294], 0.07, 0.3, 0.06, 0.1)
+    },
+    B: (kit, t) => {
+      tok(kit, t, 300, 0.1, 0.025)
+      return arp(kit, t, [220, 277, 330], 0.065, 0.26, 0.055, 0.1, 0.6, 1100)
+    },
+    C: (kit, t) => {
+      tok(kit, t, 280, 0.1, 0.025)
+      return arp(kit, t, [196, 294], 0.08, 0.32, 0.07, 0.12, 0.2)
+    },
+  },
+  over: {
+    A: (kit, t) => {
+      const end = arp(kit, t, [294, 247, 196, 147], 0.13, 0.28, 0.1, 0.28, 0.3, 1100)
+      boom(kit, t + 0.39, 80, 45, 0.3, 0.25)
+      return end
+    },
+    B: (kit, t) => arp(kit, t, [330, 277, 220, 165], 0.14, 0.26, 0.1, 0.3, 0.5, 1000),
+    C: (kit, t) => {
+      const end = arp(kit, t, [294, 220, 147], 0.16, 0.3, 0.12, 0.3, 0.2, 1000)
+      grit(kit, t + 0.32, 0.25, 0.25, 900)
+      return end
+    },
+  },
+  clear: {
+    A: (kit, t) => {
+      const end = arp(kit, t, [196, 294], 0.1, 0.24, 0.08, 0.16)
+      landing(kit, t + 0.28)
+      return Math.max(end, 0.43)
+    },
+    B: (kit, t) => {
+      settle(kit, t, 0.5, 0.18, 0.2, 1600, 0.5)
+      return arp(kit, t + 0.05, [220, 330], 0.1, 0.22, 0.08, 0.16, 0.5, 1100) + 0.05
+    },
+    C: (kit, t) => arp(kit, t, [196, 247, 294, 392], 0.08, 0.22, 0.06, 0.18, 0.2, 1100),
+  },
 }
 
 const DEFAULT_DURATIONS: Partial<Record<SoundName, number>> = {
   generate: 0.9,
   flight: 0.3,
   rocket: 0.6,
+  shot: 0.14,
 }
 
 const WORKLET_SRC = `
