@@ -9,16 +9,20 @@ export const Work = () => {
   const roles = t('work.roles', { returnObjects: true }) as Role[]
 
   return (
-    <article className="page">
-      <h1 className="page-title">{t('work.title')}</h1>
-      <p className="page-intro">{t('work.intro')}</p>
-      <ol className="roles">
+    <article className="page split">
+      <header className="page-aside">
+        <h1 className="page-title">{t('work.title')}</h1>
+        <p className="page-intro">{t('work.intro')}</p>
+      </header>
+
+      <ol className="page-main roles">
         {roles.map((role) => (
           <li key={role.company} className="role">
-            <h2 className="role-company">{role.company}</h2>
-            <p className="mono-muted role-meta">
-              {role.role} <span aria-hidden="true">/</span> {role.dates}
-            </p>
+            <div className="role-head">
+              <h2 className="role-company">{role.company}</h2>
+              <p className="mono-muted role-meta">{role.role}</p>
+              <p className="mono-muted role-meta">{role.dates}</p>
+            </div>
             <ul className="plain-list">
               {role.points.map((point) => (
                 <li key={point}>{point}</li>

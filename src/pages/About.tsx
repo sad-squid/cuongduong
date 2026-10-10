@@ -13,50 +13,54 @@ export const About = () => {
   const recognition = t('about.recognition', { returnObjects: true }) as string[]
 
   return (
-    <article className="page">
-      <h1 className="page-title">{t('about.title')}</h1>
+    <article className="page split">
+      <header className="page-aside">
+        <h1 className="page-title">{t('about.title')}</h1>
+        <section aria-labelledby="about-name">
+          <h2 id="about-name" className="section-label">{t('about.nameHeading')}</h2>
+          <dl className="names">
+            {names.map((row) => (
+              <div key={row.lang} className="name-row">
+                <dt className="mono-muted">{row.label}</dt>
+                <dd>
+                  <span lang={row.lang} className="name-value">{row.value}</span>
+                  <span className="mono-muted ipa">{row.ipa}</span>
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      </header>
 
-      <section className="page-section" aria-labelledby="about-name">
-        <h2 id="about-name" className="section-label">{t('about.nameHeading')}</h2>
-        <dl className="names">
-          {names.map((row) => (
-            <div key={row.lang} className="name-row">
-              <dt className="mono-muted">{row.label}</dt>
-              <dd>
-                <span lang={row.lang} className="name-value">{row.value}</span>
-                <span className="mono-muted ipa">{row.ipa}</span>
-              </dd>
-            </div>
+      <div className="page-main">
+        <section className="prose">
+          {story.map((paragraph) => (
+            <p key={paragraph}>{paragraph}</p>
           ))}
-        </dl>
-      </section>
+        </section>
 
-      <section className="page-section prose">
-        {story.map((paragraph) => (
-          <p key={paragraph}>{paragraph}</p>
-        ))}
-      </section>
-
-      <section className="page-section" aria-labelledby="about-languages">
-        <h2 id="about-languages" className="section-label">{t('about.languagesHeading')}</h2>
-        <dl className="pairs">
-          {languages.map((row) => (
-            <div key={row.name}>
-              <dt>{row.name}</dt>
-              <dd className="mono-muted">{row.level}</dd>
-            </div>
-          ))}
-        </dl>
-      </section>
-
-      <section className="page-section" aria-labelledby="about-recognition">
-        <h2 id="about-recognition" className="section-label">{t('about.recognitionHeading')}</h2>
-        <ul className="plain-list">
-          {recognition.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
-      </section>
+        <div className="facts">
+          <section aria-labelledby="about-languages">
+            <h2 id="about-languages" className="section-label">{t('about.languagesHeading')}</h2>
+            <dl className="pairs">
+              {languages.map((row) => (
+                <div key={row.name}>
+                  <dt>{row.name}</dt>
+                  <dd className="mono-muted">{row.level}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+          <section aria-labelledby="about-recognition">
+            <h2 id="about-recognition" className="section-label">{t('about.recognitionHeading')}</h2>
+            <ul className="plain-list">
+              {recognition.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </section>
+        </div>
+      </div>
     </article>
   )
 }

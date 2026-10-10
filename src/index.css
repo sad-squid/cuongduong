@@ -560,6 +560,79 @@ body {
   animation: none;
 }
 
+.split .page-aside {
+  margin-bottom: 48px;
+}
+
+.split .page-aside .page-intro {
+  margin-bottom: 0;
+}
+
+.prose p:last-child {
+  margin-bottom: 0;
+}
+
+.facts {
+  display: grid;
+  gap: 48px;
+  margin-top: 56px;
+}
+
+.role-head {
+  margin-bottom: 14px;
+}
+
+.role-head .role-meta {
+  margin: 4px 0 0;
+}
+
+@media (min-width: 721px) {
+  .page {
+    width: min(100%, 760px);
+  }
+}
+
+@media (min-width: 1080px) {
+  .page.split {
+    width: min(100%, 1200px);
+    display: grid;
+    grid-template-columns: minmax(300px, 5fr) minmax(0, 8fr);
+    gap: 96px;
+    align-items: start;
+    padding-inline: 48px;
+  }
+
+  .split .page-aside {
+    position: sticky;
+    top: 96px;
+    margin-bottom: 0;
+  }
+
+  .split .page-main {
+    max-width: 680px;
+  }
+
+  .facts {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 48px;
+  }
+
+  .facts .pairs > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px;
+  }
+
+  .role {
+    display: grid;
+    grid-template-columns: 180px minmax(0, 1fr);
+    gap: 32px;
+  }
+
+  .role-head {
+    margin-bottom: 0;
+  }
+}
+
 .label-short {
   display: none;
 }
