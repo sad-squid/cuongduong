@@ -46,7 +46,7 @@ const FireworksButton = () => {
   return crt.reduceMotion ? null : (
     <button
       type="button"
-      className={running ? 'door fireworks on' : 'door fireworks'}
+      className={running ? 'icon-door fireworks on' : 'icon-door fireworks'}
       aria-label={t('footer.fireworks')}
       aria-pressed={running}
       onClick={() => crt.launchFireworks()}

@@ -321,7 +321,7 @@ textarea {
 .icon-door {
   display: inline-flex;
   padding: 4px;
-  color: var(--muted);
+  color: var(--beige);
   border-radius: 2px;
 }
 
@@ -329,7 +329,7 @@ textarea {
   display: block;
   width: 22px;
   height: 22px;
-  background: radial-gradient(circle, currentColor 0 0.8px, transparent 1.05px) 0 0 / 2px 2px;
+  background: radial-gradient(circle, currentColor 0 0.95px, transparent 1.2px) 0 0 / 2px 2px;
   mask: center / contain no-repeat;
 }
 
@@ -342,31 +342,26 @@ textarea {
 }
 
 .dot-icon-fireworks {
-  width: 18px;
-  height: 18px;
   mask-image: url('/icons/fireworks.svg');
 }
 
-button.door {
+button.icon-door {
   all: unset;
+  display: inline-flex;
+  padding: 4px;
+  color: var(--beige);
+  border-radius: 2px;
   cursor: pointer;
-  color: var(--muted);
-  padding: 3px;
 }
 
-button.door:hover,
-button.door:focus-visible,
-button.door.on {
-  color: var(--cream);
-}
-
-button.door:focus-visible {
+button.icon-door:focus-visible {
   outline: 2px solid var(--warm-coral);
   outline-offset: 4px;
 }
 
 .icon-door:hover,
-.icon-door:focus-visible {
+.icon-door:focus-visible,
+.icon-door.on {
   color: var(--warm-coral);
   filter: drop-shadow(0 0 3px rgb(240 110 97 / 0.6));
 }
