@@ -758,6 +758,64 @@ body {
   }
 }
 
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .page-main .stage {
+      animation-name: rise, drift;
+      animation-duration: 560ms, auto;
+      animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1), linear;
+      animation-fill-mode: both, both;
+      animation-delay: calc(var(--i) * 70ms), 0s;
+      animation-timeline: auto, view();
+      animation-range: normal, cover;
+      animation-play-state: paused, running;
+    }
+
+    .page-main .stage.ready {
+      animation-play-state: running, running;
+    }
+
+    @media (max-width: 1079px) {
+      .page-aside .stage {
+        animation-name: rise, drift;
+        animation-duration: 560ms, auto;
+        animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1), linear;
+        animation-fill-mode: both, both;
+        animation-delay: calc(var(--i) * 70ms), 0s;
+        animation-timeline: auto, view();
+        animation-range: normal, cover;
+        animation-play-state: paused, running;
+      }
+
+      .page-aside .stage.ready {
+        animation-play-state: running, running;
+      }
+    }
+  }
+}
+
+@keyframes drift {
+  0% {
+    filter: opacity(0) blur(2px);
+    translate: 0 18px;
+  }
+
+  16% {
+    filter: opacity(1) blur(0);
+    translate: 0 0;
+  }
+
+  86% {
+    filter: opacity(1) blur(0);
+    translate: 0 0;
+  }
+
+  100% {
+    filter: opacity(0) blur(2px);
+    translate: 0 -14px;
+  }
+}
+
 @keyframes rise {
   from {
     opacity: 0;
