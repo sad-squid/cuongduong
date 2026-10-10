@@ -157,7 +157,7 @@ export class CrtController {
       this.flightField = null
       field.land(performance.now() - started)
     })
-    this.sound.play('flight', { duration: duration / 1000 })
+    this.sound.play('generate', { duration: duration / 1000 })
     this.arrivalTimer = window.setTimeout(onArriving, duration * ARRIVAL_POINT)
   }
 
@@ -191,7 +191,7 @@ export class CrtController {
     this.ejectFromName()
     field.generate(text, false, null)
     this.sound.play('generate', { duration: 0.9 })
-    this.tear(1.6, true, true)
+    this.tear(1.6, true)
   }
 
   release(field: NameField) {
@@ -229,12 +229,11 @@ export class CrtController {
     for (let i = 0; i < pts.length; i += 4) this.lattice.addSpark(pts[i], pts[i + 1], pts[i + 2], pts[i + 3])
   }
 
-  tear(strength: number, force = false, silent = false) {
+  tear(strength: number, force = false) {
     if (this.reduceMotion) return
     const now = performance.now()
     if (!force && now - this.lastTear < 450) return
     this.lastTear = now
-    if (!silent) this.sound.play('tear', { intensity: Math.min(1, strength) })
     const anchor = this.field?.tearBandsNearText() ?? { center: window.innerHeight * 0.45, spread: 80 }
     const count = 1 + Math.floor(Math.random() * (strength > 1.2 ? 3 : 2))
     const bands: Tear['bands'] = []
@@ -261,7 +260,7 @@ export class CrtController {
       const speed = compact ? 6 + Math.random() * 11 : 7 + Math.random() * 8
       this.lattice.addSpark(clientX, clientY, Math.cos(a) * speed, Math.sin(a) * speed)
     }
-    this.tear(1.2, true, true)
+    this.tear(1.2, true)
     if (!quiet) this.sound.play('blast', { pan: this.pan(clientX) })
     const now = performance.now()
     if (quiet || now - this.lastPulse < 2500) return
@@ -309,7 +308,7 @@ export class CrtController {
     if (near && !this.field.isDiffusing) {
       const dt = Math.max(1, t - this.last.t)
       const v = Math.hypot(e.clientX - this.last.x, e.clientY - this.last.y) / dt
-      if (v > 1.8) this.tear(Math.min(1.6, v / 2), false, true)
+      if (v > 1.8) this.tear(Math.min(1.6, v / 2))
     }
     this.last = { x: e.clientX, y: e.clientY, t }
   }
