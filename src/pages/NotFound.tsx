@@ -1,0 +1,66 @@
+import { useEffect, useRef } from 'react'
+import { Link } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
+import { useCrt, loadNameFonts } from '@/crt/context'
+import { NameField } from '@/crt/NameField'
+
+const SIGNALS = ['404', '迷子']
+
+export const NotFound = () => {
+  const crt = useCrt()
+  const { t } = useTranslation()
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const fieldRef = useRef<NameField | null>(null)
+  const index = useRef(0)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    crt.reveal()
+    crt.setSnow(true)
+    const field = new NameField(canvas, crt.reduceMotion, {
+      onFrame: crt.frame,
+      onStep: () => {},
+      onSettled: () => crt.liftName(),
+      onPerturbed: () => {},
+    })
+    fieldRef.current = field
+    crt.setField(field)
+    let cancelled = false
+    loadNameFonts().then(() => {
+      if (cancelled) return
+      field.setup()
+      field.generate(SIGNALS[0], true, crt.latticeAnchor())
+    })
+    return () => {
+      cancelled = true
+      crt.setSnow(false)
+      crt.setField(null)
+      field.destroy()
+      fieldRef.current = null
+    }
+  }, [crt])
+
+  const cycle = () => {
+    const field = fieldRef.current
+    if (!field || field.isDiffusing) return
+    index.current = (index.current + 1) % SIGNALS.length
+    crt.ejectFromName()
+    field.generate(SIGNALS[index.current], false, null)
+    crt.tear(1.6, true)
+  }
+
+  return (
+    <section className="home no-signal">
+      <p className="mono-muted signal-label">{t('notFound.signal')}</p>
+      <h1 className="name">
+        <button type="button" className="name-button" data-blast onClick={cycle}>
+          <span className="sr-only">{t('notFound.title')}</span>
+          <canvas ref={canvasRef} className="name-canvas" aria-hidden="true" />
+        </button>
+      </h1>
+      <p className="tagline lit">{t('notFound.body')}</p>
+      <Link className="door" to="/">{t('notFound.home')}</Link>
+    </section>
+  )
+}

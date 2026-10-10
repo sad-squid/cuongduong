@@ -1,0 +1,217 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { CrtController } from './CrtController'
+import { Lattice } from './Lattice'
+import { LogStore } from './LogStore'
+import { NameField } from './NameField'
+import { TaglineStore, segmentWords } from './TaglineStore'
+
+let now = 0
+let frames: FrameRequestCallback[] = []
+let timers: { at: number; fn: () => void }[] = []
+
+const fakeContext = () => ({
+  setTransform: () => {},
+  clearRect: () => {},
+  fillRect: () => {},
+  fill: () => {},
+  drawImage: () => {},
+  fillText: () => {},
+  measureText: (text: string) => ({ width: text.length * 38 }),
+  getImageData: (_x: number, _y: number, w: number, h: number) => {
+    const data = new Uint8ClampedArray(w * h * 4)
+    for (let i = 3; i < data.length; i += 4) data[i] = (i >> 2) % 3 === 0 ? 255 : 0
+    return { data }
+  },
+  canvas: { width: 0, height: 0 },
+  globalAlpha: 1,
+  globalCompositeOperation: 'source-over',
+  fillStyle: '',
+  font: '',
+  textAlign: 'left',
+  textBaseline: 'alphabetic',
+})
+
+const fakeCanvas = (width: number, height: number) =>
+  ({
+    width: 0,
+    height: 0,
+    getContext: () => fakeContext(),
+    getBoundingClientRect: () => ({ left: 0, top: 0, width, height, right: width, bottom: height, x: 0, y: 0 }),
+  }) as unknown as HTMLCanvasElement
+
+const advance = (ms: number, steps = 1) => {
+  for (let s = 0; s < steps; s++) {
+    now += ms
+    const due = timers.filter((t) => t.at <= now)
+    timers = timers.filter((t) => t.at > now)
+    due.forEach((t) => t.fn())
+    const queue = frames
+    frames = []
+    queue.forEach((f) => f(now))
+  }
+}
+
+beforeEach(() => {
+  now = 0
+  frames = []
+  timers = []
+  vi.spyOn(performance, 'now').mockImplementation(() => now)
+  vi.stubGlobal('requestAnimationFrame', (f: FrameRequestCallback) => frames.push(f))
+  vi.stubGlobal('cancelAnimationFrame', () => {})
+  vi.stubGlobal(
+    'Path2D',
+    class {
+      rect() {}
+    },
+  )
+  const setTimeoutStub = (fn: () => void, ms = 0) => timers.push({ at: now + ms, fn })
+  vi.stubGlobal('window', {
+    devicePixelRatio: 2,
+    innerHeight: 800,
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    setTimeout: setTimeoutStub,
+    clearTimeout: () => {},
+  })
+  vi.stubGlobal('document', { createElement: () => fakeCanvas(10, 10) })
+})
+
+afterEach(() => {
+  vi.unstubAllGlobals()
+  vi.restoreAllMocks()
+})
+
+describe('Lattice', () => {
+  const ready = () => {
+    const lattice = new Lattice(fakeCanvas(1280, 800), false, () => {})
+    lattice.setup()
+    lattice.enable()
+    return lattice
+  }
+
+  it('cleans up every loose point and moving dot after a blast', () => {
+    const lattice = ready()
+    lattice.impulse(640, 300, 240, 16)
+    for (let k = 0; k < 60; k++) lattice.addSpark(640, 300, Math.cos(k) * 10, Math.sin(k) * 10)
+    expect(lattice.sparks).toBe(60)
+    expect(lattice.movingDots).toBeGreaterThan(0)
+    advance(16, 500)
+    expect(lattice.sparks).toBe(0)
+    expect(lattice.movingDots).toBe(0)
+    expect(lattice.isRunning).toBe(false)
+  })
+
+  it('caps loose points at 600', () => {
+    const lattice = ready()
+    for (let k = 0; k < 2000; k++) lattice.addSpark(640, 300, 10, 0)
+    expect(lattice.sparks).toBe(600)
+  })
+
+  it('stays idle until enabled', () => {
+    const lattice = new Lattice(fakeCanvas(1280, 800), false, () => {})
+    lattice.setup()
+    lattice.impulse(640, 300, 240, 16)
+    expect(lattice.isRunning).toBe(false)
+  })
+
+  it('reports a word hit and removes the point that caused it', () => {
+    const lattice = ready()
+    const test = vi.fn(() => 3)
+    lattice.setHitTarget({ box: { left: 600, top: 280, right: 700, bottom: 320 }, test })
+    lattice.addSpark(560, 300, 12, 0)
+    advance(16, 10)
+    expect(test).toHaveBeenCalled()
+    expect(lattice.sparks).toBe(0)
+  })
+})
+
+describe('NameField', () => {
+  it('generates, settles, and reports the result once', () => {
+    const settled = vi.fn()
+    const field = new NameField(fakeCanvas(1280, 520), false, { onFrame: () => {}, onStep: () => {}, onSettled: settled, onPerturbed: () => {} })
+    field.setup()
+    field.generate('Cuong', true, null)
+    expect(field.isDiffusing).toBe(true)
+    advance(16, 120)
+    expect(field.isDiffusing).toBe(false)
+    expect(settled).toHaveBeenCalledTimes(1)
+    expect(settled.mock.calls[0][0].points).toBeGreaterThan(0)
+  })
+
+  it('does not report a disturbance nobody caused', () => {
+    const perturbed = vi.fn()
+    const field = new NameField(fakeCanvas(1400, 520), false, { onFrame: () => {}, onStep: () => {}, onSettled: () => {}, onPerturbed: perturbed })
+    field.setup()
+    field.generate('Cuong', true, { left: 0, top: 0, spacing: 12 })
+    advance(16, 300)
+    expect(perturbed).not.toHaveBeenCalled()
+  })
+
+  it('ignores the pointer far away from the letters', () => {
+    const field = new NameField(fakeCanvas(1280, 520), false, { onFrame: () => {}, onStep: () => {}, onSettled: () => {}, onPerturbed: () => {} })
+    field.setup()
+    field.generate('Cuong', false, null)
+    advance(16, 80)
+    expect(field.pointer(5, 5)).toBe(false)
+  })
+
+  it('snaps straight to the name with reduced motion', () => {
+    const settled = vi.fn()
+    const field = new NameField(fakeCanvas(1280, 520), true, { onFrame: () => {}, onStep: () => {}, onSettled: settled, onPerturbed: () => {} })
+    field.setup()
+    field.generate('Cuong', true, null)
+    expect(field.isDiffusing).toBe(false)
+    expect(settled).toHaveBeenCalledWith(expect.objectContaining({ steps: 0 }))
+  })
+})
+
+describe('CrtController', () => {
+  it('emits one pulse per blast window and counts distinct words', () => {
+    const controller = new CrtController(false)
+    const events: string[] = []
+    controller.subscribe((e) => {
+      if (e.type === 'pulse') events.push(`${e.words}`)
+    })
+    controller.mount(fakeCanvas(1280, 800))
+    controller.reveal()
+    controller.blast(640, 300)
+    controller.blast(650, 300)
+    advance(16, 100)
+    expect(events).toHaveLength(1)
+    controller.unmount()
+  })
+})
+
+describe('LogStore', () => {
+  it('types actions immediately and holds idle lines for a 3s pause', () => {
+    const log = new LogStore(false)
+    log.log(true, 'pulse    click')
+    log.log(false, 'note     idle')
+    advance(50, 40)
+    expect(log.getSnapshot().map((l) => l.text)).toEqual(['pulse    click'])
+    log.activity()
+    advance(50, 50)
+    expect(log.getSnapshot().some((l) => l.text.startsWith('note'))).toBe(false)
+    advance(50, 80)
+    expect(log.getSnapshot().map((l) => l.text)).toContain('note     idle')
+    expect(log.getSnapshot()[0].human).toBe(true)
+  })
+})
+
+describe('TaglineStore', () => {
+  it('splits words per language', () => {
+    expect(segmentWords('en', 'Software engineer in Tokyo')).toHaveLength(4)
+    expect(segmentWords('ja', '東京を拠点とする').length).toBeGreaterThan(1)
+  })
+
+  it('sweeps to plain text and never changes the characters underneath', () => {
+    const store = new TaglineStore(false)
+    store.setText('en', 'Software engineer')
+    store.sweep(0, 400)
+    advance(16, 5)
+    const mid = store.getSnapshot()
+    expect(mid.map((c) => c.text).join('')).toBe('Software engineer')
+    advance(16, 40)
+    expect(store.getSnapshot()).toEqual([{ kind: 'plain', text: 'Software engineer' }])
+  })
+})

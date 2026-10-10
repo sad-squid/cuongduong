@@ -1,41 +1,21 @@
 import { createRootRoute, createRoute, createRouter, redirect } from '@tanstack/react-router'
-import { Layout } from '@/components/Layout'
-import { HomePage } from '@/pages/Home'
-import { AboutPage } from '@/pages/About'
-import { WorkPage } from '@/pages/Work'
-import { NotesPage } from '@/pages/Notes'
-import { NotFoundPage } from '@/pages/NotFound'
+import { Layout } from '@/app/Layout'
+import { Home } from '@/pages/Home'
+import { About } from '@/pages/About'
+import { Work } from '@/pages/Work'
+import { Notes } from '@/pages/Notes'
+import { NotFound } from '@/pages/NotFound'
 
 const rootRoute = createRootRoute({
   component: Layout,
-  notFoundComponent: NotFoundPage,
+  notFoundComponent: NotFound,
 })
 
-const homeRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/',
-  component: HomePage,
-})
+const homeRoute = createRoute({ getParentRoute: () => rootRoute, path: '/', component: Home })
+const aboutRoute = createRoute({ getParentRoute: () => rootRoute, path: '/about', component: About })
+const workRoute = createRoute({ getParentRoute: () => rootRoute, path: '/work', component: Work })
+const notesRoute = createRoute({ getParentRoute: () => rootRoute, path: '/notes', component: Notes })
 
-const aboutRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/about',
-  component: AboutPage,
-})
-
-const workRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/work',
-  component: WorkPage,
-})
-
-const notesRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/notes',
-  component: NotesPage,
-})
-
-// /blog shipped publicly before the rebuild; keep old links alive
 const blogRedirectRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/blog',

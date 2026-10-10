@@ -1,145 +1,142 @@
 {
-  "common": {
-    "portfolio": "Danh mục",
-    "previously": "trước đây",
-    "currently": "hiện tại",
+  "home": {
+    "line": "Kỹ sư phần mềm tại Tokyo, tập trung vào lập trình với AI agent và quy trình tạo nội dung bằng AI."
+  },
+  "footer": {
+    "home": "trang chủ",
+    "about": "giới thiệu",
+    "work": "công việc",
+    "pages": "Trang",
+    "elsewhere": "Liên kết",
     "language": "Ngôn ngữ"
   },
-  "home": {
-    "overline": "kỹ sư phần mềm",
-    "name": "cường dương",
-    "bio": "Tôi là kỹ sư cấp cao tại SmartNews ở Tokyo. Trước đây làm việc tại Google, Zoom và Target. Tôi đam mê việc nuôi dưỡng một văn hóa học hỏi lành mạnh và tạo ra không gian đó cho tất cả mọi người.",
-    "factGoogle": "Đại diện tiếp cận và i18n cho Guided Support Experience.",
-    "factZoom": "Tái kiến trúc CI/CD và framework kiểm thử cho Zoom Events.",
-    "factTarget": "Ra mắt design system đầu tiên của Target — 100+ ứng dụng, 3.600+ khai báo.",
-    "role": "vai trò",
-    "roleTitle": "Kỹ sư phần mềm cấp cao",
-    "roleOrg": "SmartNews · Tokyo, Nhật Bản",
-    "tagline1": "nói điều gì đó,",
-    "tagline2": "làm điều gì đó",
-    "locationCity": "Tokyo, JP",
-    "speaks": "nói",
-    "pastLivesLabel": "kiếp trước",
-    "pastLives": "nhà thơ slam · thợ bắt cua vùng bayou · thợ gia công kim loại · barista",
-    "currentlyLine": "kỹ sư phần mềm cấp cao tại smartnews · đang học tiếng nhật · đang dần quen với tokyo"
-  },
-  "about": {
-    "overline": "giới thiệu",
-    "title": "hi, cường đây",
-    "subtitle": "kỹ sư cấp cao, thợ làm bánh tập sự.",
-    "subtitleAlt": "từng là slam poet, cựu thợ bắt cua bayou.",
-    "introOpener": "bạn tìm thấy mình rồi!",
-    "intro": "ban đầu chỉ định làm mới lại trang cũ rồi bị cuốn đi — LLM giúp mình rảnh tay đủ để phần sáng tạo cuối cùng cũng có chỗ thở. ở đây sẽ dần xuất hiện vài ý tưởng đã (quá) chín suốt mấy năm qua. còn bây giờ, cứ tự nhiên như ở nhà. cần gì — mình ở <1>đây</1>.",
-    "nameHeader": "tên",
-    "pronounceEn": "/kɔŋ/ · /tɹi/ · /dɔŋ/",
-    "pronounceVi": "/zɨəŋ˧˧/ · /ʈʂi˧˥/ · /kuəŋ˨˩/",
-    "pronounceZh": "/jɑŋ˧˥/ · /ʈʂɻ̩˥˩/ · /tɕʰjɑŋ˧˥/",
-    "nameEn": "Cuong Tri Duong",
-    "nameVi": "Dương Trí Cường",
-    "nameZh": "楊 志強",
-    "blurbHeader": "vài dòng",
-    "skillsHeader": "kỹ năng",
-    "skillsFrontend": "Nói trước công chúng",
-    "skillsFrontendItems": "hay còn gọi là, tự làm trò trước đám đông.",
-    "skillsA11y": "Tiếp cận",
-    "skillsA11yItems": "Hầu hết người ta đi được cầu thang. Ai cũng đi được đường dốc.",
-    "skillsAi": "Hướng dẫn",
-    "skillsAiItems": "Cho mọi người thấy họ thực sự tài năng đến nhường nào.",
-    "skillsDs": "Design Systems",
-    "skillsDsItems": "Xây một lần, xài mãi mãi.",
-    "skillsCrab": "Kéo lồng cua",
-    "skillsCrabItems": "Đầm lầy Louisiana, 3h sáng đến 3h chiều.",
-    "skillsCoffee": "Pha một ly tử tế",
-    "skillsCoffeeItems": "Vẫn đang tìm hạt hoàn hảo.",
-    "awardsHeader": "giải thưởng",
-    "award1": "Nhà vô địch Hackathon codeRED — Target, '17 / '18 / '19",
-    "award2": "Nhà vô địch bang MN — Kịch một màn, Hùng biện & Diễn thuyết",
-    "langsHeader": "ngôn ngữ",
-    "langEn": "Tiếng Anh — bản ngữ",
-    "langVi": "Tiếng Việt — thành thạo",
-    "langJa": "Tiếng Nhật — tạm ổn",
-    "langZh": "Tiếng Trung — đang học",
-    "langKr": "Tiếng Hàn — trì hoãn",
-    "langFr": "Tiếng Pháp — từng biết"
-  },
-  "work": {
-    "overline": "công việc",
-    "title": "vai trò",
-    "subtitle": "tám năm, bốn công ty, những người thầy tuyệt vời.",
-    "subtitleAlt": "nguyên liệu tốt hơn, pizza ngon hơn. papa john's.",
-    "timelineLabel": "dòng thời gian",
-    "timelineHint": "kéo cửa sổ để lọc",
-    "roles": {
-      "smartnews": {
-        "company": "SmartNews",
-        "role": "Kỹ sư phần mềm cấp cao",
-        "dates": "7/2024 — Hiện tại",
-        "scope": "Phát triển di động đa nền tảng tại SmartNews — React Native, Expo, và pipeline nội dung dùng LLM.",
-        "bullet1": "Thiết kế tích hợp React Native + Expo; soạn thảo tiêu chuẩn phát triển áp dụng toàn nhóm.",
-        "bullet2": "Xây dựng các pipeline LLM đầu-cuối, hỗ trợ cá nhân hóa và độ liên quan nội dung.",
-        "bullet3": "Hướng dẫn kỹ sư chuyển từ native iOS/Android sang React Native."
-      },
-      "google": {
-        "company": "Google",
-        "role": "Kỹ sư phần mềm",
-        "dates": "4/2022 — 6/2024",
-        "scope": "Guided Support Experience (GSE) và Help Experience Guidance.",
-        "bullet1": "Triển khai desktop, thử nghiệm đọc hỗ trợ tiếp cận, hạ tầng i18n.",
-        "bullet2": "Đại diện tiếp cận chính; dẫn dắt chuẩn GAR4. Đóng góp A11y hàng đầu 2023.",
-        "bullet3": "Sáng lập design system nội bộ Help Experience và thư viện thành phần GSE."
-      },
-      "zoom": {
-        "company": "Zoom",
-        "role": "Kỹ sư phần mềm cấp cao",
-        "dates": "3/2021 — 3/2022",
-        "scope": "Zoom Events — nền tảng sự kiện trực tuyến của Zoom.",
-        "bullet1": "Đề xuất và thiết kế lại hạ tầng CI/CD; tăng tốc độ phát triển rõ rệt.",
-        "bullet2": "Giới thiệu framework kiểm thử đơn vị + tích hợp cho dự án scrum cốt lõi.",
-        "bullet3": "Sáng lập design system nội bộ; hướng dẫn thực tập sinh và viết tài liệu onboarding."
-      },
-      "target": {
-        "company": "Target",
-        "role": "Kỹ sư phần mềm cấp cao → Kỹ sư phần mềm",
-        "dates": "7/2017 — 2/2021",
-        "scope": "Guest Web Experience Platform, rồi API Platform và Design Systems. Các trang phục vụ 130 triệu+ lượt truy cập mỗi ngày.",
-        "bullet1": "Giảm thiểu 6 triệu USD+ rủi ro doanh thu quảng cáo qua thay đổi mã và mở rộng kiểm thử.",
-        "bullet2": "Xây nền tảng microsite cho phép phát hành ứng dụng sản xuất trong 10 tuần ở quy mô Target.com.",
-        "bullet3": "Kỹ sư ra mắt design system đầu tiên của Target — 100+ ứng dụng, 3.600+ khai báo thư viện."
-      }
+  "palette": {
+    "label": "Bảng lệnh",
+    "input": "Nhập lệnh",
+    "home": "về trang chủ",
+    "about": "giới thiệu đầy đủ",
+    "work": "kinh nghiệm làm việc",
+    "replay": "phát lại phần mở đầu",
+    "empty": "không có lệnh phù hợp",
+    "lang": {
+      "en": "switch to English",
+      "ja": "日本語に切り替え",
+      "vi": "chuyển sang tiếng Việt"
     }
   },
-  "notFound": {
-    "overline": "lạc rồi?",
-    "body": "trang này không tồn tại — hoặc chưa bao giờ tồn tại. không sao, còn nhiều nơi khác để ghé thăm.",
-    "tryHeader": "thử"
+  "about": {
+    "title": "Giới thiệu",
+    "nameHeading": "Tên",
+    "names": [
+      {
+        "lang": "en",
+        "label": "English",
+        "value": "Cuong Tri Duong",
+        "ipa": "/kɔŋ/ /tɹi/ /dɔŋ/"
+      },
+      {
+        "lang": "vi",
+        "label": "Tiếng Việt",
+        "value": "Dương Trí Cường",
+        "ipa": "/zɨəŋ˧˧/ /ʈʂi˧˥/ /kuəŋ˨˩/"
+      },
+      {
+        "lang": "zh",
+        "label": "中文",
+        "value": "楊志強",
+        "ipa": "/jɑŋ˧˥/ /ʈʂɻ̩˥˩/ /tɕʰjɑŋ˧˥/"
+      }
+    ],
+    "story": [
+      "Tôi sinh ra ở Thành phố Hồ Chí Minh. Ngày Valentine năm 1998, lúc bốn tuổi, tôi cùng gia đình sang Minnesota. Tôi lớn lên ở Eagan và học khoa học máy tính cùng hạ tầng công nghệ thông tin tại Đại học Minnesota.",
+      "Trước khi làm công nghệ, tôi đã làm nhiều việc khác. Một mùa hè dập kim loại ở xưởng của bố. Một mùa hè kéo lồng cua cùng chú ở vùng đầm lầy Louisiana, từ 3 giờ sáng đến 3 giờ chiều dưới cái nóng vịnh Mexico. Nhiều năm pha espresso ở Caribou Coffee và làm bartender trong lúc đi học. Những công việc đó định hình cách tôi nghĩ về tay nghề: chậm mà chắc, và người bên cạnh quan trọng hơn công cụ trong tay.",
+      "Sự nghiệp công nghệ của tôi bắt đầu ở Target năm 2017. Sau đó là Zoom, Google, và giờ là SmartNews ở Tokyo, nơi tôi xây dựng hạ tầng cho nội dung do AI tạo ra và tìm cách để các nhóm lập trình hiệu quả cùng AI agent. Tôi sống gần Shibuya, đang học tiếng Trung và học lại tiếng Hàn."
+    ],
+    "languagesHeading": "Ngôn ngữ",
+    "languages": [
+      {
+        "name": "Tiếng Anh",
+        "level": "thành thạo"
+      },
+      {
+        "name": "Tiếng Việt",
+        "level": "bản ngữ"
+      },
+      {
+        "name": "Tiếng Nhật",
+        "level": "nói gần như bản ngữ, đọc còn yếu"
+      },
+      {
+        "name": "Tiếng Trung",
+        "level": "đang học"
+      },
+      {
+        "name": "Tiếng Hàn",
+        "level": "đang học lại"
+      }
+    ],
+    "recognitionHeading": "Ghi nhận",
+    "recognition": [
+      "Người đóng góp nổi bật về khả năng tiếp cận, Google, 2023",
+      "Giải nhất hackathon codeRED, Target, 2017, 2018 và 2019",
+      "Vô địch cấp bang Minnesota: kịch một màn, hùng biện và diễn thuyết"
+    ]
   },
-  "nav": {
-    "home": "trang chủ",
-    "work": "công việc",
-    "about": "giới thiệu",
-    "notes": "ghi chú"
-  },
-  "layout": {
-    "motifCake": "chiếc bánh là lời nói dối",
-    "motifHello": "xin chào, thế giới!",
-    "motifPokemon": "phải bắt cho hết",
-    "motifMinecraft": "nhấn F3 để xem thế giới",
-    "motifValorant": "đã cài spike!",
-    "motifLol": "thời gian bay như mũi tên. ruồi trái cây bay như chuối.",
-    "themeLight": "Chế độ sáng",
-    "themeDark": "Chế độ tối"
-  },
-  "search": {
-    "placeholder": "ồ, những nơi bạn sẽ đến!",
-    "noMatch": "không có kết quả",
-    "kbdNavigate": "điều hướng",
-    "kbdComplete": "hoàn thành",
-    "kbdGo": "đi",
-    "kbdClose": "đóng"
+  "work": {
+    "title": "Công việc",
+    "intro": "Chín năm, bốn công ty, một mạch xuyên suốt: xây dựng cho người dùng thật, và để mọi thứ tốt hơn lúc tôi đến.",
+    "roles": [
+      {
+        "company": "SmartNews",
+        "role": "Kỹ sư phần mềm cấp cao",
+        "dates": "2024 – nay",
+        "points": [
+          "Hạ tầng nội dung AI: pipeline tạo nội dung bằng LLM, công cụ biên tập và phân phối tới web và ứng dụng native.",
+          "Thiết kế các bước kiểm duyệt kết hợp AI agent và con người trước khi nội dung do AI tạo ra được đăng.",
+          "Dẫn dắt định tuyến đa mô hình với theo dõi request và phân bổ chi phí theo từng mô hình.",
+          "Thực hiện hơn 60 thử nghiệm sản phẩm; thúc đẩy đánh giá và triển khai bộ công cụ kỹ thuật."
+        ]
+      },
+      {
+        "company": "Google",
+        "role": "Kỹ sư phần mềm",
+        "dates": "2022 – 2024",
+        "points": [
+          "Xây dựng component và layout cho Guided Support Experience và Help Center.",
+          "Kỹ sư sáng lập hệ thống thiết kế Help Experience và design token.",
+          "Đại diện khả năng tiếp cận tiêu biểu năm 2023."
+        ]
+      },
+      {
+        "company": "Zoom",
+        "role": "Kỹ sư phần mềm",
+        "dates": "2021 – 2022",
+        "points": [
+          "Xây dựng ứng dụng Zoom Events và giao diện nền tảng sự kiện trực tuyến.",
+          "Thiết kế lại CI/CD, đưa kiểm thử đơn vị và kiểm thử tích hợp vào quy trình.",
+          "Kỹ sư sáng lập hệ thống thiết kế toàn cầu; hướng dẫn thực tập sinh và kỹ sư mới."
+        ]
+      },
+      {
+        "company": "Target",
+        "role": "Kỹ sư phần mềm cấp cao",
+        "dates": "2017 – 2021",
+        "points": [
+          "Hiệu năng và kiến trúc cho Target.com, từ React-Redux sang Next.js.",
+          "Tham gia ra mắt hệ thống thiết kế đầu tiên của Target.",
+          "Hướng dẫn kỹ sư trong Technology Leadership Program."
+        ]
+      }
+    ]
   },
   "notes": {
-    "overline": "ghi chú",
-    "title": "ghi chú",
-    "stub": "Ghi chú về khả năng tiếp cận, design system, và việc học ngôn ngữ — lập trình lẫn con người. Bài đầu tiên đang được soạn thảo."
+    "title": "Ghi chú",
+    "body": "Bài ghi chú đầu tiên đang được viết."
+  },
+  "notFound": {
+    "signal": "no signal",
+    "title": "Không tìm thấy trang",
+    "body": "Trang này không tồn tại, hoặc tín hiệu đã bị mất.",
+    "home": "về trang chủ"
   }
 }
