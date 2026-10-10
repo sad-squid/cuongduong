@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useCrt } from '@/crt/context'
 import { levelToVolume, readLevel, writeLevel } from '@/crt/soundLevel'
@@ -36,8 +36,23 @@ export const ArcadePause = ({ shake, onShake, onResume, onExit }: { shake: boole
     }
   }
 
+  const trap = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.key !== 'Tab') return
+    const items = Array.from(e.currentTarget.querySelectorAll<HTMLElement>('button, input'))
+    const first = items[0]
+    const last = items[items.length - 1]
+    if (!first || !last) return
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault()
+      last.focus()
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault()
+      first.focus()
+    }
+  }
+
   return (
-    <div className="arcade-over arcade-pause" role="dialog" aria-modal="true" aria-labelledby="arcade-pause-title">
+    <div className="arcade-over arcade-pause" role="dialog" aria-modal="true" aria-labelledby="arcade-pause-title" onKeyDown={trap}>
       <p id="arcade-pause-title" className="arcade-over-title">
         {view === 'menu' ? t('arcade.paused') : t('arcade.options')}
       </p>

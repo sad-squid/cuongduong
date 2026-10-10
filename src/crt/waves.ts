@@ -28,7 +28,6 @@ export const planWave = (wave: number): WavePlan => {
   return { wave: n, formation, boss, scale: SCALE[formation], hp, count: Math.round(COUNT[formation] * (formation === 'boss' || formation === 'tanks' ? 1 : grow)) }
 }
 
-export const isGentle = (wave: number) => wave <= 2
 
 export const patternsFor = (wave: number): Pattern[] => {
   if (wave <= 2) return ['drop']

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ArcadeInitials } from '@/components/ArcadeInitials'
 import { ArcadePause } from '@/components/ArcadePause'
@@ -84,6 +84,10 @@ export const Arcade = ({ onExit }: { onExit: () => void }) => {
   const [powers, setPowers] = useState<ActivePower[]>([])
   const [callout, setCallout] = useState<{ type: PowerType; id: number } | null>(null)
   const [paused, setPaused] = useState(false)
+  const lettersRef = useRef('AAA')
+  const trackLetters = useCallback((initials: string) => {
+    lettersRef.current = initials
+  }, [])
   const [shake, setShake] = useState(readShake)
 
   useEffect(() => {
@@ -177,8 +181,10 @@ export const Arcade = ({ onExit }: { onExit: () => void }) => {
 
   const pauseOrExit = () => {
     const game = gameRef.current
-    if (phase === 'play' && game && !game.isPaused) game.pause()
-    else if (phase !== 'play') onExit()
+    if (phase === 'entry') record(lettersRef.current)
+    else if (phase === 'play' && game && !game.isPaused) game.pause()
+    else if (phase === 'play') resume()
+    else onExit()
   }
 
   const restart = () => {
@@ -188,14 +194,17 @@ export const Arcade = ({ onExit }: { onExit: () => void }) => {
     rootRef.current?.focus()
   }
 
-  const record = (initials: string) => {
-    const next = insertScore(scoresRef.current, { initials, score: result.score, wave: result.wave })
-    scoresRef.current = next.list
-    setScores(next.list)
-    setRank(next.rank)
-    saveScores(next.list)
-    setPhase('table')
-  }
+  const record = useCallback(
+    (initials: string) => {
+      const next = insertScore(scoresRef.current, { initials, score: result.score, wave: result.wave })
+      scoresRef.current = next.list
+      setScores(next.list)
+      setRank(next.rank)
+      saveScores(next.list)
+      setPhase('table')
+    },
+    [result],
+  )
 
   useEffect(() => {
     if (phase === 'table') againRef.current?.focus()
@@ -226,7 +235,8 @@ export const Arcade = ({ onExit }: { onExit: () => void }) => {
       if (e.key === 'Escape') {
         e.preventDefault()
         const game = gameRef.current
-        if (phase !== 'play' || !game) onExit()
+        if (phase === 'entry') record(lettersRef.current)
+        else if (phase !== 'play' || !game) onExit()
         else if (game.isPaused) {
           game.unpause()
           window.requestAnimationFrame(() => rootRef.current?.focus())
@@ -242,14 +252,14 @@ export const Arcade = ({ onExit }: { onExit: () => void }) => {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [phase, onExit])
+  }, [phase, onExit, record])
 
   const best = Math.max(bestScore(scores), hud.score)
 
   return (
     <div ref={rootRef} className="arcade" data-no-blast role="region" aria-label={t('arcade.label')} tabIndex={-1}>
-      <canvas ref={canvasRef} className="arcade-canvas" aria-hidden="true" />
-      <div className="arcade-hud">
+      <canvas ref={canvasRef} className="arcade-canvas" aria-hidden="true" inert={paused} />
+      <div className="arcade-hud" inert={paused}>
         <span>
           {t('arcade.score')} <b>{String(hud.score).padStart(5, '0')}</b>
         </span>
@@ -276,7 +286,7 @@ export const Arcade = ({ onExit }: { onExit: () => void }) => {
           )}
         </button>
       </div>
-      <ul className="arcade-powers" aria-label={t('arcade.powers')}>
+      <ul className="arcade-powers" aria-label={t('arcade.powers')} inert={paused}>
         {powers.map((power) => (
           <li key={power.type}>
             <span>
@@ -316,7 +326,7 @@ export const Arcade = ({ onExit }: { onExit: () => void }) => {
       {paused && phase === 'play' ? <ArcadePause shake={shake} onShake={toggleShake} onResume={resume} onExit={onExit} /> : null}
       {phase === 'entry' ? (
         <div className="arcade-over">
-          <ArcadeInitials score={result.score} onDone={record} />
+          <ArcadeInitials score={result.score} onDone={record} onChange={trackLetters} />
         </div>
       ) : null}
       {phase === 'table' ? (

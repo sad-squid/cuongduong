@@ -4,7 +4,7 @@ import { ALPHABET } from '@/crt/HighScores'
 
 const SLOTS = 3
 
-export const ArcadeInitials = ({ score, onDone }: { score: number; onDone: (initials: string) => void }) => {
+export const ArcadeInitials = ({ score, onDone, onChange }: { score: number; onDone: (initials: string) => void; onChange: (initials: string) => void }) => {
   const { t } = useTranslation()
   const [letters, setLetters] = useState([0, 0, 0])
   const [slot, setSlot] = useState(0)
@@ -22,7 +22,11 @@ export const ArcadeInitials = ({ score, onDone }: { score: number; onDone: (init
     refs.current[next]?.focus()
   }
 
-  const confirm = () => onDone(letters.map((v) => ALPHABET[v]).join(''))
+  const initials = letters.map((v) => ALPHABET[v]).join('')
+
+  useEffect(() => onChange(initials), [initials, onChange])
+
+  const confirm = () => onDone(initials)
 
   const onKey = (e: KeyboardEvent<HTMLSpanElement>, index: number) => {
     const key = e.key

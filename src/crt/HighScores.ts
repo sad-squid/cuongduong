@@ -4,7 +4,7 @@ export type ScoreStorage = Pick<Storage, 'getItem' | 'setItem'>
 
 export const HIGH_SCORE_KEY = 'cuongduong:invaders:top5'
 
-export const TOP = 5
+const TOP = 5
 
 export const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
@@ -24,7 +24,7 @@ const valid = (entry: unknown): entry is HighScore => {
   return typeof initials === 'string' && typeof score === 'number' && Number.isFinite(score) && score >= 0 && typeof wave === 'number' && Number.isFinite(wave)
 }
 
-export const rankScores = (list: HighScore[]) => [...list].sort((a, b) => b.score - a.score).slice(0, TOP)
+const rankScores = (list: HighScore[]) => [...list].sort((a, b) => b.score - a.score).slice(0, TOP)
 
 export const loadScores = (storage: ScoreStorage | null = browserStorage()): HighScore[] => {
   try {

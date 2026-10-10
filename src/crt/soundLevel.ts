@@ -1,10 +1,11 @@
 const LEVEL_KEY = 'cd-sound-level'
-export const MAX_VOLUME = 0.6
+const MAX_VOLUME = 0.6
 
 export const readLevel = () => {
   try {
-    const stored = Number(window.localStorage.getItem(LEVEL_KEY))
-    return Number.isFinite(stored) && stored > 0 && stored <= 100 ? stored : 50
+    const raw = window.localStorage.getItem(LEVEL_KEY)
+    const stored = Number(raw)
+    return raw !== null && Number.isFinite(stored) && stored >= 0 && stored <= 100 ? stored : 50
   } catch {
     return 50
   }
