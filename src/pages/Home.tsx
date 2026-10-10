@@ -10,6 +10,7 @@ import { NameField } from '@/crt/NameField'
 import { TaglineStore } from '@/crt/TaglineStore'
 import { COLORS, contrastRatio } from '@/crt/tokens'
 import { NAMES, NAME_ORDER } from '@/content/names'
+import { useSection } from '@/app/section'
 
 const say = (key: string, options: Record<string, unknown> = {}) => i18next.t(`log.${key}`, options)
 const num = (value: number, digits = 0) => value.toLocaleString(i18next.resolvedLanguage, { minimumFractionDigits: digits, maximumFractionDigits: digits })
@@ -36,6 +37,8 @@ const HomeScreen = () => {
   const [log] = useState(() => new LogStore(crt.reduceMotion))
   const [tagline] = useState(() => new TaglineStore(crt.reduceMotion))
   const [lit, setLit] = useState(false)
+  const { active, armed } = useSection()
+  const activeRef = useRef(active)
 
   const request = (index: number) => requestName(log, index)
 
@@ -59,8 +62,16 @@ const HomeScreen = () => {
   const arriveEvent = useEffectEvent(() => arrive())
 
   useEffect(() => {
+    activeRef.current = active
+    const field = fieldRef.current
+    if (!active || !field) return
+    crt.setField(field)
+    crt.liftName()
+  }, [crt, active])
+
+  useEffect(() => {
     const canvas = canvasRef.current
-    if (!canvas) return
+    if (!canvas || !armed) return
     const showStep = (text: string | null) => {
       const el = stepRef.current
       if (!el) return
@@ -94,7 +105,7 @@ const HomeScreen = () => {
       },
     })
     fieldRef.current = field
-    crt.setField(field)
+    if (activeRef.current) crt.setField(field)
     field.setup()
     let cancelled = false
     loadNameFonts().then(() => {
@@ -115,7 +126,7 @@ const HomeScreen = () => {
       crt.release(field)
       fieldRef.current = null
     }
-  }, [crt, log, tagline])
+  }, [crt, log, tagline, armed])
 
   useEffect(() => {
     tagline.attach(taglineRef.current, () => crt.setWordTarget(tagline.hitTarget()))
@@ -133,7 +144,7 @@ const HomeScreen = () => {
     const nameIdle = () => {
       nameTimer = window.setTimeout(() => {
         const field = fieldRef.current
-        const points = arrived.current && field && !field.isDiffusing ? field.pointsInClient() : []
+        const points = arrived.current && activeRef.current && field && !field.isDiffusing ? field.pointsInClient() : []
         if (points.length) {
           const k = Math.floor((Math.random() * points.length) / 2) * 2
           crt.blast(points[k], points[k + 1], true)

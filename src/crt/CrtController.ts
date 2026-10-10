@@ -17,6 +17,8 @@ export type CrtEvent =
 type Listener = (event: CrtEvent) => void
 
 const ARRIVAL_POINT = 0.45
+const TAP_MS = 500
+const TAP_SLOP = 10
 
 const INTERACTIVE = 'a, button, input, textarea, select, label, [role="dialog"], [data-no-blast]'
 
@@ -27,7 +29,8 @@ export class CrtController {
   private transit: Transit | null = null
   private fireworks: Fireworks | null = null
   private handoff: { points: number[]; at: number } | null = null
-  private arrivalTimer = 0
+  private arrivalTimers = new Map<NameField, number>()
+  private tap: { x: number; y: number; t: number; id: number } | null = null
   private flightField: NameField | null = null
   private suppressHandoff = false
   private scrollFrame = 0
@@ -73,6 +76,8 @@ export class CrtController {
     }
     window.addEventListener('pointermove', this.onMove, { passive: true })
     window.addEventListener('pointerdown', this.onDown, { passive: true })
+    window.addEventListener('pointerup', this.onUp, { passive: true })
+    window.addEventListener('pointercancel', this.onCancel, { passive: true })
     window.addEventListener('pointerout', this.onOut, { passive: true })
     window.addEventListener('resize', this.onResize)
     window.addEventListener('scroll', this.onScroll, { passive: true })
@@ -87,10 +92,13 @@ export class CrtController {
     this.fireworks = null
     window.clearTimeout(this.idleTimer)
     window.clearTimeout(this.pulseTimer)
-    window.clearTimeout(this.arrivalTimer)
+    this.arrivalTimers.forEach((timer) => window.clearTimeout(timer))
+    this.arrivalTimers.clear()
     cancelAnimationFrame(this.scrollFrame)
     window.removeEventListener('pointermove', this.onMove)
     window.removeEventListener('pointerdown', this.onDown)
+    window.removeEventListener('pointerup', this.onUp)
+    window.removeEventListener('pointercancel', this.onCancel)
     window.removeEventListener('pointerout', this.onOut)
     window.removeEventListener('resize', this.onResize)
     window.removeEventListener('scroll', this.onScroll)
@@ -132,7 +140,7 @@ export class CrtController {
     this.handoff = null
     this.suppressHandoff = false
     const transit = this.transit
-    window.clearTimeout(this.arrivalTimer)
+    this.clearArrival(field)
     if (this.flightField) {
       transit?.abort()
       this.flightField = null
@@ -144,7 +152,7 @@ export class CrtController {
     }
     if (!handoff || !transit || performance.now() - handoff.at > 1500) {
       field.generate(text, true, this.latticeAnchor())
-      this.arrivalTimer = window.setTimeout(onArriving, 1100 * ARRIVAL_POINT)
+      this.arriveLater(field, onArriving, 1100 * ARRIVAL_POINT)
       return
     }
     field.place(text)
@@ -154,7 +162,7 @@ export class CrtController {
       this.flightField = null
       field.land(performance.now() - started)
     })
-    this.arrivalTimer = window.setTimeout(onArriving, duration * ARRIVAL_POINT)
+    this.arriveLater(field, onArriving, duration * ARRIVAL_POINT)
   }
 
   get fireworksRunning() {
@@ -187,7 +195,7 @@ export class CrtController {
   }
 
   release(field: NameField) {
-    window.clearTimeout(this.arrivalTimer)
+    this.clearArrival(field)
     const inFlight = this.flightField === field
     const points = inFlight ? (this.transit?.abort() ?? []) : field.pointsInClient()
     if (inFlight) this.flightField = null
@@ -261,6 +269,21 @@ export class CrtController {
     this.pulseTimer = window.setTimeout(() => this.emit({ type: 'pulse', moved, words: this.pulseWords.size }), 1100)
   }
 
+  private arriveLater(field: NameField, onArriving: () => void, ms: number) {
+    this.arrivalTimers.set(
+      field,
+      window.setTimeout(() => {
+        this.arrivalTimers.delete(field)
+        onArriving()
+      }, ms),
+    )
+  }
+
+  private clearArrival(field: NameField) {
+    window.clearTimeout(this.arrivalTimers.get(field))
+    this.arrivalTimers.delete(field)
+  }
+
   private emit(event: CrtEvent) {
     for (const listener of this.listeners) listener(event)
   }
@@ -304,7 +327,23 @@ export class CrtController {
     this.emit({ type: 'activity' })
     const target = e.target as Element | null
     if (target?.closest?.(INTERACTIVE) && !target.closest('[data-blast]')) return
+    if (e.pointerType !== 'touch') {
+      this.blast(e.clientX, e.clientY)
+      return
+    }
+    this.tap = { x: e.clientX, y: e.clientY, t: performance.now(), id: e.pointerId }
+  }
+
+  private onUp = (e: PointerEvent) => {
+    const tap = this.tap
+    this.tap = null
+    if (!tap || tap.id !== e.pointerId || performance.now() - tap.t > TAP_MS) return
+    if (Math.hypot(e.clientX - tap.x, e.clientY - tap.y) > TAP_SLOP) return
     this.blast(e.clientX, e.clientY)
+  }
+
+  private onCancel = () => {
+    this.tap = null
   }
 
   private onOut = (e: PointerEvent) => {

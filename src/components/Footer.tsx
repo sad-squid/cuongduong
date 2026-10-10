@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { LANGUAGE_META, SUPPORTED_LANGUAGES, toLanguage, type Language } from '@/i18n'
 import { useCrt } from '@/crt/context'
@@ -58,11 +57,20 @@ const FireworksButton = () => {
   )
 }
 
-const PAGES = [
-  ['/', 'footer.home'],
-  ['/about', 'footer.about'],
-  ['/work', 'footer.work'],
-] as const
+const LangCycle = ({ current }: { current: Language }) => {
+  const { t } = useTranslation()
+  const next = SUPPORTED_LANGUAGES[(SUPPORTED_LANGUAGES.indexOf(current) + 1) % SUPPORTED_LANGUAGES.length]
+  return (
+    <button
+      type="button"
+      className="lang-cycle"
+      aria-label={t('footer.languageCycle', { current: LANGUAGE_META[current].name, next: LANGUAGE_META[next].name })}
+      onClick={() => setLanguage(next)}
+    >
+      {LANGUAGE_META[current].code}
+    </button>
+  )
+}
 
 export const Footer = () => {
   const { t, i18n } = useTranslation()
@@ -70,11 +78,6 @@ export const Footer = () => {
 
   return (
     <footer className="footer">
-      <nav className="page-dots" aria-label={t('footer.pages')}>
-        {PAGES.map(([to, key]) => (
-          <Link key={`${to}-${lang}`} className="page-dot" to={to} aria-label={t(key)} title={t(key)} activeOptions={{ exact: true }} />
-        ))}
-      </nav>
       <nav className="doors pages" aria-label={t('footer.pages')}>
         <RouteDoor key={`home-${lang}`} label={t('footer.home')} to="/" />
         <RouteDoor key={`about-${lang}`} label={t('footer.about')} to="/about" />
@@ -90,6 +93,7 @@ export const Footer = () => {
           <LangButton key={code} code={code} current={code === lang} />
         ))}
       </div>
+      <LangCycle current={lang} />
     </footer>
   )
 }

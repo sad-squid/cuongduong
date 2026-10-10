@@ -10,7 +10,9 @@
     "pages": "Trang",
     "elsewhere": "Liên kết",
     "language": "Ngôn ngữ",
-    "fireworks": "pháo hoa"
+    "fireworks": "pháo hoa",
+    "languageCycle": "Ngôn ngữ: {{current}}. Chuyển sang {{next}}",
+    "scrollTo": "Cuộn đến {{page}}"
   },
   "palette": {
     "label": "Bảng lệnh",
