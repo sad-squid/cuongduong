@@ -155,6 +155,19 @@
     "perturb": "cursor moved {{moved}} points; restored in {{seconds}}s",
     "launch": "花火: 15s show, random cast",
     "pulse_one": "click moved {{moved}} points; interference reached {{count}} word",
-    "pulse_other": "click moved {{moved}} points; interference reached {{count}} words"
+    "pulse_other": "click moved {{moved}} points; interference reached {{count}} words",
+    "cast": {
+      "chiikawa": "chiikawa",
+      "hachiware": "hachiware",
+      "usagi": "usagi",
+      "pikachu": "pikachu",
+      "handsome_squidward": "handsome squidward",
+      "kirby": "kirby",
+      "pepe": "pepe",
+      "doge": "doge",
+      "crewmate": "crewmate",
+      "gigachad": "gigachad",
+      "trollface": "trollface"
+    }
   }
 }

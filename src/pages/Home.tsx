@@ -106,7 +106,7 @@ const HomeScreen = () => {
       if (event.type === 'activity') log.activity()
       if (event.type === 'layout') tagline.measure()
       if (event.type === 'fireworks' && event.on) log.log(true, `launch   ${say('launch')}`)
-      if (event.type === 'burst' && event.name) log.log(true, `burst    ${event.name}`)
+      if (event.type === 'burst' && event.name) log.log(true, `burst    ${say(`cast.${event.name.replace(/ /g, '_')}`)}`)
       if (event.type === 'pulse') log.log(true, `pulse    ${say('pulse', { moved: num(event.moved), count: event.words })}`)
     })
     return () => {

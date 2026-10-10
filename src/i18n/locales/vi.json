@@ -154,6 +154,19 @@
     "note": "cách mình làm nội dung AI: tạo, agent kiểm tra, người duyệt",
     "perturb": "con trỏ làm xê dịch {{moved}} điểm; trở lại sau {{seconds}} giây",
     "launch": "花火: màn pháo hoa 15 giây, nhân vật ngẫu nhiên",
-    "pulse_other": "cú bấm làm xê dịch {{moved}} điểm; nhiễu lan tới {{count}} chữ"
+    "pulse_other": "cú bấm làm xê dịch {{moved}} điểm; nhiễu lan tới {{count}} chữ",
+    "cast": {
+      "chiikawa": "Chiikawa",
+      "hachiware": "Hachiware",
+      "usagi": "Usagi",
+      "pikachu": "Pikachu",
+      "handsome_squidward": "Squidward đẹp trai",
+      "kirby": "Kirby",
+      "pepe": "ếch Pepe",
+      "doge": "chó Doge",
+      "crewmate": "phi hành viên Among Us",
+      "gigachad": "Gigachad",
+      "trollface": "mặt Troll"
+    }
   }
 }
