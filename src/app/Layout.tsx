@@ -2,11 +2,13 @@ import { useEffect, useRef, useState } from 'react'
 import { Outlet, useRouter, useRouterState } from '@tanstack/react-router'
 import { Footer } from '@/components/Footer'
 import { CommandPalette } from '@/components/CommandPalette'
+import { SoundLab } from '@/components/SoundLab'
 import { CrtController } from '@/crt/CrtController'
 import { CrtContext, prefersReducedMotion } from '@/crt/context'
 import { startLiveFavicon } from '@/crt/favicon'
 
 const SWIPE_ORDER = ['/', '/about', '/work'] as const
+const SHOW_SOUND_LAB = new URLSearchParams(window.location.search).has('sfx')
 
 export const Layout = () => {
   const [crt] = useState(() => new CrtController(prefersReducedMotion()))
@@ -91,6 +93,7 @@ export const Layout = () => {
           {announcement}
         </p>
         <CommandPalette />
+        {SHOW_SOUND_LAB ? <SoundLab /> : null}
       </div>
     </CrtContext.Provider>
   )

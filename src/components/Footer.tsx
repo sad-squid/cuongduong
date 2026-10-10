@@ -22,7 +22,10 @@ const LangButton = ({ code, current }: { code: Language; current: boolean }) => 
       aria-pressed={current}
       onPointerEnter={trigger}
       onFocus={trigger}
-      onClick={() => setLanguage(code)}
+      onClick={() => {
+        crt.sound.play('lang')
+        setLanguage(code)
+      }}
     >
       <span className="label-long">{text}</span>
       <span className="label-short" aria-hidden="true">
@@ -58,6 +61,25 @@ const FireworksButton = () => {
   )
 }
 
+const SoundButton = () => {
+  const crt = useCrt()
+  const { t } = useTranslation()
+  const [on, setOn] = useState(crt.sound.enabled)
+
+  const toggle = () => {
+    const next = !on
+    crt.sound.setEnabled(next)
+    if (next) crt.sound.play('toggle')
+    setOn(next)
+  }
+
+  return (
+    <button type="button" className={on ? 'icon-door sound on' : 'icon-door sound'} aria-label={t('footer.sound')} aria-pressed={on} onClick={toggle}>
+      <DotIcon icon={on ? 'sound' : 'muted'} />
+    </button>
+  )
+}
+
 const PAGES = [
   ['/', 'footer.home'],
   ['/about', 'footer.about'],
@@ -84,6 +106,7 @@ export const Footer = () => {
         <IconDoor icon="github" name="GitHub" href={LINKS.github} />
         <IconDoor icon="linkedin" name="LinkedIn" href={LINKS.linkedin} />
         <FireworksButton />
+        <SoundButton />
       </nav>
       <div className="langs" role="group" aria-label={t('footer.language')}>
         {SUPPORTED_LANGUAGES.map((code) => (

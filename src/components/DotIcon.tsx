@@ -1,12 +1,32 @@
 import { useId, type ReactNode } from 'react'
 
-export type IconName = 'github' | 'linkedin' | 'fireworks'
+export type IconName = 'github' | 'linkedin' | 'fireworks' | 'sound' | 'muted'
 
 const SIZE = 22
 const PITCH = 2
 const RADIUS = 0.95
 
+const SPEAKER = 'M2.5 8.5h4.2L12 4v16l-5.3-4.5H2.5z'
+
 const ICONS: Record<IconName, { box: number; draw: (fill: string) => ReactNode }> = {
+  sound: {
+    box: 24,
+    draw: (fill) => (
+      <>
+        <path fill={fill} d={SPEAKER} />
+        <path stroke={fill} strokeWidth={2.6} strokeLinecap="round" fill="none" d="M15.6 8.6a5 5 0 0 1 0 6.8M18.8 5.6a9.2 9.2 0 0 1 0 12.8" />
+      </>
+    ),
+  },
+  muted: {
+    box: 24,
+    draw: (fill) => (
+      <>
+        <path fill={fill} d={SPEAKER} />
+        <path stroke={fill} strokeWidth={2.6} strokeLinecap="round" d="M15.5 9.2l5.6 5.6M21.1 9.2l-5.6 5.6" />
+      </>
+    ),
+  },
   github: {
     box: 16,
     draw: (fill) => (

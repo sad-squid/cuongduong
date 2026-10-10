@@ -10,7 +10,8 @@
     "pages": "Pages",
     "elsewhere": "Elsewhere",
     "language": "Language",
-    "fireworks": "fireworks"
+    "fireworks": "fireworks",
+    "sound": "sound"
   },
   "palette": {
     "label": "Command palette",

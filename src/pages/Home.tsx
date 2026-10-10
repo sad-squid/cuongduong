@@ -119,6 +119,7 @@ const HomeScreen = () => {
 
   useEffect(() => {
     tagline.attach(taglineRef.current, () => crt.setWordTarget(tagline.hitTarget()))
+    tagline.setOnHit(() => crt.sound.play('tick'))
     return () => {
       crt.setWordTarget(null)
       tagline.destroy()
