@@ -1,9 +1,9 @@
-import { SPRITES, type Sprite } from './sprites'
+import { HOLE, SPRITES, type Sprite } from './sprites'
 import { COLORS } from './tokens'
 
 const SHOW_MS = 15000
 const RISE_MS = 900
-const MAX = 6000
+const MAX = 14000
 const GRAVITY = 220
 const SHELL_COLORS = [COLORS.warmCoral, COLORS.teal, COLORS.cream, COLORS.dustyRose, '#F7D046', COLORS.coral]
 
@@ -13,6 +13,60 @@ type Burst = { kind: 'sprite'; sprite: Sprite } | { kind: 'shell'; colors: numbe
 export type FireworksEvents = {
   onBurst: (x: number, y: number, name: string | null) => void
   onEnd: () => void
+}
+
+type Sampled = { xs: Float32Array; ys: Float32Array; colors: string[]; ci: Uint8Array; w: number; h: number }
+
+const sampled = new Map<string, Sampled>()
+let sampler: CanvasRenderingContext2D | null = null
+
+const rgb = (hex: string) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16))
+
+export const sampleSprite = (sprite: Sprite, height: number, pitch: number): Sampled => {
+  const key = `${sprite.name}:${Math.round(height)}:${pitch}`
+  const hit = sampled.get(key)
+  if (hit) return hit
+  const scale = height / sprite.h
+  const W = Math.ceil(sprite.w * scale)
+  const H = Math.ceil(height)
+  if (!sampler) sampler = document.createElement('canvas').getContext('2d', { willReadFrequently: true })
+  const out: Sampled = { xs: new Float32Array(0), ys: new Float32Array(0), colors: sprite.palette, ci: new Uint8Array(0), w: W, h: H }
+  const c = sampler
+  if (!c) return out
+  c.canvas.width = W
+  c.canvas.height = H
+  c.setTransform(scale, 0, 0, scale, 0, 0)
+  c.clearRect(0, 0, sprite.w, sprite.h)
+  sprite.draw(c)
+  const data = c.getImageData(0, 0, W, H).data
+  const refs = sprite.palette.map(rgb)
+  const xs: number[] = []
+  const ys: number[] = []
+  const ci: number[] = []
+  for (let y = pitch / 2; y < H; y += pitch) {
+    for (let x = pitch / 2; x < W; x += pitch) {
+      const o = (Math.floor(y) * W + Math.floor(x)) * 4
+      if (data[o + 3] < 160) continue
+      let best = 0
+      let dist = Infinity
+      for (let k = 0; k < refs.length; k++) {
+        const d = (refs[k][0] - data[o]) ** 2 + (refs[k][1] - data[o + 1]) ** 2 + (refs[k][2] - data[o + 2]) ** 2
+        if (d < dist) {
+          dist = d
+          best = k
+        }
+      }
+      if (sprite.palette[best] === HOLE) continue
+      xs.push(x - W / 2)
+      ys.push(y - H / 2)
+      ci.push(best)
+    }
+  }
+  out.xs = Float32Array.from(xs)
+  out.ys = Float32Array.from(ys)
+  out.ci = Uint8Array.from(ci)
+  sampled.set(key, out)
+  return out
 }
 
 const shuffle = <T,>(list: T[]) => {
@@ -153,6 +207,10 @@ export class Fireworks {
     this.rockets.push({ x, y: this.h + 10, fromY: this.h + 10, toY, start: now, burst, trail: this.colorIndex(COLORS.warmCoral) })
   }
 
+  private spriteHeight() {
+    return this.w >= 900 ? Math.min(260, this.h * 0.28) : Math.min(170, this.w * 0.42, this.h * 0.2)
+  }
+
   private add(x: number, y: number, vx: number, vy: number, life: number, color: number, size: number, now: number) {
     if (this.n >= MAX) return -1
     const i = this.n++
@@ -188,22 +246,17 @@ export class Fireworks {
       return
     }
     const { sprite } = burst
-    const cols = Math.max(...sprite.rows.map((row) => row.length))
-    const cell = Math.max(7, Math.min(14, Math.min(this.w, this.h) * 0.022))
-    const left = x - (cols * cell) / 2
-    const top = y - (sprite.rows.length * cell) / 2
-    sprite.rows.forEach((row, ry) => {
-      for (let cx = 0; cx < row.length; cx++) {
-        const hex = sprite.colors[row[cx]]
-        if (!hex) continue
-        const i = this.add(x + (Math.random() - 0.5) * 6, y + (Math.random() - 0.5) * 6, 0, 0, 0, this.colorIndex(hex), cell * 0.55, now)
-        if (i < 0) continue
-        this.tx[i] = left + cx * cell
-        this.ty[i] = top + ry * cell
-        this.forming[i] = 1
-        this.release[i] = now + 1900 + Math.random() * 250
-      }
-    })
+    const pitch = this.lowPower ? 4 : 3
+    const art = sampleSprite(sprite, this.spriteHeight(), pitch)
+    const colors = art.colors.map((hex) => this.colorIndex(hex))
+    for (let k = 0; k < art.xs.length; k++) {
+      const i = this.add(x + (Math.random() - 0.5) * 8, y + (Math.random() - 0.5) * 8, 0, 0, 0, colors[art.ci[k]], pitch * 0.6, now)
+      if (i < 0) break
+      this.tx[i] = x + art.xs[k]
+      this.ty[i] = y + art.ys[k]
+      this.forming[i] = 1
+      this.release[i] = now + 1900 + Math.random() * 250
+    }
     this.events?.onBurst(x, y, sprite.name)
   }
 
@@ -282,15 +335,14 @@ export class Fireworks {
     c.globalCompositeOperation = 'destination-out'
     c.globalAlpha = 0.32
     c.fillRect(0, 0, this.w, this.h)
-    c.globalCompositeOperation = 'lighter'
-    const buckets = new Map<number, Path2D>()
+    const held = new Map<number, Path2D>()
+    const loose = new Map<number, Path2D>()
     for (let i = 0; i < this.n; i++) {
-      let fade = 1
-      if (this.forming[i]) fade = 0.8 + Math.random() * 0.2
-      else fade = Math.max(0, 1 - (now - this.born[i]) / this.life[i])
-      const level = Math.min(3, Math.floor(fade * 4))
+      const fade = this.forming[i] ? 0.85 + Math.random() * 0.15 : Math.max(0, 1 - (now - this.born[i]) / this.life[i])
+      const level = Math.min(3, Math.ceil(fade * 3))
       if (level <= 0) continue
       const key = this.color[i] * 4 + level
+      const buckets = this.forming[i] ? held : loose
       let path = buckets.get(key)
       if (!path) {
         path = new Path2D()
@@ -299,11 +351,17 @@ export class Fireworks {
       const s = this.size[i]
       path.rect(this.x[i] - s / 2, this.y[i] - s / 2, s, s)
     }
-    for (const [key, path] of buckets) {
-      c.fillStyle = this.palette[key >> 2]
-      c.globalAlpha = (key & 3) / 3
-      c.fill(path)
+    const fill = (buckets: Map<number, Path2D>) => {
+      for (const [key, path] of buckets) {
+        c.fillStyle = this.palette[key >> 2]
+        c.globalAlpha = (key & 3) / 3
+        c.fill(path)
+      }
     }
+    c.globalCompositeOperation = 'lighter'
+    fill(loose)
+    c.globalCompositeOperation = 'source-over'
+    fill(held)
     c.globalCompositeOperation = 'source-over'
     c.globalAlpha = 1
   }
