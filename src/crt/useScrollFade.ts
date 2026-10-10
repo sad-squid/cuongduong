@@ -25,6 +25,10 @@ export const useScrollFade = (root: RefObject<HTMLElement | null>) => {
       const top = vh * TOP_BAND
       const bottomStart = vh - FOOTER_SPACE - vh * BOTTOM_BAND
       const bottomEnd = vh - FOOTER_SPACE
+      const scrolled = window.scrollY
+      const remaining = Math.max(0, document.documentElement.scrollHeight - vh - scrolled)
+      const topStrength = Math.min(1, scrolled / top)
+      const bottomStrength = Math.min(1, remaining / (bottomEnd - bottomStart))
       container.querySelectorAll<HTMLElement>('.page-aside .stage').forEach((el) => {
         if (wide.matches) clear(el)
       })
@@ -34,10 +38,10 @@ export const useScrollFade = (root: RefObject<HTMLElement | null>) => {
         let visible = 1
         let shift = 0
         if (center < top) {
-          visible = Math.max(0, center / top)
+          visible = 1 - (1 - Math.max(0, center / top)) * topStrength
           shift = -(1 - visible) * 14
         } else if (center > bottomStart) {
-          visible = Math.max(0, Math.min(1, (bottomEnd - center) / (bottomEnd - bottomStart)))
+          visible = 1 - (1 - Math.max(0, Math.min(1, (bottomEnd - center) / (bottomEnd - bottomStart)))) * bottomStrength
           shift = (1 - visible) * 18
         }
         if (visible >= 0.999) {
