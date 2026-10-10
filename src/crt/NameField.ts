@@ -57,6 +57,8 @@ export class NameField {
   private disturbedAt = 0
   private blasted = false
   private hidden = false
+  private ready = false
+  private queued: { text: string; apply: (text: string) => void } | null = null
   private tear: Tear | null = null
   private text = ''
   rect: DOMRect | null = null
@@ -72,8 +74,12 @@ export class NameField {
     return this.diffusing
   }
 
-  get pointCount() {
-    return this.n
+  get isReady() {
+    return this.ready && !this.diffusing && !this.hidden
+  }
+
+  queue(text: string, apply: (text: string) => void) {
+    this.queued = { text, apply }
   }
 
   setup() {
@@ -98,20 +104,15 @@ export class NameField {
     this.rect = this.canvas.getBoundingClientRect()
   }
 
-  textBoxInClient() {
-    if (!this.rect) return null
-    const { x0, y0, x1, y1 } = this.box
-    return { left: this.rect.left + x0, top: this.rect.top + y0, right: this.rect.left + x1, bottom: this.rect.top + y1 }
-  }
-
   generate(text: string, first: boolean, anchor: LatticeAnchor | null) {
     if (!this.ctx) return
     this.text = text
+    this.ready = false
     this.retarget(text)
     if (this.reduceMotion) {
       this.snap()
       this.paint(1)
-      this.callbacks.onSettled({ points: this.n, steps: 0, ms: 0, seed: 0 })
+      this.settle({ points: this.n, steps: 0, ms: 0, seed: 0 })
       return
     }
     this.seed = Math.floor(Math.random() * 0xffff)
@@ -133,6 +134,7 @@ export class NameField {
   place(text: string) {
     if (!this.ctx) return
     this.text = text
+    this.ready = false
     this.retarget(text)
     this.snap()
     this.hidden = true
@@ -144,7 +146,15 @@ export class NameField {
   land(ms: number) {
     this.hidden = false
     this.paint(1)
-    this.callbacks.onSettled({ points: this.n, steps: 0, ms, seed: 0, carried: true })
+    this.settle({ points: this.n, steps: 0, ms, seed: 0, carried: true })
+  }
+
+  private settle(result: GenerateResult) {
+    this.ready = true
+    this.callbacks.onSettled(result)
+    const queued = this.queued
+    this.queued = null
+    if (queued && queued.text !== this.text) queued.apply(queued.text)
   }
 
   pointsInClient() {
@@ -241,6 +251,7 @@ export class NameField {
   destroy() {
     cancelAnimationFrame(this.raf)
     this.running = false
+    this.queued = null
   }
 
   private sample(text: string) {
@@ -437,7 +448,7 @@ export class NameField {
       this.snap()
       this.peak = 0
       this.disturbedAt = 0
-      this.callbacks.onSettled({ points: this.n, steps: STEPS, ms: performance.now() - this.t0, seed: this.seed })
+      this.settle({ points: this.n, steps: STEPS, ms: performance.now() - this.t0, seed: this.seed })
     }
   }
 

@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from 'react'
 import { useNavigate, useRouterState } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
+import { SUPPORTED_LANGUAGES } from '@/i18n'
 import { useCrt } from '@/crt/context'
-import { LINKS, SITE_LANGS } from '@/content/names'
+import { LINKS } from '@/content/names'
 
 type Command = { id: string; label: string; hint: string; run: () => void }
 
@@ -24,7 +25,7 @@ export const CommandPalette = () => {
       { id: 'work', label: 'work', hint: t('palette.work'), run: () => navigate({ to: '/work' }) },
       { id: 'github', label: 'github', hint: 'github.com/sad-squid', run: () => window.location.assign(LINKS.github) },
       { id: 'linkedin', label: 'linkedin', hint: 'linkedin.com/in/cuongduong-dev', run: () => window.location.assign(LINKS.linkedin) },
-      ...SITE_LANGS.map((code) => ({ id: `lang-${code}`, label: `lang ${code}`, hint: t(`palette.lang.${code}`), run: () => i18n.changeLanguage(code) })),
+      ...SUPPORTED_LANGUAGES.map((code) => ({ id: `lang-${code}`, label: `lang ${code}`, hint: t(`palette.lang.${code}`), run: () => i18n.changeLanguage(code) })),
     ]
     return path === '/' ? [...list, { id: 'replay', label: 'replay', hint: t('palette.replay'), run: () => crt.replay() }] : list
   }, [t, i18n, navigate, path, crt])
@@ -85,7 +86,7 @@ export const CommandPalette = () => {
   const current = Math.min(active, Math.max(0, matches.length - 1))
 
   return (
-    <div className="palette-backdrop" onPointerDown={(e) => (e.target === e.currentTarget ? close() : null)}>
+    <div className="palette-backdrop" data-no-blast onPointerDown={(e) => (e.target === e.currentTarget ? close() : null)}>
       <div className="palette" role="dialog" aria-modal="true" aria-label={t('palette.label')}>
         <label className="palette-prompt">
           <span aria-hidden="true">&gt;</span>

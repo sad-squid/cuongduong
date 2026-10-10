@@ -68,7 +68,6 @@ export class Lattice {
   }
 
   setup() {
-    if (this.reduceMotion) return
     const r = this.canvas.getBoundingClientRect()
     const d = Math.min(1.5, window.devicePixelRatio || 1)
     this.canvas.width = Math.max(1, Math.round(r.width * d))
@@ -144,10 +143,6 @@ export class Lattice {
       lc.fill(odd)
     }
     this.cache = cache
-  }
-
-  refreshRect() {
-    this.rect = this.canvas.getBoundingClientRect()
   }
 
   enable() {
@@ -248,7 +243,7 @@ export class Lattice {
   }
 
   private wake() {
-    if (this.running || !this.ctx || !this.enabled) return
+    if (this.running || !this.ctx || !this.enabled || this.reduceMotion) return
     this.running = true
     this.raf = requestAnimationFrame(this.frame)
   }

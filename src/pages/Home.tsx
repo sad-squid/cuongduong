@@ -1,18 +1,20 @@
 import { useEffect, useEffectEvent, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { toLanguage } from '@/i18n'
 import { Tagline } from '@/components/Tagline'
 import { SignalLog } from '@/components/SignalLog'
 import { useCrt, loadNameFonts } from '@/crt/context'
+import { useDocumentTitle } from '@/crt/useDocumentTitle'
 import { LogStore } from '@/crt/LogStore'
 import { NameField } from '@/crt/NameField'
 import { TaglineStore } from '@/crt/TaglineStore'
 import { COLORS, contrastRatio } from '@/crt/tokens'
-import { NAMES, NAME_ORDER, toSiteLang } from '@/content/names'
+import { NAMES, NAME_ORDER } from '@/content/names'
 
 const HomeScreen = () => {
   const crt = useCrt()
   const { t, i18n } = useTranslation()
-  const lang = toSiteLang(i18n.resolvedLanguage)
+  const lang = toLanguage(i18n.resolvedLanguage)
   const line = t('home.line')
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const stepRef = useRef<HTMLDivElement>(null)
@@ -34,11 +36,9 @@ const HomeScreen = () => {
 
   const regenerate = (index: number) => {
     const field = fieldRef.current
-    if (!field || !landed.current || field.isDiffusing) return
+    if (!field || nameIndex.current === index) return
     nameIndex.current = index
-    crt.ejectFromName()
-    field.generate(request(index), false, null)
-    crt.tear(1.6, true)
+    crt.regenerate(field, request(index))
   }
 
   const arrived = useRef(false)
@@ -149,6 +149,7 @@ const HomeScreen = () => {
 
 export const Home = () => {
   const crt = useCrt()
+  useDocumentTitle(null)
   const [run, setRun] = useState(0)
 
   useEffect(

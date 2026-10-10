@@ -14,6 +14,8 @@ export class Transit {
   private tx = new Float32Array(0)
   private ty = new Float32Array(0)
   private delay = new Float32Array(0)
+  private cx = new Float32Array(0)
+  private cy = new Float32Array(0)
   private t0 = 0
   private duration = 0
   private raf = 0
@@ -21,10 +23,6 @@ export class Transit {
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas
-  }
-
-  get isFlying() {
-    return this.done !== null
   }
 
   setup() {
@@ -38,11 +36,7 @@ export class Transit {
   }
 
   fly(from: number[], to: number[], onDone: () => void) {
-    return this.start(from, to, onDone)
-  }
-
-  private start(from: number[], to: number[], onDone: () => void) {
-    this.cancel()
+    this.abort()
     const m = from.length / 2
     const n = to.length / 2
     if (!this.ctx || !m || !n) {
@@ -58,6 +52,8 @@ export class Transit {
     this.tx = new Float32Array(n)
     this.ty = new Float32Array(n)
     this.delay = new Float32Array(n)
+    this.cx = new Float32Array(n)
+    this.cy = new Float32Array(n)
     let distance = 0
     for (let rank = 0; rank < n; rank++) {
       const i = toOrder[rank]
@@ -67,6 +63,8 @@ export class Transit {
       this.tx[rank] = to[i * 2]
       this.ty[rank] = to[i * 2 + 1]
       this.delay[rank] = (rank / n) * STAGGER_MS + Math.random() * 60
+      this.cx[rank] = this.sx[rank]
+      this.cy[rank] = this.sy[rank]
       distance = Math.max(distance, Math.hypot(this.tx[rank] - this.sx[rank], this.ty[rank] - this.sy[rank]))
     }
     this.duration = Math.min(1000, 520 + distance * 0.45)
@@ -76,12 +74,13 @@ export class Transit {
     return this.duration + STAGGER_MS
   }
 
-  cancel() {
+  abort() {
+    const points: number[] = []
+    if (this.done) for (let i = 0; i < this.n; i++) points.push(this.cx[i], this.cy[i])
     cancelAnimationFrame(this.raf)
-    const finish = this.done
     this.done = null
     this.clear()
-    finish?.()
+    return points
   }
 
   destroy() {
@@ -111,6 +110,8 @@ export class Transit {
       const len = Math.hypot(dx, dy) || 1
       const x = this.sx[i] + dx * e + (-dy / len) * wobble * ((i & 1) * 2 - 1)
       const y = this.sy[i] + dy * e + (dx / len) * wobble * ((i & 1) * 2 - 1)
+      this.cx[i] = x
+      this.cy[i] = y
       ;(p > 0.15 && p < 0.85 ? fast : calm).rect(x, y, DOT, DOT)
     }
     const d = this.dpr

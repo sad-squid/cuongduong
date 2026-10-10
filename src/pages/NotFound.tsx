@@ -3,12 +3,14 @@ import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useCrt, loadNameFonts } from '@/crt/context'
 import { NameField } from '@/crt/NameField'
+import { useDocumentTitle } from '@/crt/useDocumentTitle'
 
 const SIGNALS = ['404', '迷子']
 
 export const NotFound = () => {
   const crt = useCrt()
   const { t } = useTranslation()
+  useDocumentTitle(t('notFound.title'))
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const fieldRef = useRef<NameField | null>(null)
   const index = useRef(0)
@@ -42,11 +44,9 @@ export const NotFound = () => {
 
   const cycle = () => {
     const field = fieldRef.current
-    if (!field || field.isDiffusing) return
+    if (!field) return
     index.current = (index.current + 1) % SIGNALS.length
-    crt.ejectFromName()
-    field.generate(SIGNALS[index.current], false, null)
-    crt.tear(1.6, true)
+    crt.regenerate(field, SIGNALS[index.current])
   }
 
   return (

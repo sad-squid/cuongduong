@@ -24,6 +24,9 @@ export class CrtController {
   private transit: Transit | null = null
   private handoff: { points: number[]; at: number } | null = null
   private arrivalTimer = 0
+  private flightField: NameField | null = null
+  private suppressHandoff = false
+  private scrollFrame = 0
   private listeners = new Set<Listener>()
   private lastTear = -Infinity
   private idleTimer = 0
@@ -41,10 +44,6 @@ export class CrtController {
     this.reduceMotion = reduceMotion
   }
 
-  get isLowPower() {
-    return this.lowPower
-  }
-
   get isRevealed() {
     return this.revealed
   }
@@ -57,7 +56,7 @@ export class CrtController {
   }
 
   mount(canvas: HTMLCanvasElement, transitCanvas: HTMLCanvasElement) {
-    this.lattice = new Lattice(canvas, this.reduceMotion, this.sampleFrame)
+    this.lattice = new Lattice(canvas, this.reduceMotion, this.frame)
     this.lattice.setup()
     this.transit = new Transit(transitCanvas)
     this.transit.setup()
@@ -81,6 +80,7 @@ export class CrtController {
     window.clearTimeout(this.idleTimer)
     window.clearTimeout(this.pulseTimer)
     window.clearTimeout(this.arrivalTimer)
+    cancelAnimationFrame(this.scrollFrame)
     window.removeEventListener('pointermove', this.onMove)
     window.removeEventListener('pointerdown', this.onDown)
     window.removeEventListener('pointerout', this.onOut)
@@ -100,6 +100,8 @@ export class CrtController {
   }
 
   replay() {
+    this.handoff = null
+    this.suppressHandoff = true
     window.clearTimeout(this.idleTimer)
     this.lattice?.reset()
     this.revealed = false
@@ -107,7 +109,6 @@ export class CrtController {
     this.emit({ type: 'replay' })
   }
 
-  frame = (t: number) => this.sampleFrame(t)
 
   setSnow(on: boolean) {
     this.lattice?.setSnow(on)
@@ -121,8 +122,13 @@ export class CrtController {
   introduce(field: NameField, text: string, onArriving: () => void = () => {}) {
     const handoff = this.handoff
     this.handoff = null
+    this.suppressHandoff = false
     const transit = this.transit
     window.clearTimeout(this.arrivalTimer)
+    if (this.flightField) {
+      transit?.abort()
+      this.flightField = null
+    }
     if (this.reduceMotion) {
       field.generate(text, true, null)
       onArriving()
@@ -135,14 +141,30 @@ export class CrtController {
     }
     field.place(text)
     const started = performance.now()
-    const duration = transit.fly(handoff.points, field.targetsInClient(), () => field.land(performance.now() - started))
+    this.flightField = field
+    const duration = transit.fly(handoff.points, field.targetsInClient(), () => {
+      this.flightField = null
+      field.land(performance.now() - started)
+    })
     this.arrivalTimer = window.setTimeout(onArriving, duration * ARRIVAL_POINT)
+  }
+
+  regenerate(field: NameField, text: string) {
+    if (!field.isReady) {
+      field.queue(text, (next) => this.regenerate(field, next))
+      return
+    }
+    this.ejectFromName()
+    field.generate(text, false, null)
+    this.tear(1.6, true)
   }
 
   release(field: NameField) {
     window.clearTimeout(this.arrivalTimer)
-    const points = field.pointsInClient()
-    if (points.length) this.handoff = { points, at: performance.now() }
+    const inFlight = this.flightField === field
+    const points = inFlight ? (this.transit?.abort() ?? []) : field.pointsInClient()
+    if (inFlight) this.flightField = null
+    if (points.length && !this.suppressHandoff) this.handoff = { points, at: performance.now() }
     if (this.field === field) this.setField(null)
     field.destroy()
   }
@@ -202,10 +224,10 @@ export class CrtController {
       this.lattice.addSpark(clientX, clientY, Math.cos(a) * speed, Math.sin(a) * speed)
     }
     this.tear(1.2, true)
-    this.pulseWords = new Set()
     const now = performance.now()
     if (now - this.lastPulse < 2500) return
     this.lastPulse = now
+    this.pulseWords = new Set()
     window.clearTimeout(this.pulseTimer)
     this.pulseTimer = window.setTimeout(() => this.emit({ type: 'pulse', moved, words: this.pulseWords.size }), 1100)
   }
@@ -222,7 +244,7 @@ export class CrtController {
     }, 7000 + Math.random() * 7000)
   }
 
-  private sampleFrame = (t: number) => {
+  frame = (t: number) => {
     const dt = t - this.frameLast
     this.frameLast = t
     if (dt <= 0 || dt > 200) return
@@ -271,7 +293,11 @@ export class CrtController {
   }
 
   private onScroll = () => {
-    this.lattice?.refreshRect()
-    this.field?.refreshRect()
+    if (this.scrollFrame) return
+    this.scrollFrame = requestAnimationFrame(() => {
+      this.scrollFrame = 0
+      this.field?.refreshRect()
+      this.emit({ type: 'layout' })
+    })
   }
 }

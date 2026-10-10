@@ -1,8 +1,8 @@
 import { useEffect, useEffectEvent, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
+import { SUPPORTED_LANGUAGES, toLanguage } from '@/i18n'
 import { useCrt, loadNameFonts } from '@/crt/context'
 import { NameField, type FieldLayout } from '@/crt/NameField'
-import { SITE_LANGS, toSiteLang } from '@/content/names'
 
 const INSET = 48
 
@@ -11,16 +11,15 @@ const TITLE_LAYOUT: FieldLayout = { align: 'left', inset: INSET, fontSize: (w) =
 export const PointTitle = ({ titleKey, onLanded }: { titleKey: string; onLanded: () => void }) => {
   const crt = useCrt()
   const { t, i18n } = useTranslation()
-  const lang = toSiteLang(i18n.resolvedLanguage)
+  const lang = toLanguage(i18n.resolvedLanguage)
   const title = t(titleKey)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const fieldRef = useRef<NameField | null>(null)
-  const landed = useRef(false)
   const shown = useRef<string | null>(null)
   const cycle = useRef(0)
 
   const variants = () => {
-    const order = [lang, ...SITE_LANGS.filter((code) => code !== lang)]
+    const order = [lang, ...SUPPORTED_LANGUAGES.filter((code) => code !== lang)]
     return order.map((code) => i18n.getFixedT(code)(titleKey))
   }
 
@@ -28,10 +27,7 @@ export const PointTitle = ({ titleKey, onLanded }: { titleKey: string; onLanded:
 
   const regenerate = (text: string) => {
     const field = fieldRef.current
-    if (!field || !landed.current || field.isDiffusing) return
-    crt.ejectFromName()
-    field.generate(text, false, null)
-    crt.tear(1.6, true)
+    if (field) crt.regenerate(field, text)
   }
 
   useEffect(() => {
@@ -44,7 +40,6 @@ export const PointTitle = ({ titleKey, onLanded }: { titleKey: string; onLanded:
         onFrame: crt.frame,
         onStep: () => {},
         onSettled: () => {
-          landed.current = true
           crt.liftName()
           landedEvent()
         },
@@ -65,7 +60,6 @@ export const PointTitle = ({ titleKey, onLanded }: { titleKey: string; onLanded:
       cancelled = true
       crt.release(field)
       fieldRef.current = null
-      landed.current = false
     }
   }, [crt])
 

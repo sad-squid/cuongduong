@@ -2,6 +2,7 @@ import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { PointTitle } from '@/components/PointTitle'
 import { useArrival } from '@/crt/useArrival'
+import { useDocumentTitle } from '@/crt/useDocumentTitle'
 import { useReveal } from '@/crt/useReveal'
 import { useScrollFade } from '@/crt/useScrollFade'
 
@@ -16,6 +17,7 @@ export const About = () => {
   const languages = t('about.languages', { returnObjects: true }) as LanguageRow[]
   const recognition = t('about.recognition', { returnObjects: true }) as string[]
   const { land, stage } = useArrival()
+  useDocumentTitle(t('about.title'))
   const pageRef = useRef<HTMLElement>(null)
   useScrollFade(pageRef)
 

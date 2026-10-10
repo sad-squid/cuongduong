@@ -10,6 +10,7 @@ export class LogStore {
   private done: string[] = []
   private partial: string | null = null
   private typing = false
+  private current: string | null = null
   private lastActivity = performance.now()
   private typer = 0
   private pumpTimer = 0
@@ -36,24 +37,13 @@ export class LogStore {
       return
     }
     ;(action ? this.actions : this.idle).push(text)
+    if (action && this.typing) this.finishCurrent()
     this.pump()
   }
 
   activity() {
     this.lastActivity = performance.now()
     if (this.idle.length && !this.typing) this.schedulePump(QUIET_MS)
-  }
-
-  reset() {
-    window.clearTimeout(this.typer)
-    window.clearTimeout(this.pumpTimer)
-    this.actions = []
-    this.idle = []
-    this.done = []
-    this.partial = null
-    this.typing = false
-    this.lastActivity = performance.now()
-    this.publish()
   }
 
   destroy() {
@@ -67,8 +57,17 @@ export class LogStore {
     this.pumpTimer = window.setTimeout(() => this.pump(), ms)
   }
 
+  private finishCurrent() {
+    window.clearTimeout(this.typer)
+    if (this.current !== null) this.done = [...this.done, this.current].slice(-VISIBLE)
+    this.current = null
+    this.partial = null
+    this.typing = false
+  }
+
   private pump() {
     if (this.typing) return
+    while (this.actions.length > 1) this.done = [...this.done, this.actions.shift() as string].slice(-VISIBLE)
     const now = performance.now()
     const next = this.actions.length
       ? this.actions.shift()
@@ -84,6 +83,7 @@ export class LogStore {
 
   private type(line: string) {
     this.typing = true
+    this.current = line
     let i = 0
     const step = () => {
       if (i <= line.length) {
@@ -95,6 +95,7 @@ export class LogStore {
       }
       this.done = [...this.done, line].slice(-VISIBLE)
       this.partial = null
+      this.current = null
       this.typing = false
       this.publish()
       this.typer = window.setTimeout(() => this.pump(), 380)

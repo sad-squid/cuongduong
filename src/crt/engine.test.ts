@@ -7,7 +7,8 @@ import { TaglineStore, segmentWords } from './TaglineStore'
 
 let now = 0
 let frames: FrameRequestCallback[] = []
-let timers: { at: number; fn: () => void }[] = []
+let timers: { id: number; at: number; fn: () => void }[] = []
+let timerId = 0
 
 const fakeContext = () => ({
   setTransform: () => {},
@@ -64,14 +65,21 @@ beforeEach(() => {
       rect() {}
     },
   )
-  const setTimeoutStub = (fn: () => void, ms = 0) => timers.push({ at: now + ms, fn })
+  const setTimeoutStub = (fn: () => void, ms = 0) => {
+    timerId += 1
+    timers.push({ id: timerId, at: now + ms, fn })
+    return timerId
+  }
+  const clearTimeoutStub = (id: number) => {
+    timers = timers.filter((t) => t.id !== id)
+  }
   vi.stubGlobal('window', {
     devicePixelRatio: 2,
     innerHeight: 800,
     addEventListener: () => {},
     removeEventListener: () => {},
     setTimeout: setTimeoutStub,
-    clearTimeout: () => {},
+    clearTimeout: clearTimeoutStub,
   })
   vi.stubGlobal('document', { createElement: () => fakeCanvas(10, 10) })
 })
@@ -227,6 +235,63 @@ describe('heading handoff', () => {
   })
 })
 
+describe('review regressions', () => {
+  const noop = { onFrame: () => {}, onStep: () => {}, onPerturbed: () => {} }
+  const settledField = (controller: CrtController, text: string, onSettled = () => {}) => {
+    const field = new NameField(fakeCanvas(1280, 520), false, { ...noop, onSettled })
+    field.setup()
+    controller.introduce(field, text)
+    advance(16, 120)
+    return field
+  }
+
+  it('replay plays the lattice intro, not a carry flight', () => {
+    const controller = new CrtController(false)
+    controller.mount(fakeCanvas(1280, 800), fakeCanvas(1280, 800))
+    const before = settledField(controller, 'Cuong')
+    controller.replay()
+    controller.release(before)
+    const after = new NameField(fakeCanvas(1280, 520), false, { ...noop, onSettled: () => {} })
+    after.setup()
+    controller.introduce(after, 'Cuong')
+    expect(after.isDiffusing).toBe(true)
+    controller.unmount()
+  })
+
+  it('leaving mid-flight aborts the flight and hands its points on', () => {
+    const controller = new CrtController(false)
+    controller.mount(fakeCanvas(1280, 800), fakeCanvas(1280, 800))
+    controller.release(settledField(controller, 'Cuong'))
+    const aboutSettled = vi.fn()
+    const about = new NameField(fakeCanvas(1280, 520), false, { ...noop, onSettled: aboutSettled })
+    about.setup()
+    controller.introduce(about, 'About')
+    advance(16, 10)
+    controller.release(about)
+    const work = new NameField(fakeCanvas(1280, 520), false, { ...noop, onSettled: () => {} })
+    work.setup()
+    controller.introduce(work, 'Work')
+    expect(work.isDiffusing).toBe(false)
+    advance(16, 120)
+    expect(aboutSettled).not.toHaveBeenCalled()
+    controller.unmount()
+  })
+
+  it('queues a regenerate that arrives before the heading is ready', () => {
+    const controller = new CrtController(false)
+    controller.mount(fakeCanvas(1280, 800), fakeCanvas(1280, 800))
+    const settled = vi.fn()
+    const field = new NameField(fakeCanvas(1280, 520), false, { ...noop, onSettled: settled })
+    field.setup()
+    controller.introduce(field, 'Cuong')
+    advance(16, 5)
+    controller.regenerate(field, 'Cường')
+    advance(16, 200)
+    expect(settled).toHaveBeenCalledTimes(2)
+    controller.unmount()
+  })
+})
+
 describe('LogStore', () => {
   it('types actions immediately and holds idle lines for a 3s pause', () => {
     const log = new LogStore(false)
@@ -240,6 +305,23 @@ describe('LogStore', () => {
     advance(50, 80)
     expect(log.getSnapshot().map((l) => l.text)).toContain('note     idle')
     expect(log.getSnapshot()[0].human).toBe(true)
+  })
+})
+
+describe('LogStore backlog', () => {
+  it('keeps up with rapid actions: finishes the current line and types only the newest', () => {
+    const log = new LogStore(false)
+    log.log(true, 'request  first event with a long line of text to type out')
+    advance(30, 2)
+    log.log(true, 'pulse    second')
+    log.log(true, 'pulse    third')
+    log.log(true, 'pulse    newest')
+    const texts = () => log.getSnapshot().map((l) => l.text)
+    expect(texts()).toContain('request  first event with a long line of text to type out')
+    expect(texts()).toContain('pulse    second')
+    expect(texts()).toContain('pulse    third')
+    advance(50, 40)
+    expect(texts()[texts().length - 1]).toBe('pulse    newest')
   })
 })
 

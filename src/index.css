@@ -4,7 +4,7 @@
   font-weight: 700;
   font-display: block;
   src: url('/fonts/name-jp-700.woff2') format('woff2');
-  unicode-range: U+30b3, U+30f3, U+5b50, U+5f37, U+5fd7, U+8ff7;
+  unicode-range: U+30b3, U+30f3, U+4e8b, U+4ecb, U+4ed5, U+5b50, U+5df1, U+5f37, U+5fd7, U+7d39, U+81ea, U+8ff7;
 }
 
 :root {
@@ -17,7 +17,7 @@
   --dusty-rose: #b58484;
   --rose-text: #ba7f8a;
   --muted: color-mix(in srgb, var(--beige) 72%, var(--bg));
-  --faint: color-mix(in srgb, var(--beige) 55%, var(--bg));
+  --faint: color-mix(in srgb, var(--beige) 62%, var(--bg));
   --line: color-mix(in srgb, var(--cream) 22%, var(--bg));
   --glow-1: 0 0 3px rgb(240 110 97 / 0.6), -3px 0 6px rgb(240 110 97 / 0.3), 3px 0 6px rgb(240 110 97 / 0.3);
   --glow-2: 0 0 3px rgb(240 110 97 / 0.35), -2px 0 5px rgb(240 110 97 / 0.15), 2px 0 5px rgb(240 110 97 / 0.15);
@@ -153,6 +153,12 @@ body {
   height: 150px;
   cursor: default;
   touch-action: manipulation;
+}
+
+.name-button:focus-visible,
+.title-button:focus-visible {
+  outline: 2px solid var(--warm-coral);
+  outline-offset: 6px;
 }
 
 .name-canvas {

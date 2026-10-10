@@ -5,13 +5,18 @@ import en from './locales/en.json'
 import vi from './locales/vi.json'
 import ja from './locales/ja.json'
 
-export const SUPPORTED_LANGUAGES = ['en', 'vi', 'ja'] as const
+export const SUPPORTED_LANGUAGES = ['en', 'ja', 'vi'] as const
 export type Language = (typeof SUPPORTED_LANGUAGES)[number]
 
-export const LANGUAGE_META: Record<Language, { code: string; name: string }> = {
-  en: { code: 'EN', name: 'English' },
-  vi: { code: 'VI', name: 'Tiếng Việt' },
-  ja: { code: 'JA', name: '日本語' },
+export const LANGUAGE_META: Record<Language, { code: string; label: string }> = {
+  en: { code: 'EN', label: 'EN' },
+  ja: { code: 'JA', label: '日本語' },
+  vi: { code: 'VI', label: 'Tiếng Việt' },
+}
+
+export const toLanguage = (lng: string | undefined): Language => {
+  const base = (lng ?? 'en').split('-')[0]
+  return (SUPPORTED_LANGUAGES as readonly string[]).includes(base) ? (base as Language) : 'en'
 }
 
 i18n

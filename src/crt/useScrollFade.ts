@@ -10,9 +10,14 @@ export const useScrollFade = (root: RefObject<HTMLElement | null>) => {
     if (!container || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const wide = window.matchMedia('(min-width: 1080px)')
     let frame = 0
+    let targets: HTMLElement[] = []
+    let pinned: HTMLElement[] = []
 
-    const targets = () =>
-      Array.from(container.querySelectorAll<HTMLElement>(wide.matches ? '.page-main .stage' : '.stage'))
+    const collect = () => {
+      targets = Array.from(container.querySelectorAll<HTMLElement>(wide.matches ? '.page-main .stage' : '.stage'))
+      pinned = wide.matches ? Array.from(container.querySelectorAll<HTMLElement>('.page-aside .stage')) : []
+      pinned.forEach((el) => clear(el))
+    }
 
     const clear = (el: HTMLElement) => {
       el.style.filter = ''
@@ -29,11 +34,9 @@ export const useScrollFade = (root: RefObject<HTMLElement | null>) => {
       const remaining = Math.max(0, document.documentElement.scrollHeight - vh - scrolled)
       const topStrength = Math.min(1, scrolled / top)
       const bottomStrength = Math.min(1, remaining / (bottomEnd - bottomStart))
-      container.querySelectorAll<HTMLElement>('.page-aside .stage').forEach((el) => {
-        if (wide.matches) clear(el)
-      })
-      for (const el of targets()) {
-        const r = el.getBoundingClientRect()
+      const rects = targets.map((el) => el.getBoundingClientRect())
+      targets.forEach((el, i) => {
+        const r = rects[i]
         const center = r.top + Math.min(r.height, vh * 0.5) / 2
         let visible = 1
         let shift = 0
@@ -46,26 +49,31 @@ export const useScrollFade = (root: RefObject<HTMLElement | null>) => {
         }
         if (visible >= 0.999) {
           clear(el)
-          continue
+          return
         }
         el.style.filter = `opacity(${visible.toFixed(3)}) blur(${((1 - visible) * 3).toFixed(2)}px)`
         el.style.translate = `0 ${shift.toFixed(1)}px`
-      }
+      })
     }
 
     const schedule = () => {
       if (!frame) frame = requestAnimationFrame(update)
     }
 
-    schedule()
+    const rewire = () => {
+      collect()
+      schedule()
+    }
+
+    rewire()
     window.addEventListener('scroll', schedule, { passive: true })
     window.addEventListener('resize', schedule)
-    wide.addEventListener('change', schedule)
+    wide.addEventListener('change', rewire)
     return () => {
       cancelAnimationFrame(frame)
       window.removeEventListener('scroll', schedule)
       window.removeEventListener('resize', schedule)
-      wide.removeEventListener('change', schedule)
+      wide.removeEventListener('change', rewire)
     }
   }, [root])
 }

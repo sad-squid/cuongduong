@@ -1,17 +1,14 @@
 import { useTranslation } from 'react-i18next'
+import { LANGUAGE_META, SUPPORTED_LANGUAGES, toLanguage, type Language } from '@/i18n'
 import { useCrt } from '@/crt/context'
-import { LINKS, SITE_LANGS, toSiteLang, type SiteLang } from '@/content/names'
+import { LINKS } from '@/content/names'
 import { IconDoor, RouteDoor } from './Doors'
 import { useScramble } from './useScramble'
 
-const LANG_LABELS: Record<SiteLang, string> = { en: 'EN', ja: '日本語', vi: 'Tiếng Việt' }
-
-const LANG_CODES: Record<SiteLang, string> = { en: 'EN', ja: 'JA', vi: 'VI' }
-
-const LangButton = ({ code, current }: { code: SiteLang; current: boolean }) => {
+const LangButton = ({ code, current }: { code: Language; current: boolean }) => {
   const crt = useCrt()
   const { i18n } = useTranslation()
-  const label = LANG_LABELS[code]
+  const label = LANGUAGE_META[code].label
   const [text, trigger] = useScramble(label, crt.reduceMotion)
   return (
     <button
@@ -26,7 +23,7 @@ const LangButton = ({ code, current }: { code: SiteLang; current: boolean }) => 
     >
       <span className="label-long">{text}</span>
       <span className="label-short" aria-hidden="true">
-        {LANG_CODES[code]}
+        {LANGUAGE_META[code].code}
       </span>
     </button>
   )
@@ -34,7 +31,7 @@ const LangButton = ({ code, current }: { code: SiteLang; current: boolean }) => 
 
 export const Footer = () => {
   const { t, i18n } = useTranslation()
-  const lang = toSiteLang(i18n.resolvedLanguage)
+  const lang = toLanguage(i18n.resolvedLanguage)
 
   return (
     <footer className="footer">
@@ -48,7 +45,7 @@ export const Footer = () => {
         <IconDoor icon="linkedin" name="LinkedIn" href={LINKS.linkedin} />
       </nav>
       <div className="langs" role="group" aria-label={t('footer.language')}>
-        {SITE_LANGS.map((code) => (
+        {SUPPORTED_LANGUAGES.map((code) => (
           <LangButton key={code} code={code} current={code === lang} />
         ))}
       </div>
