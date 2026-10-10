@@ -23,7 +23,8 @@
   --glow-2: 0 0 3px rgb(240 110 97 / 0.35), -2px 0 5px rgb(240 110 97 / 0.15), 2px 0 5px rgb(240 110 97 / 0.15);
   --glow-3: 0 0 3px rgb(240 110 97 / 0.18);
   --scanline-fill: repeating-linear-gradient(to bottom, rgb(240 238 233 / 0.16) 0 2px, transparent 2px 3px);
-  --font-name: 'Space Grotesk', 'Name JP', system-ui, sans-serif;
+  --font-name: 'Space Grotesk', system-ui, sans-serif;
+  --font-cjk: 'PingFang TC', 'Hiragino Sans', 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
   --font-body: 'DM Sans', system-ui, sans-serif;
   --font-mono: 'Space Mono', ui-monospace, monospace;
   color-scheme: dark;
@@ -319,10 +320,30 @@ body {
   text-shadow: var(--glow-1);
 }
 
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 22px max(24px, calc((100% - 680px) / 2)) 30px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.8;
+  background: linear-gradient(to bottom, var(--bg) 0%, var(--bg) 72%, transparent 100%);
+}
+
+.door[data-status='active'] {
+  color: var(--cream);
+  text-shadow: var(--glow-1);
+}
+
 .page {
   width: min(100%, 680px);
   margin: 0 auto;
-  padding: 120px 24px 80px;
+  padding: 56px 24px 80px;
 }
 
 .page-title {
@@ -390,6 +411,11 @@ body {
 .name-value {
   font-family: var(--font-name);
   font-size: 20px;
+  font-weight: 500;
+}
+
+.name-value:lang(zh) {
+  font-family: var(--font-cjk);
 }
 
 .plain-list {

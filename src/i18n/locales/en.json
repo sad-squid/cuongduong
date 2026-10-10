@@ -50,7 +50,7 @@
     "story": [
       "Born in Ho Chi Minh City. Landed in Minnesota on Valentine's Day 1998, age four, with my parents and sister. Grew up in Eagan and studied computer science and IT infrastructure at the University of Minnesota.",
       "Before tech I did other work. A summer stamping metal at my dad's shop. A summer pulling crab cages with my uncle in the Louisiana bayous, 3am to 3pm in Gulf of Mexico heat. Years pulling espresso at Caribou Coffee and bartending through school. That work shaped how I think about craft: slow is fast, and the person next to you matters more than the tool in your hand.",
-      "My tech career started at Target in 2017. Then Zoom, Google, and now SmartNews in Tokyo, where I build the infrastructure behind AI-generated content and work out how teams can code well with agents. I live near Shibuya, I'm learning Mandarin, and I'm resuming Korean."
+      "My tech career started at Target in 2017. Then Zoom, Google, and now SmartNews in Tokyo, where I build the infrastructure behind AI-generated content and work out how teams can code well with agents. I live near Shibuya and I'm learning Mandarin."
     ],
     "languagesHeading": "Languages",
     "languages": [
@@ -69,10 +69,6 @@
       {
         "name": "Chinese",
         "level": "learning"
-      },
-      {
-        "name": "Korean",
-        "level": "resuming"
       }
     ],
     "recognitionHeading": "Recognition",
@@ -138,5 +134,8 @@
     "title": "Page not found",
     "body": "This page doesn't exist, or the signal dropped.",
     "home": "back to home"
+  },
+  "header": {
+    "home": "Cuong Duong, home"
   }
 }

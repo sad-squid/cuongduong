@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Outlet, useRouterState } from '@tanstack/react-router'
 import { Footer } from '@/components/Footer'
+import { Header } from '@/components/Header'
 import { CommandPalette } from '@/components/CommandPalette'
 import { CrtController } from '@/crt/CrtController'
 import { CrtContext, prefersReducedMotion } from '@/crt/context'
@@ -41,6 +42,7 @@ export const Layout = () => {
         <canvas ref={latticeRef} className="lattice" aria-hidden="true" />
         <div className="scan-bar" aria-hidden="true" />
         <div className="vignette" aria-hidden="true" />
+        <Header />
         <main className="content">
           <Outlet />
         </main>
