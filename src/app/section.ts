@@ -49,18 +49,24 @@ export const PAGE_OVERLAP = 0.1
 
 const FLAT_PX = 2
 
+const MIN_PAGE = 0.1
+
 export const pageStops = (regions: Region[], vh: number, overlap = PAGE_OVERLAP): Stop[] => {
   const step = Math.max(1, vh * (1 - overlap))
+  const flat = Math.max(FLAT_PX, vh * MIN_PAGE)
   const stops: Stop[] = []
+  const add = (value: number, section: number) => {
+    const y = Math.round(value)
+    const prev = stops[stops.length - 1]
+    if (!prev || y > prev.y + FLAT_PX) stops.push({ y, section })
+  }
   regions.forEach((r, section) => {
-    const span = r.end - r.top
-    const pages = span > FLAT_PX ? Math.ceil(span / step) : 0
-    for (let k = 0; k <= pages; k++) {
-      const y = Math.round(pages === 0 ? r.top : r.top + (span * k) / pages)
-      const prev = stops[stops.length - 1]
-      if (prev && y <= prev.y + FLAT_PX) continue
-      stops.push({ y, section })
+    if (r.end - r.top <= flat) {
+      add(r.top, section)
+      return
     }
+    for (let y = r.top; y < r.end - flat; y += step) add(y, section)
+    add(r.end, section)
   })
   return stops
 }

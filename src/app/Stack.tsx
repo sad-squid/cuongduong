@@ -36,7 +36,7 @@ const HOLD_SKIP = 'a, button, input, textarea, select, label, [role="dialog"], [
 
 const NATIVE = '.palette, .arcade, [role="dialog"]'
 const TYPING = 'input, textarea, select, [contenteditable]:not([contenteditable="false"])'
-const PRESSABLE = 'button, a[href], summary, [role="button"]'
+const PRESSABLE = 'button, summary, [role="button"]'
 
 const KEYS: Record<string, number> = { PageDown: 1, PageUp: -1, ArrowDown: 1, ArrowUp: -1 }
 
@@ -222,16 +222,14 @@ export const Stack = () => {
   })
 
   const onTouchDrag = useEffectEvent((touch: TouchState, y: number) => {
-    const all = stops()
-    const low = all[Math.max(0, touch.origin - 1)].y
-    const high = all[Math.min(all.length - 1, touch.origin + 1)].y
-    window.scrollTo({ top: Math.max(low, Math.min(high, touch.scroll0 + touch.y0 - y)), behavior: 'instant' })
+    window.scrollTo({ top: Math.max(touch.low, Math.min(touch.high, touch.scroll0 + touch.y0 - y)), behavior: 'instant' })
   })
 
   const onTouchBegin = useEffectEvent((e: TouchEvent): TouchState | null => {
     const finger = e.touches[0]
     if (e.touches.length !== 1 || !finger || nativeTarget(e.target) || gamePlaying()) return null
     const all = stops()
+    const origin = nearestStop(all, window.scrollY)
     const target = e.target instanceof Element ? e.target : null
     const holdable = !crt.reduceMotion && !(target?.closest(HOLD_SKIP) && !target.closest('[data-blast]'))
     return {
@@ -239,7 +237,9 @@ export const Stack = () => {
       y0: finger.clientY,
       t0: performance.now(),
       scroll0: window.scrollY,
-      origin: nearestStop(all, window.scrollY),
+      origin,
+      low: all[Math.max(0, origin - 1)].y,
+      high: all[Math.min(all.length - 1, origin + 1)].y,
       mode: moving() ? 'swallow' : 'pending',
       holdable,
       target: e.target,
@@ -282,10 +282,11 @@ export const Stack = () => {
         })
     }
     const onResize = () => {
+      halt()
       onScroll()
       window.clearTimeout(resizeTimer)
       resizeTimer = window.setTimeout(() => {
-        if (!moving() && fingers === 0) snapNearest()
+        if (fingers === 0) snapNearest()
       }, SETTLE_MS)
     }
     const onTouchStart = (e: TouchEvent) => {
@@ -425,6 +426,8 @@ type TouchState = {
   t0: number
   scroll0: number
   origin: number
+  low: number
+  high: number
   mode: 'pending' | 'drag' | 'free' | 'swallow'
   holdable: boolean
   target: EventTarget | null

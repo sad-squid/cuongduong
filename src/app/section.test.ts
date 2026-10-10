@@ -28,7 +28,7 @@ describe('pageStops', () => {
       ],
       900,
     )
-    expect(ys(stops)).toEqual([0, 900, 1567, 2233, 2900])
+    expect(ys(stops)).toEqual([0, 900, 1710, 2520, 2900])
     stops.slice(2).forEach((s, k) => expect(s.y - stops[k + 1].y).toBeLessThanOrEqual(810))
     expect(stops.map((s) => s.section)).toEqual([0, 1, 1, 1, 1])
   })
@@ -36,11 +36,25 @@ describe('pageStops', () => {
   it('ends a tall section with its bottom aligned to the viewport bottom', () => {
     const stops = pageStops([{ top: 0, end: 1000 }], 844)
     expect(stops[stops.length - 1].y).toBe(1000)
-    expect(ys(stops)).toEqual([0, 500, 1000])
+    expect(ys(stops)).toEqual([0, 760, 1000])
   })
 
   it('treats a span that fits in one step as two pages', () => {
     expect(ys(pageStops([{ top: 100, end: 700 }], 900))).toEqual([100, 700])
+  })
+
+  it('steps a tall section by 90% of the viewport', () => {
+    const stops = pageStops([{ top: 0, end: 2015 - 844 }], 844)
+    for (let k = 1; k < stops.length - 1; k++) expect(stops[k].y - stops[k - 1].y).toBe(760)
+  })
+
+  it('treats a section a few pixels taller than the viewport as one page', () => {
+    expect(ys(pageStops([{ top: 0, end: 3 }, { top: 903, end: 903 }], 900))).toEqual([0, 903])
+  })
+
+  it('keeps the last page from being a sliver when the span is just over one step', () => {
+    const stops = pageStops([{ top: 0, end: 811 }], 900)
+    expect(ys(stops)).toEqual([0, 811])
   })
 
   it('ignores sub-pixel overflow', () => {
