@@ -187,12 +187,12 @@
       },
       {
         "label": "công cụ",
-        "value": "React, Vite, TanStack Router, i18next, Web Audio, và rất nhiều canvas"
+        "value": "React, Vite, TanStack Router, i18next, và rất nhiều canvas"
       }
     ],
     "cast": "khách mời",
     "castNote": "các nhân vật thuộc về tác giả của họ; vẽ ở đây bằng tình yêu, chưa xin phép",
-    "thanks": "cảm ơn bạn đã xem đến tận đây",
+    "thanks": "cảm ơn bạn đã xem đến cuối",
     "start": "press start",
     "home": "về trang chủ"
   },

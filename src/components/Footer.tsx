@@ -51,7 +51,9 @@ const FireworksButton = () => {
       to="/credits"
       className={running ? 'icon-door fireworks on' : 'icon-door fireworks'}
       aria-label={t('footer.fireworks')}
-      onClick={() => (onCredits ? crt.launchFireworks() : null)}
+      role={onCredits ? 'button' : undefined}
+      aria-pressed={onCredits ? running : undefined}
+      onClick={() => (onCredits ? crt.toggleFireworks() : null)}
     >
       <DotIcon icon="fireworks" />
     </Link>

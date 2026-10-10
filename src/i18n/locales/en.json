@@ -188,12 +188,12 @@
       },
       {
         "label": "made with",
-        "value": "React, Vite, TanStack Router, i18next, Web Audio, a lot of canvas"
+        "value": "React, Vite, TanStack Router, i18next, a lot of canvas"
       }
     ],
     "cast": "guest stars",
     "castNote": "characters belong to their creators; drawn here with love, not permission",
-    "thanks": "thanks for scrolling this far",
+    "thanks": "thanks for watching",
     "start": "press start",
     "home": "back home"
   },

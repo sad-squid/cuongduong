@@ -186,6 +186,43 @@ textarea {
   pointer-events: none;
 }
 
+.home.hidden {
+  visibility: hidden;
+}
+
+.tap-count {
+  position: absolute;
+  left: 50%;
+  bottom: 2px;
+  display: flex;
+  gap: 6px;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 500ms ease-out;
+  pointer-events: none;
+}
+
+.tap-count.on {
+  opacity: 1;
+  transition-duration: 80ms;
+}
+
+.tap-count i {
+  width: 5px;
+  height: 5px;
+  background: color-mix(in srgb, var(--beige) 30%, var(--bg));
+}
+
+.tap-count i.lit {
+  background: var(--cream);
+  box-shadow: 0 0 4px rgb(240 238 233 / 0.5);
+}
+
+.tap-count i.lit:nth-child(5) {
+  background: var(--warm-coral);
+  box-shadow: 0 0 5px rgb(240 110 97 / 0.7);
+}
+
 .step {
   height: 18px;
   font-family: var(--font-mono);
@@ -663,11 +700,6 @@ button.icon-door:focus-visible {
   display: none;
 }
 
-.icon-door[data-status='active'] {
-  color: var(--warm-coral);
-  filter: drop-shadow(0 0 3px rgb(240 110 97 / 0.6));
-}
-
 .credits {
   position: fixed;
   inset: 0;
@@ -919,6 +951,10 @@ button.icon-door:focus-visible {
 
   .beam {
     animation: flick 90ms steps(2) infinite;
+  }
+
+  .tap-count i.new {
+    animation: flick 90ms steps(2) 3;
   }
 
   .press-start {

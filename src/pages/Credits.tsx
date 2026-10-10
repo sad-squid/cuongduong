@@ -38,10 +38,11 @@ export const Credits = () => {
   useEffect(() => {
     let timer = 0
     const off = crt.subscribe((event) => {
-      if (event.type !== 'fireworks' || event.on || playingRef.current) return
+      if (event.type !== 'fireworks' || event.on || playingRef.current || crt.fireworksHeld) return
       window.clearTimeout(timer)
-      timer = window.setTimeout(() => (playingRef.current ? null : crt.launchFireworks()), RELAUNCH_MS)
+      timer = window.setTimeout(() => (playingRef.current || crt.fireworksHeld ? null : crt.launchFireworks()), RELAUNCH_MS)
     })
+    crt.holdFireworks(false)
     const launch = window.setTimeout(() => crt.launchFireworks(), 400)
     return () => {
       off()
@@ -113,7 +114,7 @@ export const Credits = () => {
     playingRef.current = false
     crt.setGame(false)
     setPlaying(false)
-    crt.launchFireworks()
+    if (!crt.fireworksHeld) crt.launchFireworks()
     window.requestAnimationFrame(() => startRef.current?.focus())
   }, [crt])
 

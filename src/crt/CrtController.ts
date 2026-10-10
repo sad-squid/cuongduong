@@ -44,6 +44,7 @@ export class CrtController {
   private frameSamples = 0
   private lowPower = false
   private revealed = false
+  private fireworksPaused = false
 
   constructor(reduceMotion: boolean) {
     this.reduceMotion = reduceMotion
@@ -179,6 +180,24 @@ export class CrtController {
 
   stopFireworks() {
     if (this.fireworks?.isRunning) this.fireworks.stop()
+  }
+
+  get fireworksHeld() {
+    return this.fireworksPaused
+  }
+
+  holdFireworks(held: boolean) {
+    this.fireworksPaused = held
+  }
+
+  toggleFireworks() {
+    if (this.fireworks?.isRunning) {
+      this.fireworksPaused = true
+      this.fireworks.stop()
+      return
+    }
+    this.fireworksPaused = false
+    this.launchFireworks()
   }
 
   setGame(on: boolean) {

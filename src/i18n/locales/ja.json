@@ -187,12 +187,12 @@
       },
       {
         "label": "使用技術",
-        "value": "React, Vite, TanStack Router, i18next, Web Audio, そして大量の canvas"
+        "value": "React, Vite, TanStack Router, i18next, そして大量の canvas"
       }
     ],
     "cast": "ゲスト出演",
     "castNote": "キャラクターの権利は各作者に帰属します。許可はもらっていませんが、愛を込めて描きました",
-    "thanks": "ここまで見てくれてありがとう",
+    "thanks": "最後まで見てくれてありがとう",
     "start": "press start",
     "home": "ホームに戻る"
   },
