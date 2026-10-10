@@ -19,10 +19,7 @@ export const RouteDoor = ({ label, to }: Labels & { to: '/' | '/about' | '/work'
       className="door"
       to={to}
       aria-label={label}
-      onPointerEnter={() => {
-        trigger()
-        crt.sound.play('hover')
-      }}
+      onPointerEnter={trigger}
       onFocus={trigger}
     >
       {text}

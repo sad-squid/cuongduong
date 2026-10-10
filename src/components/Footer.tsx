@@ -22,10 +22,7 @@ const LangButton = ({ code, current }: { code: Language; current: boolean }) => 
       aria-pressed={current}
       onPointerEnter={trigger}
       onFocus={trigger}
-      onClick={() => {
-        crt.sound.play('lang')
-        setLanguage(code)
-      }}
+      onClick={() => setLanguage(code)}
     >
       <span className="label-long">{text}</span>
       <span className="label-short" aria-hidden="true">
@@ -91,7 +88,7 @@ export const Footer = () => {
   const lang = toLanguage(i18n.resolvedLanguage)
 
   return (
-    <footer className="footer">
+    <footer className="footer" data-no-blast>
       <nav className="page-dots" aria-label={t('footer.pages')}>
         {PAGES.map(([to, key]) => (
           <Link key={`${to}-${lang}`} className="page-dot" to={to} aria-label={t(key)} title={t(key)} activeOptions={{ exact: true }} />
