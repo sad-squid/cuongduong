@@ -53,10 +53,21 @@
       }
     ],
     "story": [
-      "Mình là người Việt gốc Hoa, sinh ra ở Sài Gòn và lớn lên ở Eagan, bang Minnesota (Mỹ). Mình học khoa học máy tính và hạ tầng CNTT ở Đại học Minnesota, và giờ chủ yếu làm web.",
-      "Trước khi đi làm phần mềm, có mùa hè mình đứng máy dập kim loại ở xưởng nơi bố làm, có mùa hè lại theo chú ra Morgan City, Louisiana kéo lồng cua từ 3 giờ sáng. Những mùa đông lạnh buốt ở Minneapolis, ban ngày mình đứng quầy pha cà phê nóng ở Caribou, tối thì làm bartender.",
-      "Mình bắt đầu đi làm ở Target, làm design system đầu tiên của công ty và Target.com. Sau đó mình chuyển qua Zoom, rồi Google, nơi mình phụ trách mảng accessibility (khả năng tiếp cận) cho trải nghiệm hỗ trợ khách hàng. Hiện mình là senior engineer ở SmartNews tại Tokyo.",
-      "Mình thích vun đắp một môi trường học hỏi lành mạnh, nơi ai cũng thấy thoải mái để học và để hỏi."
+      [
+        "Mình là người Việt gốc Hoa, sinh ra ở Sài Gòn và lớn lên ở Eagan, bang Minnesota (Mỹ).",
+        "Mình học khoa học máy tính và hạ tầng CNTT ở Đại học Minnesota, và giờ chủ yếu làm web."
+      ],
+      [
+        "Trước khi đi làm phần mềm, có mùa hè mình đứng máy dập kim loại ở xưởng nơi bố làm, có mùa hè lại theo chú ra Morgan City, Louisiana kéo lồng cua từ 3 giờ sáng.",
+        "Những mùa đông lạnh buốt ở Minneapolis, ban ngày mình đứng quầy pha cà phê nóng ở Caribou, tối thì làm bartender."
+      ],
+      [
+        "Mình bắt đầu đi làm ở Target, làm design system đầu tiên của công ty và Target.com. Sau đó mình chuyển qua Zoom, rồi Google, nơi mình phụ trách mảng accessibility (khả năng tiếp cận) cho trải nghiệm hỗ trợ khách hàng.",
+        "Hiện mình là senior engineer ở SmartNews tại Tokyo."
+      ],
+      [
+        "Mình thích vun đắp một môi trường học hỏi lành mạnh, nơi ai cũng thấy thoải mái để học và để hỏi."
+      ]
     ],
     "languagesHeading": "Ngôn ngữ",
     "languages": [

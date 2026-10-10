@@ -476,6 +476,16 @@ button.icon-door:focus-visible {
   color: var(--beige);
 }
 
+.prose p[data-beat]::before {
+  content: '';
+  display: block;
+  width: 52px;
+  height: 6px;
+  margin: 10px 0 30px;
+  background: radial-gradient(circle, var(--warm-coral) 0 1.3px, transparent 1.7px) 0 50% / 9px 6px repeat-x;
+  opacity: 0.75;
+}
+
 .names,
 .pairs {
   margin: 0;

@@ -13,7 +13,8 @@ export const About = () => {
   useReveal()
   const { t } = useTranslation()
   const names = t('about.names', { returnObjects: true }) as NameRow[]
-  const story = t('about.story', { returnObjects: true }) as string[]
+  const story = t('about.story', { returnObjects: true }) as string[][]
+  const lines = story.flatMap((beat, b) => beat.map((text, i) => ({ text, mark: b > 0 && i === 0 })))
   const languages = t('about.languages', { returnObjects: true }) as LanguageRow[]
   const recognition = t('about.recognition', { returnObjects: true }) as string[]
   const { land, stage } = useArrival()
@@ -43,14 +44,14 @@ export const About = () => {
 
       <div className="page-main">
         <section className="prose">
-          {story.map((paragraph, i) => (
-            <p key={paragraph} {...stage(i + 1)}>
-              {paragraph}
+          {lines.map(({ text, mark }, i) => (
+            <p key={text} {...stage(i + 1)} data-beat={mark ? '' : undefined}>
+              {text}
             </p>
           ))}
         </section>
 
-        <div className={`facts ${stage(story.length + 1).className}`} style={stage(story.length + 1).style}>
+        <div className={`facts ${stage(lines.length + 1).className}`} style={stage(lines.length + 1).style}>
           <section aria-labelledby="about-languages">
             <h2 id="about-languages" className="section-label">{t('about.languagesHeading')}</h2>
             <dl className="pairs">
