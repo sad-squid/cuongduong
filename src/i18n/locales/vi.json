@@ -1,6 +1,6 @@
 {
   "home": {
-    "line": "Kỹ sư phần mềm tại Tokyo, tập trung vào lập trình với AI agent và quy trình tạo nội dung bằng AI.",
+    "line": "Kỹ sư phần mềm ở Tokyo, hiện tập trung vào lập trình cùng AI agent và xây dựng quy trình làm nội dung bằng AI.",
     "heading": "Cuong Duong (Dương Trí Cường)"
   },
   "footer": {
@@ -75,11 +75,11 @@
         "level": "đang học"
       }
     ],
-    "recognitionHeading": "Ghi nhận",
+    "recognitionHeading": "Thành tích",
     "recognition": [
       "Người đóng góp nổi bật về accessibility, Google, 2023",
       "Giải nhất hackathon codeRED, Target, 2017, 2018 và 2019",
-      "Vô địch cấp bang Minnesota: kịch một màn, hùng biện và diễn thuyết"
+      "Vô địch bang Minnesota môn kịch một màn và hùng biện"
     ]
   },
   "work": {
@@ -88,43 +88,43 @@
     "roles": [
       {
         "company": "SmartNews",
-        "role": "Kỹ sư phần mềm cấp cao",
+        "role": "Senior Software Engineer",
         "dates": "2024 – nay",
         "points": [
           "Hạ tầng nội dung AI: pipeline tạo nội dung bằng LLM, công cụ biên tập và phân phối tới web và ứng dụng native.",
           "Thiết kế các bước kiểm duyệt kết hợp AI agent và con người trước khi nội dung do AI tạo ra được đăng.",
-          "Dẫn dắt định tuyến đa mô hình với theo dõi request và phân bổ chi phí theo từng mô hình.",
-          "Thực hiện hơn 60 thử nghiệm sản phẩm; thúc đẩy đánh giá và triển khai bộ công cụ kỹ thuật."
+          "Dẫn dắt việc định tuyến giữa nhiều model, có trace request và tính chi phí riêng cho từng model.",
+          "Chạy hơn 60 thử nghiệm sản phẩm, và dẫn dắt việc đánh giá, đưa vào sử dụng các công cụ cho team kỹ thuật."
         ]
       },
       {
         "company": "Google",
-        "role": "Kỹ sư phần mềm",
+        "role": "Software Engineer",
         "dates": "2022 – 2024",
         "points": [
           "Xây dựng component và layout cho Guided Support Experience và Help Center.",
-          "Kỹ sư sáng lập hệ thống thiết kế Help Experience và design token.",
-          "Đại diện khả năng tiếp cận tiêu biểu năm 2023."
+          "Một trong những kỹ sư đầu tiên xây design system Help Experience và design token.",
+          "Accessibility champion năm 2023."
         ]
       },
       {
         "company": "Zoom",
-        "role": "Kỹ sư phần mềm",
+        "role": "Software Engineer",
         "dates": "2021 – 2022",
         "points": [
           "Xây dựng ứng dụng Zoom Events và giao diện nền tảng sự kiện trực tuyến.",
-          "Thiết kế lại CI/CD, đưa kiểm thử đơn vị và kiểm thử tích hợp vào quy trình.",
-          "Kỹ sư sáng lập hệ thống thiết kế toàn cầu; hướng dẫn thực tập sinh và kỹ sư mới."
+          "Làm lại kiến trúc CI/CD, đưa unit test và integration test vào quy trình.",
+          "Một trong những kỹ sư đầu tiên xây design system toàn cầu; mentor cho thực tập sinh và kỹ sư mới ra trường."
         ]
       },
       {
         "company": "Target",
-        "role": "Kỹ sư phần mềm cấp cao",
+        "role": "Senior Software Engineer",
         "dates": "2017 – 2021",
         "points": [
-          "Hiệu năng và kiến trúc cho Target.com, từ React-Redux sang Next.js.",
-          "Tham gia ra mắt hệ thống thiết kế đầu tiên của Target.",
-          "Hướng dẫn kỹ sư trong Technology Leadership Program."
+          "Tối ưu hiệu năng và kiến trúc Target.com, chuyển từ React-Redux sang Next.js.",
+          "Góp phần ra mắt design system đầu tiên của Target.",
+          "Mentor cho các kỹ sư trong Technology Leadership Program."
         ]
       }
     ]
@@ -136,7 +136,7 @@
   "notFound": {
     "signal": "no signal",
     "title": "Không tìm thấy trang",
-    "body": "Trang này không tồn tại, hoặc tín hiệu đã bị mất.",
+    "body": "Trang này không tồn tại, hoặc… mất sóng rồi.",
     "home": "về trang chủ"
   },
   "log": {
@@ -150,7 +150,7 @@
     "carry": "chuyển {{points}} điểm từ tiêu đề trước trong {{seconds}} giây",
     "generate": "{{points}} điểm / {{steps}} bước / {{seconds}} giây / seed {{seed}}",
     "check": "agent: độ tương phản {{ratio}}:1 so với nền, đạt chuẩn AAA",
-    "gate": "người: là bạn. bấm vào tên để xem cách viết khác",
+    "gate": "người duyệt: chính là bạn. bấm vào tên để xem cách viết khác",
     "note": "cách mình làm nội dung AI: tạo, agent kiểm tra, người duyệt",
     "perturb": "con trỏ làm xê dịch {{moved}} điểm; trở lại sau {{seconds}} giây",
     "launch": "花火: màn pháo hoa 15 giây, nhân vật ngẫu nhiên",
