@@ -204,7 +204,7 @@
     "lives_one": "{{count}} life left",
     "lives_other": "{{count}} lives left",
     "close": "Close the game",
-    "keys": "← → move · space fire · esc exit",
+    "mouse": "move the mouse · click to fire",
     "touch": "drag to move · hold to fire",
     "over": "game over",
     "again": "press start to play again"

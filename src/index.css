@@ -827,6 +827,9 @@ button.icon-door:focus-visible {
   touch-action: none;
   user-select: none;
   -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
   outline: none;
   font-family: var(--font-mono);
 }
@@ -837,6 +840,7 @@ button.icon-door:focus-visible {
   width: 100%;
   height: 100%;
   touch-action: none;
+  cursor: none;
 }
 
 .arcade-hud {
@@ -932,12 +936,23 @@ button.icon-door:focus-visible {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: calc(14px + env(safe-area-inset-bottom, 0px));
   margin: 0;
-  font-size: 11px;
+  font-size: 12px;
   text-align: center;
-  color: var(--faint);
+  color: var(--muted);
+  opacity: 0;
+  transition: opacity 600ms ease-out;
   pointer-events: none;
+}
+
+.arcade-hint.on {
+  opacity: 1;
+}
+
+html:has(.screen.playing),
+html:has(.screen.playing) body {
+  overflow: hidden;
+  overscroll-behavior: none;
 }
 
 @media (prefers-reduced-motion: no-preference) {

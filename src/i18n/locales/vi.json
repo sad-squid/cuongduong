@@ -202,7 +202,7 @@
     "wave": "đợt",
     "lives_other": "còn {{count}} mạng",
     "close": "Đóng trò chơi",
-    "keys": "← → di chuyển · space bắn · esc thoát",
+    "mouse": "di chuột để di chuyển · bấm để bắn",
     "touch": "kéo để di chuyển · giữ để bắn",
     "over": "game over",
     "again": "press start để chơi lại"

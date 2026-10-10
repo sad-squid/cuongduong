@@ -202,7 +202,7 @@
     "wave": "wave",
     "lives_other": "残機 {{count}}",
     "close": "ゲームを閉じる",
-    "keys": "← → 移動 · space 発射 · esc 終了",
+    "mouse": "マウスで移動 · クリックで発射",
     "touch": "ドラッグで移動 · 長押しで発射",
     "over": "game over",
     "again": "press start でもう一度"

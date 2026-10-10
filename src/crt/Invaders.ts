@@ -14,12 +14,17 @@ const SHOT_COOLDOWN = 160
 const GRAVITY = 160
 const SHIP = ['....C....', '...BBB...', '...BBB...', '.BBBBBBB.', 'BBBBBBBBB', 'BBBBBBBBB', 'BB.....BB']
 
+export type InputKind = 'mouse' | 'touch'
+
 export type InvadersHud = { score: number; wave: number; lives: number }
 
 export type InvadersEvents = {
   onHud: (hud: InvadersHud) => void
   onOver: (score: number) => void
   onHit: (x: number, y: number) => void
+  onInput: (kind: InputKind) => void
+  onShot: () => void
+  onLayout: (hintY: number) => void
 }
 
 type Art = { xs: Float32Array; ys: Float32Array; ci: Uint8Array; colors: string[]; w: number; h: number; pitch: number; image: HTMLCanvasElement }
@@ -116,7 +121,8 @@ export class Invaders {
   private lastShot = 0
   private bombClock = 0
   private keys = { left: false, right: false, fire: false }
-  private pointer: { active: boolean; x: number } = { active: false, x: 0 }
+  private pointer = { follow: false, firing: false, x: 0, y: 0, id: -1 }
+  private input: InputKind = 'mouse'
   private score = 0
   private wave = 1
   private lives = START_LIVES
@@ -138,9 +144,10 @@ export class Invaders {
   private last = 0
   private running = false
 
-  constructor(canvas: HTMLCanvasElement, events: InvadersEvents) {
+  constructor(canvas: HTMLCanvasElement, events: InvadersEvents, input: InputKind) {
     this.canvas = canvas
     this.events = events
+    this.input = input
   }
 
   start() {
@@ -208,11 +215,23 @@ export class Invaders {
     this.sx = Math.min(this.size * 1.9, this.field / (this.cols + 1.2))
     this.sy = this.size * 1.45
     this.shipPitch = this.w < 520 ? 2.2 : 3
-    this.shipY = this.h - Math.max(64, this.h * 0.09)
+    this.placeShip()
     this.arts = this.sprites.map((sprite) => buildArt(sprite, this.size, this.dpr))
     this.ox *= this.w / prevW
     this.oy *= this.h / prevH
     this.shipX = Math.min(this.left + this.field, Math.max(this.left, (this.shipX * this.w) / prevW))
+  }
+
+  private placeShip() {
+    this.shipY = this.input === 'touch' ? this.h - Math.max(150, this.h * 0.2) : this.h - Math.max(64, this.h * 0.09)
+    this.events.onLayout(96 + Math.min(this.wave - 1, 4) * this.size * 0.35 + (ROWS - 1) * this.sy + this.size + 28)
+  }
+
+  private setInput(kind: InputKind) {
+    if (kind === this.input) return
+    this.input = kind
+    this.placeShip()
+    this.events.onInput(kind)
   }
 
   private newWave(now: number) {
@@ -313,7 +332,8 @@ export class Invaders {
     this.over = true
     this.shipDown = true
     this.keys = { left: false, right: false, fire: false }
-    this.pointer.active = false
+    this.pointer.firing = false
+    this.pointer.follow = this.input === 'mouse'
     this.events.onOver(this.score)
   }
 
@@ -381,18 +401,19 @@ export class Invaders {
     const playing = !this.over && !this.nextWaveAt
     if (!this.over) {
       const speed = Math.max(300, this.field * 0.6)
-      if (this.pointer.active) {
+      if (this.pointer.follow) {
         const delta = this.pointer.x - this.shipX
-        const step = Math.min(Math.abs(delta), speed * 1.8 * dt)
+        const step = Math.min(Math.abs(delta), Math.abs(delta) * Math.min(1, dt * 18), speed * 2.4 * dt)
         this.shipX += Math.sign(delta) * step
       } else {
         const move = (this.keys.right ? 1 : 0) - (this.keys.left ? 1 : 0)
         this.shipX += move * speed * dt
       }
       this.shipX = Math.min(this.left + this.field, Math.max(this.left, this.shipX))
-      if ((this.keys.fire || this.pointer.active) && this.shots.length < 1 && now - this.lastShot > SHOT_COOLDOWN && sinceWave > FORM_MS) {
+      if ((this.keys.fire || this.pointer.firing) && this.shots.length < 1 && now - this.lastShot > SHOT_COOLDOWN && sinceWave > FORM_MS) {
         this.shots.push({ x: this.shipX, y: this.shipY - 4 })
         this.lastShot = now
+        this.events.onShot()
       }
     }
 
@@ -499,6 +520,13 @@ export class Invaders {
       c.fill(tip)
     }
 
+    if (this.input === 'mouse' && this.pointer.follow && !this.over) {
+      c.fillStyle = COLORS.cream
+      c.globalAlpha = 0.55
+      c.fillRect(this.pointer.x - 1, this.pointer.y - 1, 2, 2)
+      c.globalAlpha = 1
+    }
+
     const shots = new Path2D()
     for (const shot of this.shots) {
       for (let k = 0; k < 4; k++) shots.rect(shot.x - 1, shot.y + k * 4, 2, 2)
@@ -557,6 +585,7 @@ export class Invaders {
     else if (key === 'arrowright' || key === 'd') this.keys.right = true
     else if (key === ' ' || key === 'arrowup' || key === 'w') this.keys.fire = true
     else return
+    if (key !== ' ' && key !== 'arrowup' && key !== 'w') this.pointer.follow = false
     e.preventDefault()
   }
 
@@ -568,22 +597,36 @@ export class Invaders {
   }
 
   private onPointerDown = (e: PointerEvent) => {
+    e.preventDefault()
+    const kind: InputKind = e.pointerType === 'mouse' ? 'mouse' : 'touch'
+    this.setInput(kind)
     if (this.over) return
+    if (kind === 'touch' && e.clientY < this.h * 0.4) return
     this.canvas.setPointerCapture?.(e.pointerId)
-    this.pointer = { active: true, x: e.clientX }
+    this.pointer = { follow: true, firing: true, x: e.clientX, y: e.clientY, id: e.pointerId }
   }
 
   private onPointerMove = (e: PointerEvent) => {
-    if (this.pointer.active) this.pointer.x = e.clientX
+    if (e.pointerType === 'mouse') {
+      this.setInput('mouse')
+      this.pointer.x = e.clientX
+      this.pointer.y = e.clientY
+      if (!this.over) this.pointer.follow = true
+      return
+    }
+    if (e.pointerId !== this.pointer.id || !this.pointer.firing) return
+    this.pointer.x = e.clientX
+    this.pointer.y = e.clientY
   }
 
-  private onPointerUp = () => {
-    this.pointer.active = false
+  private onPointerUp = (e: PointerEvent) => {
+    this.pointer.firing = false
+    if (e.pointerType !== 'mouse') this.pointer.follow = false
   }
 
   private onBlur = () => {
     this.keys = { left: false, right: false, fire: false }
-    this.pointer.active = false
+    this.pointer.firing = false
   }
 
   private onResize = () => {

@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useCrt } from '@/crt/context'
-import { Invaders, type InvadersHud } from '@/crt/Invaders'
+import { Invaders, type InputKind, type InvadersHud } from '@/crt/Invaders'
 
-const coarsePointer = () => window.matchMedia('(pointer: coarse)').matches
+const initialInput = (): InputKind => (window.matchMedia('(pointer: coarse)').matches ? 'touch' : 'mouse')
 
 export const Arcade = ({ onExit }: { onExit: () => void }) => {
   const crt = useCrt()
@@ -14,7 +14,8 @@ export const Arcade = ({ onExit }: { onExit: () => void }) => {
   const [hud, setHud] = useState<InvadersHud>({ score: 0, wave: 1, lives: 3 })
   const [over, setOver] = useState(false)
   const [hint, setHint] = useState(true)
-  const [touch] = useState(coarsePointer)
+  const [input, setInput] = useState(initialInput)
+  const [hintY, setHintY] = useState(0)
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -23,11 +24,14 @@ export const Arcade = ({ onExit }: { onExit: () => void }) => {
       onHud: setHud,
       onOver: () => setOver(true),
       onHit: (x, y) => crt.ripple(x, y),
-    })
+      onInput: setInput,
+      onShot: () => setHint(false),
+      onLayout: setHintY,
+    }, initialInput())
     gameRef.current = game
     game.start()
     rootRef.current?.focus()
-    const timer = window.setTimeout(() => setHint(false), 4500)
+    const timer = window.setTimeout(() => setHint(false), 3000)
     return () => {
       window.clearTimeout(timer)
       game.destroy()
@@ -40,6 +44,24 @@ export const Arcade = ({ onExit }: { onExit: () => void }) => {
     gameRef.current?.start()
     rootRef.current?.focus()
   }
+
+  useEffect(() => {
+    const root = rootRef.current
+    if (!root) return
+    const stop = (e: TouchEvent) => e.stopPropagation()
+    const hold = (e: TouchEvent) => {
+      e.stopPropagation()
+      if (e.cancelable) e.preventDefault()
+    }
+    root.addEventListener('touchstart', stop, { passive: true })
+    root.addEventListener('touchend', stop, { passive: true })
+    root.addEventListener('touchmove', hold, { passive: false })
+    return () => {
+      root.removeEventListener('touchstart', stop)
+      root.removeEventListener('touchend', stop)
+      root.removeEventListener('touchmove', hold)
+    }
+  }, [])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -92,7 +114,9 @@ export const Arcade = ({ onExit }: { onExit: () => void }) => {
           </button>
         </div>
       ) : null}
-      {hint && !over ? <p className="arcade-hint">{touch ? t('arcade.touch') : t('arcade.keys')}</p> : null}
+      <p className={hint && !over && hintY ? 'arcade-hint on' : 'arcade-hint'} style={{ top: hintY }} aria-hidden="true">
+        {input === 'touch' ? t('arcade.touch') : t('arcade.mouse')}
+      </p>
     </div>
   )
 }
