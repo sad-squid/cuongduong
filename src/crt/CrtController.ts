@@ -157,6 +157,7 @@ export class CrtController {
       this.flightField = null
       field.land(performance.now() - started)
     })
+    this.sound.play('generate', { duration: duration / 1000 })
     this.arrivalTimer = window.setTimeout(onArriving, duration * ARRIVAL_POINT)
   }
 
@@ -260,7 +261,7 @@ export class CrtController {
       this.lattice.addSpark(clientX, clientY, Math.cos(a) * speed, Math.sin(a) * speed)
     }
     this.tear(1.2, true)
-    if (!quiet) this.sound.play('blast', { pan: this.pan(clientX) })
+    if (!quiet) this.sound.play('blast', { pan: this.pan(clientX), intensity: 0.45 })
     const now = performance.now()
     if (quiet || now - this.lastPulse < 2500) return
     this.lastPulse = now
