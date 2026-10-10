@@ -378,6 +378,39 @@ textarea {
   text-shadow: var(--glow-1);
 }
 
+.squid-legs-b {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .squid-bob {
+    animation: squid-bob 1.6s ease-in-out infinite;
+  }
+
+  .squid-legs-a {
+    animation: squid-legs 0.8s steps(1, end) infinite;
+  }
+
+  .squid-legs-b {
+    animation: squid-legs 0.8s steps(1, end) -0.4s infinite;
+  }
+}
+
+@keyframes squid-bob {
+  50% {
+    transform: translateY(-0.6px);
+  }
+}
+
+@keyframes squid-legs {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
 .icon-door {
   display: inline-flex;
   padding: 4px;

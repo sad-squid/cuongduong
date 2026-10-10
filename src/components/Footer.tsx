@@ -7,37 +7,18 @@ import { setLanguage } from '@/router'
 import { LINKS } from '@/content/names'
 import { IconDoor } from './Doors'
 import { DotIcon } from './DotIcon'
+import { SquidIcon } from './SquidIcon'
 import { levelToVolume, readLevel, writeLevel } from '@/crt/soundLevel'
 
 const FireworksButton = () => {
-  const crt = useCrt()
   const { t } = useTranslation()
-  const [running, setRunning] = useState(() => crt.fireworksRunning)
   const onCredits = useRouterState({ select: (s) => s.location.pathname === '/credits' })
 
-  useEffect(
-    () =>
-      crt.subscribe((event) => {
-        if (event.type === 'fireworks') setRunning(event.on)
-      }),
-    [crt],
-  )
-
-  if (onCredits) {
-    return crt.reduceMotion ? null : (
-      <button
-        type="button"
-        className={running ? 'icon-door fireworks on' : 'icon-door fireworks'}
-        aria-label={t('footer.fireworks')}
-        aria-pressed={running}
-        onClick={() => crt.toggleFireworks()}
-      >
-        <DotIcon icon="fireworks" />
-      </button>
-    )
-  }
-
-  return (
+  return onCredits ? (
+    <Link to="/" className="icon-door squid-home" aria-label={t('credits.home')}>
+      <SquidIcon />
+    </Link>
+  ) : (
     <Link to="/credits" className="icon-door fireworks" aria-label={t('footer.fireworks')}>
       <DotIcon icon="fireworks" />
     </Link>
