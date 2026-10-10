@@ -102,6 +102,8 @@ const HomeScreen = () => {
     const off = crt.subscribe((event) => {
       if (event.type === 'activity') log.activity()
       if (event.type === 'layout') tagline.measure()
+      if (event.type === 'fireworks' && event.on) log.log(true, 'launch   花火: 15s show, random cast')
+      if (event.type === 'burst' && event.name) log.log(true, `burst    ${event.name}`)
       if (event.type === 'pulse') log.log(true, `pulse    click moved ${event.moved.toLocaleString('en-US')} points; interference reached ${event.words} ${event.words === 1 ? 'word' : 'words'}`)
     })
     return () => {

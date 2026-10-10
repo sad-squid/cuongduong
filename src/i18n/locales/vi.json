@@ -8,7 +8,8 @@
     "work": "công việc",
     "pages": "Trang",
     "elsewhere": "Liên kết",
-    "language": "Ngôn ngữ"
+    "language": "Ngôn ngữ",
+    "fireworks": "pháo hoa"
   },
   "palette": {
     "label": "Bảng lệnh",
@@ -22,7 +23,8 @@
       "en": "switch to English",
       "ja": "日本語に切り替え",
       "vi": "chuyển sang tiếng Việt"
-    }
+    },
+    "fireworks": "màn pháo hoa 15 giây"
   },
   "about": {
     "title": "Giới thiệu",

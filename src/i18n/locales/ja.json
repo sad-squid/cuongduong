@@ -8,7 +8,8 @@
     "work": "仕事",
     "pages": "ページ",
     "elsewhere": "リンク",
-    "language": "言語"
+    "language": "言語",
+    "fireworks": "花火"
   },
   "palette": {
     "label": "コマンドパレット",
@@ -22,7 +23,8 @@
       "en": "switch to English",
       "ja": "日本語に切り替え",
       "vi": "chuyển sang tiếng Việt"
-    }
+    },
+    "fireworks": "15秒の花火ショー"
   },
   "about": {
     "title": "自己紹介",

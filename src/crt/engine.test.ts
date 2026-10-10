@@ -180,7 +180,7 @@ describe('CrtController', () => {
     controller.subscribe((e) => {
       if (e.type === 'pulse') events.push(`${e.words}`)
     })
-    controller.mount(fakeCanvas(1280, 800), fakeCanvas(1280, 800))
+    controller.mount(fakeCanvas(1280, 800), fakeCanvas(1280, 800), fakeCanvas(1280, 800))
     controller.reveal()
     controller.blast(640, 300)
     controller.blast(650, 300)
@@ -195,7 +195,7 @@ describe('reveal ordering', () => {
     const controller = new CrtController(false)
     controller.reveal()
     expect(controller.isRevealed).toBe(true)
-    controller.mount(fakeCanvas(1280, 800), fakeCanvas(1280, 800))
+    controller.mount(fakeCanvas(1280, 800), fakeCanvas(1280, 800), fakeCanvas(1280, 800))
     controller.blast(640, 300)
     advance(16, 2)
     expect(controller.isRevealed).toBe(true)
@@ -206,7 +206,7 @@ describe('reveal ordering', () => {
 describe('heading handoff', () => {
   it('flies the leaving heading into the arriving one and settles once', () => {
     const controller = new CrtController(false)
-    controller.mount(fakeCanvas(1280, 800), fakeCanvas(1280, 800))
+    controller.mount(fakeCanvas(1280, 800), fakeCanvas(1280, 800), fakeCanvas(1280, 800))
     const noop = { onFrame: () => {}, onStep: () => {}, onPerturbed: () => {} }
     const first = new NameField(fakeCanvas(1280, 520), false, { ...noop, onSettled: () => {} })
     first.setup()
@@ -226,7 +226,7 @@ describe('heading handoff', () => {
 
   it('falls back to the lattice intro without a fresh handoff', () => {
     const controller = new CrtController(false)
-    controller.mount(fakeCanvas(1280, 800), fakeCanvas(1280, 800))
+    controller.mount(fakeCanvas(1280, 800), fakeCanvas(1280, 800), fakeCanvas(1280, 800))
     const field = new NameField(fakeCanvas(1280, 520), false, { onFrame: () => {}, onStep: () => {}, onSettled: () => {}, onPerturbed: () => {} })
     field.setup()
     controller.introduce(field, 'Work')
@@ -247,7 +247,7 @@ describe('review regressions', () => {
 
   it('replay plays the lattice intro, not a carry flight', () => {
     const controller = new CrtController(false)
-    controller.mount(fakeCanvas(1280, 800), fakeCanvas(1280, 800))
+    controller.mount(fakeCanvas(1280, 800), fakeCanvas(1280, 800), fakeCanvas(1280, 800))
     const before = settledField(controller, 'Cuong')
     controller.replay()
     controller.release(before)
@@ -260,7 +260,7 @@ describe('review regressions', () => {
 
   it('leaving mid-flight aborts the flight and hands its points on', () => {
     const controller = new CrtController(false)
-    controller.mount(fakeCanvas(1280, 800), fakeCanvas(1280, 800))
+    controller.mount(fakeCanvas(1280, 800), fakeCanvas(1280, 800), fakeCanvas(1280, 800))
     controller.release(settledField(controller, 'Cuong'))
     const aboutSettled = vi.fn()
     const about = new NameField(fakeCanvas(1280, 520), false, { ...noop, onSettled: aboutSettled })
@@ -279,7 +279,7 @@ describe('review regressions', () => {
 
   it('queues a regenerate that arrives before the heading is ready', () => {
     const controller = new CrtController(false)
-    controller.mount(fakeCanvas(1280, 800), fakeCanvas(1280, 800))
+    controller.mount(fakeCanvas(1280, 800), fakeCanvas(1280, 800), fakeCanvas(1280, 800))
     const settled = vi.fn()
     const field = new NameField(fakeCanvas(1280, 520), false, { ...noop, onSettled: settled })
     field.setup()

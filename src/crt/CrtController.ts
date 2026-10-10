@@ -1,5 +1,6 @@
 import { Lattice, type HitTarget } from './Lattice'
 import { Transit } from './Transit'
+import { Fireworks } from './Fireworks'
 import type { NameField } from './NameField'
 import { BLAST, type Tear } from './tokens'
 
@@ -10,6 +11,8 @@ export type CrtEvent =
   | { type: 'reveal'; on: boolean }
   | { type: 'replay' }
   | { type: 'layout' }
+  | { type: 'fireworks'; on: boolean }
+  | { type: 'burst'; name: string | null }
 
 type Listener = (event: CrtEvent) => void
 
@@ -22,6 +25,7 @@ export class CrtController {
   private lattice: Lattice | null = null
   private field: NameField | null = null
   private transit: Transit | null = null
+  private fireworks: Fireworks | null = null
   private handoff: { points: number[]; at: number } | null = null
   private arrivalTimer = 0
   private flightField: NameField | null = null
@@ -55,11 +59,13 @@ export class CrtController {
     }
   }
 
-  mount(canvas: HTMLCanvasElement, transitCanvas: HTMLCanvasElement) {
+  mount(canvas: HTMLCanvasElement, transitCanvas: HTMLCanvasElement, fireworksCanvas: HTMLCanvasElement) {
     this.lattice = new Lattice(canvas, this.reduceMotion, this.frame)
     this.lattice.setup()
     this.transit = new Transit(transitCanvas)
     this.transit.setup()
+    this.fireworks = new Fireworks(fireworksCanvas)
+    this.fireworks.setup()
     if (this.revealed) {
       this.lattice.enable()
       this.scheduleIdleTear()
@@ -77,6 +83,8 @@ export class CrtController {
     this.lattice = null
     this.transit?.destroy()
     this.transit = null
+    this.fireworks?.destroy()
+    this.fireworks = null
     window.clearTimeout(this.idleTimer)
     window.clearTimeout(this.pulseTimer)
     window.clearTimeout(this.arrivalTimer)
@@ -147,6 +155,25 @@ export class CrtController {
       field.land(performance.now() - started)
     })
     this.arrivalTimer = window.setTimeout(onArriving, duration * ARRIVAL_POINT)
+  }
+
+  get fireworksRunning() {
+    return this.fireworks?.isRunning ?? false
+  }
+
+  launchFireworks() {
+    if (this.reduceMotion || !this.fireworks) return
+    const started = this.fireworks.play(
+      {
+        onBurst: (x, y, name) => {
+          this.lattice?.impulse(x, y, 180, 5)
+          this.emit({ type: 'burst', name })
+        },
+        onEnd: () => this.emit({ type: 'fireworks', on: false }),
+      },
+      this.lowPower,
+    )
+    if (started) this.emit({ type: 'fireworks', on: true })
   }
 
   regenerate(field: NameField, text: string) {
@@ -286,6 +313,7 @@ export class CrtController {
 
   private onResize = () => {
     this.transit?.setup()
+    this.fireworks?.setup()
     this.lattice?.setup()
     this.field?.setup()
     this.liftName()

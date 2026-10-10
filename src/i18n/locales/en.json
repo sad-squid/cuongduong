@@ -8,7 +8,8 @@
     "work": "work",
     "pages": "Pages",
     "elsewhere": "Elsewhere",
-    "language": "Language"
+    "language": "Language",
+    "fireworks": "fireworks"
   },
   "palette": {
     "label": "Command palette",
@@ -22,7 +23,8 @@
       "en": "switch to English",
       "ja": "日本語に切り替え",
       "vi": "chuyển sang tiếng Việt"
-    }
+    },
+    "fireworks": "a 15 second show"
   },
   "about": {
     "title": "About",

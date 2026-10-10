@@ -27,6 +27,7 @@ export const CommandPalette = () => {
       { id: 'linkedin', label: 'linkedin', hint: 'linkedin.com/in/cuongduong-dev', run: () => window.location.assign(LINKS.linkedin) },
       ...SUPPORTED_LANGUAGES.map((code) => ({ id: `lang-${code}`, label: `lang ${code}`, hint: t(`palette.lang.${code}`), run: () => i18n.changeLanguage(code) })),
     ]
+    if (!crt.reduceMotion) list.push({ id: 'fireworks', label: 'fireworks', hint: t('palette.fireworks'), run: () => crt.launchFireworks() })
     return path === '/' ? [...list, { id: 'replay', label: 'replay', hint: t('palette.replay'), run: () => crt.replay() }] : list
   }, [t, i18n, navigate, path, crt])
 
