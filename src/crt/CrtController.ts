@@ -157,7 +157,7 @@ export class CrtController {
       this.flightField = null
       field.land(performance.now() - started)
     })
-    this.sound.play('generate', { duration: duration / 1000 })
+    this.sound.play('generate', { duration: duration / 1000, landing: false })
     this.arrivalTimer = window.setTimeout(onArriving, duration * ARRIVAL_POINT)
   }
 

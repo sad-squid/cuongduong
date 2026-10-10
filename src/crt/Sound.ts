@@ -18,6 +18,7 @@ export type PlayOptions = {
   pan?: number
   variant?: Variant
   duration?: number
+  landing?: boolean
 }
 
 export type ChainSettings = {
@@ -132,6 +133,7 @@ type Kit = {
   out: AudioNode
   k: number
   dur: number
+  land: boolean
   osc(shape: Shape, freq: number, t: number, end: number): OscillatorNode
   env(dest: AudioNode, t: number, peak: number, attack: number, release: number): GainNode
   curve(dest: AudioNode, t: number, points: readonly Point[]): GainNode
@@ -260,19 +262,19 @@ const SOUNDS: Record<SoundName, Record<Variant, SoundFn>> = {
     A: (kit, t) => {
       const d = kit.dur
       settle(kit, t, d, 0.3, 0.26, 1900, 0.5)
-      landing(kit, t + d * 0.78)
+      if (kit.land) landing(kit, t + d * 0.78)
       return d * 0.78 + 0.15
     },
     B: (kit, t) => {
       const d = kit.dur
       settle(kit, t, d, 0.22, 0.45, 1800, 0.5)
-      landing(kit, t + d * 0.78)
+      if (kit.land) landing(kit, t + d * 0.78)
       return d * 0.78 + 0.15
     },
     C: (kit, t) => {
       const d = kit.dur
       settle(kit, t, d, 0.38, 0.14, 2200, 0.25)
-      landing(kit, t + d * 0.78)
+      if (kit.land) landing(kit, t + d * 0.78)
       return d * 0.78 + 0.15
     },
   },
@@ -728,7 +730,7 @@ const createEngine = (ctx: BaseAudioContext, initial: ChainSettings): Engine => 
       f.detune.value = cents
       return f
     }
-    const kit: Kit = { ctx, out: gain, k, dur: opts.duration ?? DEFAULT_DURATIONS[name] ?? 0.5, osc: vOsc, env, curve, noise, filt: vFilt, flutter, wobble, tail }
+    const kit: Kit = { ctx, out: gain, k, dur: opts.duration ?? DEFAULT_DURATIONS[name] ?? 0.5, land: opts.landing ?? true, osc: vOsc, env, curve, noise, filt: vFilt, flutter, wobble, tail }
     const len = SOUNDS[name][variant](kit, t)
     return { gain, end: t + len }
   }
