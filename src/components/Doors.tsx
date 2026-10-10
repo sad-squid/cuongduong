@@ -18,6 +18,7 @@ export const RouteDoor = ({ label, to }: Labels & { to: '/' | '/about' | '/work'
     <Link
       className="door"
       to={to}
+      activeOptions={{ exact: true }}
       aria-label={label}
       onPointerEnter={trigger}
       onFocus={trigger}

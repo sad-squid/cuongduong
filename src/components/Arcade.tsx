@@ -122,7 +122,7 @@ export const Arcade = ({ onExit }: { onExit: () => void }) => {
           ))}
         </span>
         <button type="button" className="arcade-close" aria-label={t('arcade.close')} onClick={onExit}>
-          esc ×
+          <span className="key">esc</span>×
         </button>
       </div>
       <ul className="arcade-powers" aria-label={t('arcade.powers')}>

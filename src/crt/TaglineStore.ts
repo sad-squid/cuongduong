@@ -37,6 +37,23 @@ export const segmentWords = (lang: string, text: string): [number, number][] => 
   return out
 }
 
+const HIRAGANA = /^[\u3041-\u309f]/
+const PARTICLE = /^[\u3041-\u309f]+$/
+const CLOSING = /^[、。，．・ー」』）)!?！？]/
+
+export const phraseStarts = (text: string) => {
+  const starts: number[] = []
+  if (typeof Intl === 'undefined' || !('Segmenter' in Intl)) return starts
+  let previous = ''
+  for (const s of new Intl.Segmenter('ja', { granularity: 'word' }).segment(text)) {
+    const content = !HIRAGANA.test(s.segment) && !CLOSING.test(s.segment)
+    const afterPause = /[、。]$/.test(previous)
+    if (s.index > 0 && (afterPause || (content && PARTICLE.test(previous)))) starts.push(s.index)
+    previous = s.segment
+  }
+  return starts
+}
+
 export class TaglineStore {
   private readonly reduceMotion: boolean
   private text = ''

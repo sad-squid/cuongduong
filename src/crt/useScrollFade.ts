@@ -36,8 +36,9 @@ export const useScrollFade = (root: RefObject<HTMLElement | null>) => {
       const bottomStart = vh - footer - vh * (compact.matches ? COMPACT_BOTTOM_BAND : BOTTOM_BAND)
       const bottomEnd = vh - footer
       const blur = compact.matches ? 1.5 : 3
-      const scrolled = window.scrollY
-      const remaining = Math.max(0, document.documentElement.scrollHeight - vh - scrolled)
+      const box = container.getBoundingClientRect()
+      const scrolled = Math.max(0, -box.top)
+      const remaining = Math.max(0, box.bottom - vh)
       const topStrength = Math.min(1, scrolled / top)
       const bottomStrength = Math.min(1, remaining / (bottomEnd - bottomStart))
       const rects = targets.map((el) => el.getBoundingClientRect())

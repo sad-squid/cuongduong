@@ -7,30 +7,6 @@ import { setLanguage } from '@/router'
 import { LINKS } from '@/content/names'
 import { IconDoor, RouteDoor } from './Doors'
 import { DotIcon } from './DotIcon'
-import { useScramble } from './useScramble'
-
-const LangButton = ({ code, current }: { code: Language; current: boolean }) => {
-  const crt = useCrt()
-  const label = LANGUAGE_META[code].label
-  const [text, trigger] = useScramble(label, crt.reduceMotion)
-  return (
-    <button
-      type="button"
-      lang={code}
-      className={current ? 'on' : undefined}
-      aria-label={label}
-      aria-pressed={current}
-      onPointerEnter={trigger}
-      onFocus={trigger}
-      onClick={() => setLanguage(code)}
-    >
-      <span className="label-long">{text}</span>
-      <span className="label-short" aria-hidden="true">
-        {LANGUAGE_META[code].code}
-      </span>
-    </button>
-  )
-}
 
 const FireworksButton = () => {
   const crt = useCrt()
@@ -118,11 +94,6 @@ export const Footer = () => {
         <FireworksButton key={`fireworks-${lang}`} />
         <SoundButton />
       </nav>
-      <div className="langs" role="group" aria-label={t('footer.language')}>
-        {SUPPORTED_LANGUAGES.map((code) => (
-          <LangButton key={code} code={code} current={code === lang} />
-        ))}
-      </div>
       <LangCycle current={lang} />
     </footer>
   )

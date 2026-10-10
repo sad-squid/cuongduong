@@ -5,8 +5,8 @@ import { CommandPalette } from '@/components/CommandPalette'
 import { CrtController } from '@/crt/CrtController'
 import { CrtContext, prefersReducedMotion } from '@/crt/context'
 import { startLiveFavicon } from '@/crt/favicon'
-import { MobileStack } from './MobileStack'
-import { stackIndex, useCompact } from './section'
+import { Stack } from './Stack'
+import { stackIndex } from './section'
 
 const SHOW_SOUND_LAB = import.meta.env.DEV && new URLSearchParams(window.location.search).has('sfx')
 const SoundLab = lazy(() => import('@/components/SoundLab').then((m) => ({ default: m.SoundLab })))
@@ -22,8 +22,7 @@ export const Layout = () => {
   const path = useRouterState({ select: (s) => s.location.pathname })
   const [announcement, setAnnouncement] = useState('')
   const firstPath = useRef(path)
-  const compact = useCompact()
-  const stacked = compact && stackIndex(path) >= 0
+  const stacked = stackIndex(path) >= 0
 
   useEffect(() => {
     const canvas = latticeRef.current
@@ -62,7 +61,7 @@ export const Layout = () => {
         <div className="scan-bar" aria-hidden="true" />
         <div className="vignette" aria-hidden="true" />
         <main className="content">
-          {stacked ? <MobileStack /> : <Outlet />}
+          {stacked ? <Stack /> : <Outlet />}
         </main>
         <Footer />
         <div className="scanlines" aria-hidden="true" />

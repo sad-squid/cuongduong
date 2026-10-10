@@ -7,10 +7,10 @@ import ja from './locales/ja.json'
 export const SUPPORTED_LANGUAGES = ['en', 'ja', 'vi'] as const
 export type Language = (typeof SUPPORTED_LANGUAGES)[number]
 
-export const LANGUAGE_META: Record<Language, { code: string; label: string; name: string }> = {
-  en: { code: 'EN', label: 'EN', name: 'English' },
-  ja: { code: 'JA', label: '日本語', name: '日本語' },
-  vi: { code: 'VI', label: 'Tiếng Việt', name: 'Tiếng Việt' },
+export const LANGUAGE_META: Record<Language, { name: string }> = {
+  en: { name: 'English' },
+  ja: { name: '日本語' },
+  vi: { name: 'Tiếng Việt' },
 }
 
 export const toLanguage = (lng: string | undefined): Language => {
