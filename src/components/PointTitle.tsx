@@ -59,7 +59,7 @@ export const PointTitle = ({ titleKey, onLanded }: { titleKey: string; onLanded:
       if (cancelled) return
       field.setup()
       shown.current = canvas.dataset.title ?? ''
-      crt.introduce(field, shown.current)
+      crt.introduce(field, shown.current, () => landedEvent())
     })
     return () => {
       cancelled = true

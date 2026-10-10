@@ -1,7 +1,9 @@
+import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { PointTitle } from '@/components/PointTitle'
 import { useArrival } from '@/crt/useArrival'
 import { useReveal } from '@/crt/useReveal'
+import { useScrollFade } from '@/crt/useScrollFade'
 
 type NameRow = { lang: string; label: string; value: string; say: string }
 type LanguageRow = { name: string; level: string }
@@ -14,9 +16,11 @@ export const About = () => {
   const languages = t('about.languages', { returnObjects: true }) as LanguageRow[]
   const recognition = t('about.recognition', { returnObjects: true }) as string[]
   const { land, stage } = useArrival()
+  const pageRef = useRef<HTMLElement>(null)
+  useScrollFade(pageRef)
 
   return (
-    <article className="page split">
+    <article ref={pageRef} className="page split">
       <header className="page-aside">
         <PointTitle titleKey="about.title" onLanded={land} />
         <section aria-labelledby="about-name" {...stage(0)}>

@@ -41,6 +41,18 @@ const HomeScreen = () => {
     crt.tear(1.6, true)
   }
 
+  const arrived = useRef(false)
+
+  const arrive = () => {
+    if (arrived.current) return
+    arrived.current = true
+    crt.reveal()
+    setLit(true)
+    tagline.sweep()
+  }
+
+  const arriveEvent = useEffectEvent(() => arrive())
+
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
@@ -62,11 +74,9 @@ const HomeScreen = () => {
           const seed = result.seed.toString(16).padStart(4, '0')
           log.log(true, `generate ${result.points.toLocaleString('en-US')} points / ${result.steps} steps / ${seconds}s / seed ${seed}`)
         }
+        arriveEvent()
         if (landed.current) return
         landed.current = true
-        crt.reveal()
-        setLit(true)
-        tagline.sweep()
         log.log(true, `check    agent: contrast ${contrastRatio(COLORS.cream, COLORS.bg).toFixed(1)}:1 against the background, passes AAA`)
         log.log(true, 'gate     human: you. click the name to ask for another')
         log.log(false, 'note     how I ship AI content: generate, agent check, human gate')
@@ -87,7 +97,7 @@ const HomeScreen = () => {
       field.setup()
       const name = NAMES[NAME_ORDER[nameIndex.current]]
       log.log(true, `request  name -> "${name.text}" (${name.lang}): ${name.note}`)
-      crt.introduce(field, name.text)
+      crt.introduce(field, name.text, () => arriveEvent())
     })
     const off = crt.subscribe((event) => {
       if (event.type === 'activity') log.activity()
@@ -118,7 +128,7 @@ const HomeScreen = () => {
     shownLang.current = lang
     tagline.setText(lang, line)
     if (previous === null) return
-    if (landed.current) tagline.sweep()
+    if (arrived.current) tagline.sweep()
     onLanguage(NAME_ORDER.indexOf(lang))
   }, [lang, line, tagline])
 

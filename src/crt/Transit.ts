@@ -38,12 +38,16 @@ export class Transit {
   }
 
   fly(from: number[], to: number[], onDone: () => void) {
+    return this.start(from, to, onDone)
+  }
+
+  private start(from: number[], to: number[], onDone: () => void) {
     this.cancel()
     const m = from.length / 2
     const n = to.length / 2
     if (!this.ctx || !m || !n) {
       onDone()
-      return
+      return 0
     }
     const byX = (pts: number[], count: number) => Array.from({ length: count }, (_, i) => i).sort((a, b) => pts[a * 2] - pts[b * 2])
     const fromOrder = byX(from, m)
@@ -69,6 +73,7 @@ export class Transit {
     this.t0 = performance.now()
     this.done = onDone
     this.raf = requestAnimationFrame(this.frame)
+    return this.duration + STAGGER_MS
   }
 
   cancel() {

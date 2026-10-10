@@ -1,7 +1,9 @@
+import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { PointTitle } from '@/components/PointTitle'
 import { useArrival } from '@/crt/useArrival'
 import { useReveal } from '@/crt/useReveal'
+import { useScrollFade } from '@/crt/useScrollFade'
 
 type Role = { company: string; role: string; dates: string; points: string[] }
 
@@ -10,9 +12,11 @@ export const Work = () => {
   const { t } = useTranslation()
   const roles = t('work.roles', { returnObjects: true }) as Role[]
   const { land, stage } = useArrival()
+  const pageRef = useRef<HTMLElement>(null)
+  useScrollFade(pageRef)
 
   return (
-    <article className="page split">
+    <article ref={pageRef} className="page split">
       <header className="page-aside">
         <PointTitle titleKey="work.title" onLanded={land} />
         <p className={`page-intro ${stage(0).className}`} style={stage(0).style}>

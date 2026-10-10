@@ -13,6 +13,8 @@ export type CrtEvent =
 
 type Listener = (event: CrtEvent) => void
 
+const ARRIVAL_POINT = 0.45
+
 const INTERACTIVE = 'a, button, input, textarea, select, label, [role="dialog"], [data-no-blast]'
 
 export class CrtController {
@@ -21,6 +23,7 @@ export class CrtController {
   private field: NameField | null = null
   private transit: Transit | null = null
   private handoff: { points: number[]; at: number } | null = null
+  private arrivalTimer = 0
   private listeners = new Set<Listener>()
   private lastTear = -Infinity
   private idleTimer = 0
@@ -67,6 +70,7 @@ export class CrtController {
     this.transit = null
     window.clearTimeout(this.idleTimer)
     window.clearTimeout(this.pulseTimer)
+    window.clearTimeout(this.arrivalTimer)
     window.removeEventListener('pointermove', this.onMove)
     window.removeEventListener('pointerdown', this.onDown)
     window.removeEventListener('pointerout', this.onOut)
@@ -102,20 +106,29 @@ export class CrtController {
     if (!field) this.lattice?.lift(null)
   }
 
-  introduce(field: NameField, text: string) {
+  introduce(field: NameField, text: string, onArriving: () => void = () => {}) {
     const handoff = this.handoff
     this.handoff = null
     const transit = this.transit
-    if (!handoff || !transit || this.reduceMotion || performance.now() - handoff.at > 1500) {
+    window.clearTimeout(this.arrivalTimer)
+    if (this.reduceMotion) {
+      field.generate(text, true, null)
+      onArriving()
+      return
+    }
+    if (!handoff || !transit || performance.now() - handoff.at > 1500) {
       field.generate(text, true, this.latticeAnchor())
+      this.arrivalTimer = window.setTimeout(onArriving, 1100 * ARRIVAL_POINT)
       return
     }
     field.place(text)
     const started = performance.now()
-    transit.fly(handoff.points, field.targetsInClient(), () => field.land(performance.now() - started))
+    const duration = transit.fly(handoff.points, field.targetsInClient(), () => field.land(performance.now() - started))
+    this.arrivalTimer = window.setTimeout(onArriving, duration * ARRIVAL_POINT)
   }
 
   release(field: NameField) {
+    window.clearTimeout(this.arrivalTimer)
     const points = field.pointsInClient()
     if (points.length) this.handoff = { points, at: performance.now() }
     if (this.field === field) this.setField(null)
