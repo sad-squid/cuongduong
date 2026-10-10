@@ -6,8 +6,6 @@ import { arcade, chip, chipDrum, firework } from './music'
 const AHEAD_MS = 1500
 const TICK_MS = 100
 const LEAD_MS = 1000
-const TAIL_MS = 400
-const FADE_S = 2.2
 const SPB = BEAT_MS / 1000
 
 export type ShowTrace = { kicks: number[]; bursts: number[]; audioBars: number[] }
@@ -20,8 +18,7 @@ export class CreditsShow {
   private readonly fireworks: Fireworks
   private origin = 0
   private nextBar = 0
-  private finalBar = Infinity
-  private endAt = Infinity
+  private climaxBar = -1
   private timer = 0
   private music: MusicBus | null = null
   private audioFrom = Infinity
@@ -80,7 +77,7 @@ export class CreditsShow {
   }
 
   finale() {
-    if (this.finalBar !== Infinity || this.done) return
+    if (this.climaxBar >= 0 || this.done) return
     const now = this.now()
     let target = nextEnd(Math.max(0, this.nextBar - 1))
     if (target < this.nextBar) {
@@ -93,9 +90,7 @@ export class CreditsShow {
         this.fireworks.enqueue(this.flank(last.at))
       } else target = nextEnd(target + 1)
     }
-    this.finalBar = target
-    this.endAt = kicksForBar(target, this.origin).at(-1)?.at ?? now
-    this.fireworks.end(this.endAt + TAIL_MS)
+    this.climaxBar = target
     this.tick()
   }
 
@@ -119,10 +114,9 @@ export class CreditsShow {
     if (!document.hidden) this.sound.wake()
     const now = this.now()
     this.syncAudio()
-    if (now >= this.endAt + TAIL_MS) return this.stop(FADE_S)
     if (document.hidden) return
-    if (this.finalBar === Infinity && barStart(this.origin, this.nextBar) < now - 100) this.nextBar = Math.floor((now - this.origin) / BAR_MS) + 1
-    while (this.nextBar <= this.finalBar && barStart(this.origin, this.nextBar) - AHEAD_MS <= now) this.scheduleBar(this.nextBar++)
+    if (barStart(this.origin, this.nextBar) < now - 100) this.nextBar = Math.floor((now - this.origin) / BAR_MS) + 1
+    while (barStart(this.origin, this.nextBar) - AHEAD_MS <= now) this.scheduleBar(this.nextBar++)
   }
 
   private syncAudio() {
@@ -131,14 +125,14 @@ export class CreditsShow {
       this.music.stop(0.08)
       this.music = null
     }
-    if (!this.music && live && this.nextBar <= this.finalBar) {
+    if (!this.music && live) {
       this.music = this.sound.musicBus(SPB * 0.75)
       this.audioFrom = this.nextBar
     }
   }
 
   private scheduleBar(bar: number) {
-    const final = bar === this.finalBar
+    const final = bar === this.climaxBar
     const start = barStart(this.origin, bar)
     const kicks = kicksForBar(bar, this.origin, final).map((k) => ({ ...k, pan: k.kind === 'big' ? 0 : spread(0.6) }))
     const notes = notesForBar(bar).map((n) => ({ ...n, pan: spread(0.4) }))
