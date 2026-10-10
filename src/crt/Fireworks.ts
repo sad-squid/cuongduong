@@ -232,7 +232,7 @@ export class Fireworks {
       this.tx[i] = x + art.xs[k]
       this.ty[i] = y + art.ys[k]
       this.forming[i] = 1
-      this.release[i] = now + 1900 + Math.random() * 250
+      this.release[i] = now + 1300 + Math.random() * 200
     }
     this.events?.onBurst(x, y, sprite.name)
   }
