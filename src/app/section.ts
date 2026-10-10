@@ -40,3 +40,44 @@ export const scrollProgress = (regions: { top: number; end: number }[], y: numbe
   if (!next || y <= regions[k].end) return k
   return k + Math.min(1, Math.max(0, (y - regions[k].end) / Math.max(1, next.top - regions[k].end)))
 }
+
+export type Region = { top: number; end: number }
+
+export type Stop = { y: number; section: number }
+
+export const PAGE_OVERLAP = 0.1
+
+const FLAT_PX = 2
+
+export const pageStops = (regions: Region[], vh: number, overlap = PAGE_OVERLAP): Stop[] => {
+  const step = Math.max(1, vh * (1 - overlap))
+  const stops: Stop[] = []
+  regions.forEach((r, section) => {
+    const span = r.end - r.top
+    const pages = span > FLAT_PX ? Math.ceil(span / step) : 0
+    for (let k = 0; k <= pages; k++) {
+      const y = Math.round(pages === 0 ? r.top : r.top + (span * k) / pages)
+      const prev = stops[stops.length - 1]
+      if (prev && y <= prev.y + FLAT_PX) continue
+      stops.push({ y, section })
+    }
+  })
+  return stops
+}
+
+export const nearestStop = (stops: Stop[], y: number) => {
+  let best = 0
+  stops.forEach((s, k) => {
+    if (Math.abs(s.y - y) < Math.abs(stops[best].y - y)) best = k
+  })
+  return best
+}
+
+export const stepStop = (stops: Stop[], y: number, dir: number) => {
+  if (dir > 0) {
+    const k = stops.findIndex((s) => s.y > y + 1)
+    return k < 0 ? null : k
+  }
+  for (let k = stops.length - 1; k >= 0; k--) if (stops[k].y < y - 1) return k
+  return null
+}
