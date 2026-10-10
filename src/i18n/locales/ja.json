@@ -35,7 +35,7 @@
         "lang": "en",
         "label": "English",
         "value": "Cuong Tri Duong",
-        "say": "Kong Tree Dong"
+        "say": ""
       },
       {
         "lang": "vi",
@@ -60,7 +60,7 @@
     "languages": [
       {
         "name": "英語",
-        "level": "流暢"
+        "level": "ネイティブ"
       },
       {
         "name": "ベトナム語",
@@ -68,7 +68,7 @@
       },
       {
         "name": "日本語",
-        "level": "会話はネイティブに近い、読みは苦手"
+        "level": "ビジネスレベル"
       },
       {
         "name": "中国語",

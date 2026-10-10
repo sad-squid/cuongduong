@@ -35,7 +35,7 @@
         "lang": "en",
         "label": "English",
         "value": "Cuong Tri Duong",
-        "say": "Kong Tree Dong"
+        "say": ""
       },
       {
         "lang": "vi",
@@ -60,7 +60,7 @@
     "languages": [
       {
         "name": "Tiếng Anh",
-        "level": "thành thạo"
+        "level": "bản ngữ"
       },
       {
         "name": "Tiếng Việt",
@@ -68,7 +68,7 @@
       },
       {
         "name": "Tiếng Nhật",
-        "level": "nói gần như bản ngữ, đọc còn yếu"
+        "level": "thành thạo trong công việc"
       },
       {
         "name": "Tiếng Trung",

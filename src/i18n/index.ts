@@ -1,6 +1,5 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
-import LanguageDetector from 'i18next-browser-languagedetector'
 import en from './locales/en.json'
 import vi from './locales/vi.json'
 import ja from './locales/ja.json'
@@ -19,10 +18,22 @@ export const toLanguage = (lng: string | undefined): Language => {
   return (SUPPORTED_LANGUAGES as readonly string[]).includes(base) ? (base as Language) : 'en'
 }
 
+export const languageFromPath = (pathname: string): Language => {
+  const segment = pathname.split('/')[1]
+  return segment === 'ja' || segment === 'vi' ? segment : 'en'
+}
+
+export const stripLanguage = (pathname: string) => {
+  const lang = languageFromPath(pathname)
+  return lang === 'en' ? pathname : pathname.slice(lang.length + 1) || '/'
+}
+
+export const withLanguage = (pathname: string, lang: Language) => (lang === 'en' ? pathname : `/${lang}${pathname === '/' ? '' : pathname}`)
+
 i18n
-  .use(LanguageDetector)
   .use(initReactI18next)
   .init({
+    lng: languageFromPath(window.location.pathname),
     resources: {
       en: { translation: en },
       vi: { translation: vi },
@@ -31,11 +42,6 @@ i18n
     fallbackLng: 'en',
     supportedLngs: SUPPORTED_LANGUAGES,
     interpolation: { escapeValue: false },
-    detection: {
-      order: ['localStorage', 'navigator'],
-      caches: ['localStorage'],
-      lookupLocalStorage: 'i18nextLng',
-    },
   })
 
 const syncHtmlLang = (lng: string) => {

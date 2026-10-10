@@ -3,6 +3,7 @@ import { useNavigate, useRouterState } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { SUPPORTED_LANGUAGES } from '@/i18n'
 import { useCrt } from '@/crt/context'
+import { setLanguage } from '@/router'
 import { LINKS } from '@/content/names'
 
 type Command = { id: string; label: string; hint: string; run: () => void }
@@ -10,7 +11,7 @@ type Command = { id: string; label: string; hint: string; run: () => void }
 export const CommandPalette = () => {
   const crt = useCrt()
   const navigate = useNavigate()
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const path = useRouterState({ select: (s) => s.location.pathname })
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
@@ -25,11 +26,11 @@ export const CommandPalette = () => {
       { id: 'work', label: 'work', hint: t('palette.work'), run: () => navigate({ to: '/work' }) },
       { id: 'github', label: 'github', hint: 'github.com/sad-squid', run: () => window.location.assign(LINKS.github) },
       { id: 'linkedin', label: 'linkedin', hint: 'linkedin.com/in/cuongduong-dev', run: () => window.location.assign(LINKS.linkedin) },
-      ...SUPPORTED_LANGUAGES.map((code) => ({ id: `lang-${code}`, label: `lang ${code}`, hint: t(`palette.lang.${code}`), run: () => i18n.changeLanguage(code) })),
+      ...SUPPORTED_LANGUAGES.map((code) => ({ id: `lang-${code}`, label: `lang ${code}`, hint: t(`palette.lang.${code}`), run: () => setLanguage(code) })),
     ]
     if (!crt.reduceMotion) list.push({ id: 'fireworks', label: 'fireworks', hint: t('palette.fireworks'), run: () => crt.launchFireworks() })
     return path === '/' ? [...list, { id: 'replay', label: 'replay', hint: t('palette.replay'), run: () => crt.replay() }] : list
-  }, [t, i18n, navigate, path, crt])
+  }, [t, navigate, path, crt])
 
   const matches = useMemo(() => {
     const q = query.trim().toLowerCase()

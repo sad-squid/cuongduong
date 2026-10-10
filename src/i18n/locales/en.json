@@ -1,7 +1,7 @@
 {
   "home": {
     "line": "Software engineer in Tokyo, focused on agentic coding and workflows for AI-generated content.",
-    "heading": "Hi, I'm Cuong Duong"
+    "heading": "Cuong Duong"
   },
   "footer": {
     "home": "home",
@@ -35,7 +35,7 @@
         "lang": "en",
         "label": "English",
         "value": "Cuong Tri Duong",
-        "say": "Kong Tree Dong"
+        "say": ""
       },
       {
         "lang": "vi",
@@ -60,7 +60,7 @@
     "languages": [
       {
         "name": "English",
-        "level": "fluent"
+        "level": "native"
       },
       {
         "name": "Vietnamese",
@@ -68,7 +68,7 @@
       },
       {
         "name": "Japanese",
-        "level": "near-native speaking, weak reading"
+        "level": "business level"
       },
       {
         "name": "Chinese",

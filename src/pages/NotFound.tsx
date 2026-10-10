@@ -9,7 +9,7 @@ const SIGNALS = ['404', '迷子']
 
 export const NotFound = () => {
   const crt = useCrt()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   useDocumentTitle(t('notFound.title'))
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const fieldRef = useRef<NameField | null>(null)
@@ -59,7 +59,7 @@ export const NotFound = () => {
         </button>
       </h1>
       <p className="tagline lit">{t('notFound.body')}</p>
-      <Link className="door" to="/">{t('notFound.home')}</Link>
+      <Link key={i18n.resolvedLanguage} className="door" to="/">{t('notFound.home')}</Link>
     </section>
   )
 }
