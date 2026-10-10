@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link, useRouterState } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { LANGUAGE_META, SUPPORTED_LANGUAGES, toLanguage, type Language } from '@/i18n'
 import { useCrt } from '@/crt/context'
@@ -34,7 +35,8 @@ const LangButton = ({ code, current }: { code: Language; current: boolean }) => 
 const FireworksButton = () => {
   const crt = useCrt()
   const { t } = useTranslation()
-  const [running, setRunning] = useState(false)
+  const [running, setRunning] = useState(() => crt.fireworksRunning)
+  const onCredits = useRouterState({ select: (s) => s.location.pathname === '/credits' })
 
   useEffect(
     () =>
@@ -44,16 +46,17 @@ const FireworksButton = () => {
     [crt],
   )
 
-  return crt.reduceMotion ? null : (
-    <button
-      type="button"
+  return (
+    <Link
+      to="/credits"
       className={running ? 'icon-door fireworks on' : 'icon-door fireworks'}
       aria-label={t('footer.fireworks')}
-      aria-pressed={running}
-      onClick={() => crt.launchFireworks()}
+      role={onCredits ? 'button' : undefined}
+      aria-pressed={onCredits ? running : undefined}
+      onClick={() => (onCredits ? crt.toggleFireworks() : null)}
     >
       <DotIcon icon="fireworks" />
-    </button>
+    </Link>
   )
 }
 
@@ -105,7 +108,7 @@ export const Footer = () => {
       <nav className="doors links" aria-label={t('footer.elsewhere')}>
         <IconDoor icon="github" name="GitHub" href={LINKS.github} />
         <IconDoor icon="linkedin" name="LinkedIn" href={LINKS.linkedin} />
-        <FireworksButton />
+        <FireworksButton key={`fireworks-${lang}`} />
         <SoundButton />
       </nav>
       <div className="langs" role="group" aria-label={t('footer.language')}>

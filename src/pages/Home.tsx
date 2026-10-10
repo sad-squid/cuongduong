@@ -1,7 +1,8 @@
-import { useEffect, useEffectEvent, useRef, useState } from 'react'
+import { useCallback, useEffect, useEffectEvent, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18next, { toLanguage } from '@/i18n'
 import { Tagline } from '@/components/Tagline'
+import { Arcade } from '@/components/Arcade'
 import { SignalLog } from '@/components/SignalLog'
 import { useCrt, loadNameFonts } from '@/crt/context'
 import { usePageTitle } from '@/crt/useDocumentTitle'
@@ -14,6 +15,9 @@ import { useSection } from '@/app/section'
 
 const say = (key: string, options: Record<string, unknown> = {}) => i18next.t(`log.${key}`, options)
 const num = (value: number, digits = 0) => value.toLocaleString(i18next.resolvedLanguage, { minimumFractionDigits: digits, maximumFractionDigits: digits })
+
+const TAP_MS = 450
+const TAPS = 5
 
 const requestName = (log: LogStore, index: number) => {
   const name = NAMES[NAME_ORDER[index]]
@@ -39,6 +43,11 @@ const HomeScreen = () => {
   const [lit, setLit] = useState(false)
   const { active, armed } = useSection()
   const activeRef = useRef(active)
+  const [streak, setStreak] = useState({ count: 0, shown: false })
+  const [playing, setPlaying] = useState(false)
+  const taps = useRef({ count: 0, at: -Infinity })
+  const tapTimer = useRef(0)
+  const nameRef = useRef<HTMLButtonElement>(null)
 
   const request = (index: number) => requestName(log, index)
 
@@ -48,6 +57,50 @@ const HomeScreen = () => {
     nameIndex.current = index
     crt.regenerate(field, request(index))
   }
+
+  const openGame = () => {
+    crt.stopFireworks()
+    crt.setGame(true)
+    setPlaying(true)
+  }
+
+  const closeGame = useCallback(() => {
+    crt.setGame(false)
+    setPlaying(false)
+    window.requestAnimationFrame(() => nameRef.current?.focus())
+  }, [crt])
+
+  const tapName = () => {
+    const now = performance.now()
+    const tap = taps.current
+    tap.count = now - tap.at < TAP_MS ? tap.count + 1 : 1
+    tap.at = now
+    window.clearTimeout(tapTimer.current)
+    if (tap.count === 1) {
+      regenerate((nameIndex.current + 1) % NAME_ORDER.length)
+      return
+    }
+    setStreak({ count: tap.count, shown: true })
+    if (tap.count < TAPS) {
+      tapTimer.current = window.setTimeout(() => setStreak((was) => ({ ...was, shown: false })), 1000)
+      return
+    }
+    tap.count = 0
+    tap.at = -Infinity
+    crt.tear(1.8, true)
+    tapTimer.current = window.setTimeout(() => {
+      setStreak((was) => ({ ...was, shown: false }))
+      openGame()
+    }, 320)
+  }
+
+  useEffect(
+    () => () => {
+      window.clearTimeout(tapTimer.current)
+      crt.setGame(false)
+    },
+    [crt],
+  )
 
   const arrived = useRef(false)
 
@@ -188,17 +241,25 @@ const HomeScreen = () => {
   }, [lang, line, tagline])
 
   return (
-    <section className="home">
-      <SignalLog store={log} />
-      <h1 className="name">
-        <button type="button" className="name-button" data-blast onClick={() => regenerate((nameIndex.current + 1) % NAME_ORDER.length)}>
-          <span className="sr-only">{t('home.heading')}</span>
-          <canvas ref={canvasRef} className="name-canvas" aria-hidden="true" />
-        </button>
-      </h1>
-      <div ref={stepRef} className="step" aria-hidden="true" data-on="false" />
-      <Tagline ref={taglineRef} store={tagline} text={line} lang={lang} lit={lit} />
-    </section>
+    <>
+      <section className={playing ? 'home hidden' : 'home'} aria-hidden={playing}>
+        <SignalLog store={log} />
+        <h1 className="name">
+          <button ref={nameRef} type="button" className="name-button" data-blast onClick={tapName}>
+            <span className="sr-only">{t('home.heading')}</span>
+            <canvas ref={canvasRef} className="name-canvas" aria-hidden="true" />
+            <span className={streak.shown ? 'tap-count on' : 'tap-count'} aria-hidden="true">
+              {Array.from({ length: TAPS }, (_, i) => (
+                <i key={i} className={i < streak.count ? (i === streak.count - 1 ? 'lit new' : 'lit') : undefined} />
+              ))}
+            </span>
+          </button>
+        </h1>
+        <div ref={stepRef} className="step" aria-hidden="true" data-on="false" />
+        <Tagline ref={taglineRef} store={tagline} text={line} lang={lang} lit={lit} />
+      </section>
+      {playing ? <Arcade onExit={closeGame} /> : null}
+    </>
   )
 }
 

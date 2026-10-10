@@ -28,7 +28,7 @@
       "ja": "日本語に切り替え",
       "vi": "chuyển sang tiếng Việt"
     },
-    "fireworks": "màn pháo hoa 15 giây"
+    "fireworks": "phần credits, kèm pháo hoa"
   },
   "about": {
     "title": "Giới thiệu",
@@ -170,6 +170,58 @@
       "crewmate": "phi hành viên Among Us",
       "gigachad": "Gigachad",
       "trollface": "mặt Troll"
+    }
+  },
+  "credits": {
+    "title": "Credits",
+    "site": "cuongduong.dev",
+    "roles": [
+      {
+        "label": "thiết kế, code, chữ",
+        "value": "Dương Trí Cường"
+      },
+      {
+        "label": "cùng làm với",
+        "value": "Claude (Anthropic)"
+      },
+      {
+        "label": "phông chữ",
+        "value": "Space Grotesk, DM Sans, Space Mono, Noto Sans JP"
+      },
+      {
+        "label": "công cụ",
+        "value": "React, Vite, TanStack Router, i18next, và rất nhiều canvas"
+      }
+    ],
+    "cast": "khách mời",
+    "castNote": "các nhân vật thuộc về tác giả của họ; vẽ ở đây bằng tình yêu, chưa xin phép",
+    "thanks": "cảm ơn bạn đã xem đến cuối",
+    "start": "press start",
+    "home": "về trang chủ"
+  },
+  "arcade": {
+    "label": "Invaders",
+    "score": "điểm",
+    "wave": "đợt",
+    "lives_other": "còn {{count}} mạng",
+    "close": "Đóng trò chơi",
+    "mouse": "di chuột để di chuyển · bấm để bắn",
+    "touch": "kéo để di chuyển · giữ để bắn",
+    "over": "game over",
+    "again": "press start để chơi lại",
+    "powers": "Vật phẩm",
+    "power": {
+      "spread": "BẮN TỎA",
+      "rapid": "BẮN NHANH",
+      "laser": "LASER",
+      "hanabi": "PHÁO HOA",
+      "shield": "KHIÊN",
+      "wow": "MUCH WOW",
+      "homing": "ĐẠN ĐUỔI",
+      "glitch": "GLITCH",
+      "wingmen": "YỂM TRỢ",
+      "big": "ĐẠN TO",
+      "chain": "DÂY CHUYỀN"
     }
   }
 }

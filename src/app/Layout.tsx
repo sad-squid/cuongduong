@@ -18,6 +18,7 @@ export const Layout = () => {
   const fireworksRef = useRef<HTMLCanvasElement>(null)
   const [revealed, setRevealed] = useState(false)
   const [lowPower, setLowPower] = useState(false)
+  const [playing, setPlaying] = useState(false)
   const path = useRouterState({ select: (s) => s.location.pathname })
   const [announcement, setAnnouncement] = useState('')
   const firstPath = useRef(path)
@@ -32,6 +33,7 @@ export const Layout = () => {
     const off = crt.subscribe((event) => {
       if (event.type === 'reveal') setRevealed(event.on)
       if (event.type === 'lowPower') setLowPower(event.on)
+      if (event.type === 'game') setPlaying(event.on)
     })
     crt.mount(canvas, transit, fireworks)
     return () => {
@@ -49,7 +51,9 @@ export const Layout = () => {
     return () => window.clearTimeout(timer)
   }, [path])
 
-  const className = ['screen', revealed ? 'revealed' : null, lowPower ? 'low-power' : null].filter(Boolean).join(' ')
+  const className = ['screen', revealed ? 'revealed' : null, lowPower ? 'low-power' : null, path === '/credits' ? 'on-credits' : null, playing ? 'playing' : null]
+    .filter(Boolean)
+    .join(' ')
 
   return (
     <CrtContext.Provider value={crt}>
@@ -63,7 +67,7 @@ export const Layout = () => {
         <Footer />
         <div className="scanlines" aria-hidden="true" />
         <canvas ref={transitRef} className="transit" aria-hidden="true" />
-        <canvas ref={fireworksRef} className="transit" aria-hidden="true" />
+        <canvas ref={fireworksRef} className="transit fireworks-layer" aria-hidden="true" />
         <p className="sr-only" aria-live="polite">
           {announcement}
         </p>
