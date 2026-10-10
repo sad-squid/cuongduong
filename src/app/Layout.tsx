@@ -16,11 +16,11 @@ export const Layout = () => {
     const canvas = latticeRef.current
     const transit = transitRef.current
     if (!canvas || !transit) return
-    crt.mount(canvas, transit)
     const off = crt.subscribe((event) => {
       if (event.type === 'reveal') setRevealed(event.on)
       if (event.type === 'lowPower') setLowPower(event.on)
     })
+    crt.mount(canvas, transit)
     return () => {
       off()
       crt.unmount()

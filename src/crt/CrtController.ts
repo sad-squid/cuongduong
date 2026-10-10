@@ -35,6 +35,7 @@ export class CrtController {
   private frameLast = 0
   private frameSamples = 0
   private lowPower = false
+  private revealed = false
 
   constructor(reduceMotion: boolean) {
     this.reduceMotion = reduceMotion
@@ -42,6 +43,10 @@ export class CrtController {
 
   get isLowPower() {
     return this.lowPower
+  }
+
+  get isRevealed() {
+    return this.revealed
   }
 
   subscribe(listener: Listener) {
@@ -56,6 +61,11 @@ export class CrtController {
     this.lattice.setup()
     this.transit = new Transit(transitCanvas)
     this.transit.setup()
+    if (this.revealed) {
+      this.lattice.enable()
+      this.scheduleIdleTear()
+      this.emit({ type: 'reveal', on: true })
+    }
     window.addEventListener('pointermove', this.onMove, { passive: true })
     window.addEventListener('pointerdown', this.onDown, { passive: true })
     window.addEventListener('pointerout', this.onOut, { passive: true })
@@ -83,6 +93,7 @@ export class CrtController {
   }
 
   reveal() {
+    this.revealed = true
     this.lattice?.enable()
     this.scheduleIdleTear()
     this.emit({ type: 'reveal', on: true })
@@ -91,6 +102,7 @@ export class CrtController {
   replay() {
     window.clearTimeout(this.idleTimer)
     this.lattice?.reset()
+    this.revealed = false
     this.emit({ type: 'reveal', on: false })
     this.emit({ type: 'replay' })
   }

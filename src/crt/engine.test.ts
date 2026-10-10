@@ -182,6 +182,19 @@ describe('CrtController', () => {
   })
 })
 
+describe('reveal ordering', () => {
+  it('honours a reveal requested before the lattice is mounted', () => {
+    const controller = new CrtController(false)
+    controller.reveal()
+    expect(controller.isRevealed).toBe(true)
+    controller.mount(fakeCanvas(1280, 800), fakeCanvas(1280, 800))
+    controller.blast(640, 300)
+    advance(16, 2)
+    expect(controller.isRevealed).toBe(true)
+    controller.unmount()
+  })
+})
+
 describe('heading handoff', () => {
   it('flies the leaving heading into the arriving one and settles once', () => {
     const controller = new CrtController(false)
