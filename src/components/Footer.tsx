@@ -46,15 +46,22 @@ const FireworksButton = () => {
     [crt],
   )
 
+  if (onCredits) {
+    return crt.reduceMotion ? null : (
+      <button
+        type="button"
+        className={running ? 'icon-door fireworks on' : 'icon-door fireworks'}
+        aria-label={t('footer.fireworks')}
+        aria-pressed={running}
+        onClick={() => crt.toggleFireworks()}
+      >
+        <DotIcon icon="fireworks" />
+      </button>
+    )
+  }
+
   return (
-    <Link
-      to="/credits"
-      className={running ? 'icon-door fireworks on' : 'icon-door fireworks'}
-      aria-label={t('footer.fireworks')}
-      role={onCredits ? 'button' : undefined}
-      aria-pressed={onCredits ? running : undefined}
-      onClick={() => (onCredits ? crt.toggleFireworks() : null)}
-    >
+    <Link to="/credits" className="icon-door fireworks" aria-label={t('footer.fireworks')}>
       <DotIcon icon="fireworks" />
     </Link>
   )

@@ -1,11 +1,10 @@
-import { createRootRoute, createRoute, createRouter, redirect } from '@tanstack/react-router'
+import { createRootRoute, createRoute, createRouter, lazyRouteComponent, redirect } from '@tanstack/react-router'
 import { Layout } from '@/app/Layout'
 import { Home } from '@/pages/Home'
 import { About } from '@/pages/About'
 import { Work } from '@/pages/Work'
 import { Notes } from '@/pages/Notes'
 import { NotFound } from '@/pages/NotFound'
-import { Credits } from '@/pages/Credits'
 import i18n, { languageFromPath, stripLanguage, toLanguage, withLanguage, type Language } from '@/i18n'
 
 const rootRoute = createRootRoute({
@@ -16,7 +15,7 @@ const rootRoute = createRootRoute({
 const homeRoute = createRoute({ getParentRoute: () => rootRoute, path: '/', component: Home })
 const aboutRoute = createRoute({ getParentRoute: () => rootRoute, path: '/about', component: About })
 const workRoute = createRoute({ getParentRoute: () => rootRoute, path: '/work', component: Work })
-const creditsRoute = createRoute({ getParentRoute: () => rootRoute, path: '/credits', component: Credits })
+const creditsRoute = createRoute({ getParentRoute: () => rootRoute, path: '/credits', component: lazyRouteComponent(() => import('@/pages/Credits'), 'Credits') })
 const notesRoute = createRoute({ getParentRoute: () => rootRoute, path: '/notes', component: Notes })
 
 const blogRedirectRoute = createRoute({

@@ -31,7 +31,7 @@ export const startLiveFavicon = (crt: CrtController) => {
     flashTimer = window.setTimeout(rest, ms)
   }
   const tick = () => {
-    if (!crt.reduceMotion && !document.hidden && !celebrating) {
+    if (!document.hidden && !celebrating) {
       if (Math.random() < 0.22) flash('glitch', 180)
       else flash('blink', 140)
     }
@@ -52,7 +52,7 @@ export const startLiveFavicon = (crt: CrtController) => {
   })
   document.addEventListener('visibilitychange', rest)
   rest()
-  timer = window.setTimeout(tick, 2500)
+  if (!crt.reduceMotion) timer = window.setTimeout(tick, 2500)
   return () => {
     off()
     window.clearTimeout(timer)

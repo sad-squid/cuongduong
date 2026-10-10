@@ -431,12 +431,6 @@ button.icon-door:focus-visible {
   text-shadow: var(--glow-1);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .arcade-callout {
-    opacity: 1;
-  }
-}
-
 .door[data-status='active'] {
   color: var(--cream);
   text-shadow: var(--glow-1);
@@ -673,7 +667,8 @@ button.icon-door:focus-visible {
   z-index: 0;
 }
 
-.screen.playing .footer {
+.screen.playing .footer,
+.screen.playing .section-dots {
   display: none;
 }
 
@@ -1162,15 +1157,6 @@ button.lang-cycle {
     justify-content: center;
   }
 
-  .langs button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 44px;
-    min-height: 44px;
-    padding: 0 10px;
-  }
-
   .label-long {
     display: none;
   }
@@ -1182,7 +1168,6 @@ button.lang-cycle {
   .label-short.dot-icon {
     display: block;
   }
-
 
   .page {
     padding-top: 72px;
@@ -1255,11 +1240,6 @@ button.lang-cycle {
   .footer {
     column-gap: 0;
     padding-inline: 8px;
-  }
-
-  .langs button {
-    min-width: 40px;
-    padding: 0 6px;
   }
 }
 
@@ -1473,4 +1453,10 @@ button.lang-cycle {
 
 .sfx-lab button:focus-visible {
   outline: 1px solid var(--warm-coral);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arcade-callout {
+    opacity: 1;
+  }
 }

@@ -301,7 +301,7 @@ export class CrtController {
 
   blast(clientX: number, clientY: number, quiet = false) {
     if (this.reduceMotion || !this.lattice) return
-    const compact = window.innerWidth < 720
+    const compact = window.innerWidth <= 720
     const radius = BLAST.radius * (compact ? 0.55 : 1)
     const strength = BLAST.strength * (compact ? 0.8 : 1)
     let moved = this.field?.impulse(clientX, clientY, radius, strength) ?? 0

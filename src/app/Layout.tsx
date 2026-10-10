@@ -1,15 +1,15 @@
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { Outlet, useRouterState } from '@tanstack/react-router'
 import { Footer } from '@/components/Footer'
 import { CommandPalette } from '@/components/CommandPalette'
-import { SoundLab } from '@/components/SoundLab'
 import { CrtController } from '@/crt/CrtController'
 import { CrtContext, prefersReducedMotion } from '@/crt/context'
 import { startLiveFavicon } from '@/crt/favicon'
 import { MobileStack } from './MobileStack'
 import { stackIndex, useCompact } from './section'
 
-const SHOW_SOUND_LAB = new URLSearchParams(window.location.search).has('sfx')
+const SHOW_SOUND_LAB = import.meta.env.DEV && new URLSearchParams(window.location.search).has('sfx')
+const SoundLab = lazy(() => import('@/components/SoundLab').then((m) => ({ default: m.SoundLab })))
 
 export const Layout = () => {
   const [crt] = useState(() => new CrtController(prefersReducedMotion()))
@@ -72,7 +72,11 @@ export const Layout = () => {
           {announcement}
         </p>
         <CommandPalette />
-        {SHOW_SOUND_LAB ? <SoundLab /> : null}
+        {SHOW_SOUND_LAB ? (
+          <Suspense fallback={null}>
+            <SoundLab />
+          </Suspense>
+        ) : null}
       </div>
     </CrtContext.Provider>
   )

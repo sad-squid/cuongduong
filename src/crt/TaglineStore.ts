@@ -173,6 +173,7 @@ export class TaglineStore {
   }
 
   destroy() {
+    this.onHit = () => {}
     this.stop()
     this.listeners.clear()
   }

@@ -7,7 +7,7 @@ import { POWER_TYPES, type PowerType } from '@/crt/powers'
 const BAR = 10
 const CALLOUT_MS = 800
 
-const debugEnabled = () => import.meta.env.DEV || new URLSearchParams(window.location.search).has('invaders-debug')
+const debugEnabled = () => import.meta.env.DEV && new URLSearchParams(window.location.search).has('invaders-debug')
 
 const initialInput = (): InputKind => (window.matchMedia('(pointer: coarse)').matches ? 'touch' : 'mouse')
 

@@ -1,8 +1,7 @@
-import { useCallback, useEffect, useEffectEvent, useRef, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useEffectEvent, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18next, { toLanguage } from '@/i18n'
 import { Tagline } from '@/components/Tagline'
-import { Arcade } from '@/components/Arcade'
 import { SignalLog } from '@/components/SignalLog'
 import { useCrt, loadNameFonts } from '@/crt/context'
 import { usePageTitle } from '@/crt/useDocumentTitle'
@@ -12,6 +11,8 @@ import { TaglineStore } from '@/crt/TaglineStore'
 import { COLORS, contrastRatio } from '@/crt/tokens'
 import { NAMES, NAME_ORDER } from '@/content/names'
 import { useSection } from '@/app/section'
+
+const Arcade = lazy(() => import('@/components/Arcade').then((m) => ({ default: m.Arcade })))
 
 const say = (key: string, options: Record<string, unknown> = {}) => i18next.t(`log.${key}`, options)
 const num = (value: number, digits = 0) => value.toLocaleString(i18next.resolvedLanguage, { minimumFractionDigits: digits, maximumFractionDigits: digits })
@@ -43,6 +44,7 @@ const HomeScreen = () => {
   const [lit, setLit] = useState(false)
   const { active, armed } = useSection()
   const activeRef = useRef(active)
+  const playingRef = useRef(false)
   const [streak, setStreak] = useState({ count: 0, shown: false })
   const [playing, setPlaying] = useState(false)
   const taps = useRef({ count: 0, at: -Infinity })
@@ -61,11 +63,13 @@ const HomeScreen = () => {
   const openGame = () => {
     crt.stopFireworks()
     crt.setGame(true)
+    playingRef.current = true
     setPlaying(true)
   }
 
   const closeGame = useCallback(() => {
     crt.setGame(false)
+    playingRef.current = false
     setPlaying(false)
     window.requestAnimationFrame(() => nameRef.current?.focus())
   }, [crt])
@@ -198,7 +202,7 @@ const HomeScreen = () => {
     const nameIdle = () => {
       nameTimer = window.setTimeout(() => {
         const field = fieldRef.current
-        const points = arrived.current && activeRef.current && field && !field.isDiffusing ? field.pointsInClient() : []
+        const points = arrived.current && activeRef.current && !playingRef.current && field && !field.isDiffusing ? field.pointsInClient() : []
         if (points.length) {
           const k = Math.floor((Math.random() * points.length) / 2) * 2
           crt.blast(points[k], points[k + 1], true)
@@ -258,7 +262,11 @@ const HomeScreen = () => {
         <div ref={stepRef} className="step" aria-hidden="true" data-on="false" />
         <Tagline ref={taglineRef} store={tagline} text={line} lang={lang} lit={lit} />
       </section>
-      {playing ? <Arcade onExit={closeGame} /> : null}
+      {playing ? (
+        <Suspense fallback={null}>
+          <Arcade onExit={closeGame} />
+        </Suspense>
+      ) : null}
     </>
   )
 }

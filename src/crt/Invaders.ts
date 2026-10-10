@@ -126,6 +126,9 @@ const shuffle = <T,>(list: T[]) => {
   return out
 }
 
+const typing = (target: EventTarget | null) =>
+  target instanceof Element && (target.closest('input, textarea, select, [contenteditable="true"], [role="dialog"]') !== null)
+
 export class Invaders {
   private readonly canvas: HTMLCanvasElement
   private readonly events: InvadersEvents
@@ -1023,7 +1026,7 @@ export class Invaders {
   }
 
   private onKeyDown = (e: KeyboardEvent) => {
-    if (this.over || e.metaKey || e.ctrlKey || e.altKey) return
+    if (this.over || e.metaKey || e.ctrlKey || e.altKey || typing(e.target)) return
     const key = e.key.toLowerCase()
     if (key === 'arrowleft' || key === 'a') this.keys.left = true
     else if (key === 'arrowright' || key === 'd') this.keys.right = true
@@ -1034,6 +1037,7 @@ export class Invaders {
   }
 
   private onKeyUp = (e: KeyboardEvent) => {
+    if (typing(e.target)) return
     const key = e.key.toLowerCase()
     if (key === 'arrowleft' || key === 'a') this.keys.left = false
     else if (key === 'arrowright' || key === 'd') this.keys.right = false

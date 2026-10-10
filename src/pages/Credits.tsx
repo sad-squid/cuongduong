@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useCrt } from '@/crt/context'
 import { useDocumentTitle } from '@/crt/useDocumentTitle'
 import { useReveal } from '@/crt/useReveal'
-import { Arcade } from '@/components/Arcade'
+
+const Arcade = lazy(() => import('@/components/Arcade').then((m) => ({ default: m.Arcade })))
 
 type Role = { label: string; value: string }
 
@@ -26,14 +27,6 @@ export const Credits = () => {
   const startRef = useRef<HTMLButtonElement>(null)
   const animRef = useRef<Animation | null>(null)
   const roles = t('credits.roles', { returnObjects: true }) as Role[]
-
-  useEffect(() => {
-    const meta = document.createElement('meta')
-    meta.name = 'robots'
-    meta.content = 'noindex'
-    document.head.appendChild(meta)
-    return () => meta.remove()
-  }, [])
 
   useEffect(() => {
     let timer = 0
@@ -159,7 +152,11 @@ export const Credits = () => {
           </div>
         </div>
       </section>
-      {playing ? <Arcade onExit={exit} /> : null}
+      {playing ? (
+        <Suspense fallback={null}>
+          <Arcade onExit={exit} />
+        </Suspense>
+      ) : null}
     </>
   )
 }
