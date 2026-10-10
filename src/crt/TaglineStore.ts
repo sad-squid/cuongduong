@@ -128,6 +128,13 @@ export class TaglineStore {
     return { box: this.box, test: (x, y) => this.hitAt(x, y) }
   }
 
+  scrambleGroup() {
+    if (this.sweeping || this.reduceMotion || !this.words.length) return
+    const start = Math.floor(Math.random() * this.words.length)
+    const count = 2 + Math.floor(Math.random() * 3)
+    for (const word of this.words.slice(start, start + count)) this.hitAt((word.left + word.right) / 2, (word.top + word.bottom) / 2)
+  }
+
   measure() {
     const el = this.el
     if (!el || this.sweeping) return

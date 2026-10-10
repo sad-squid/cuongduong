@@ -123,6 +123,44 @@ const HomeScreen = () => {
     }
   }, [crt, tagline, log])
 
+  useEffect(() => {
+    if (crt.reduceMotion) return
+    let nameTimer = 0
+    let wordTimer = 0
+    const nameIdle = () => {
+      nameTimer = window.setTimeout(() => {
+        const field = fieldRef.current
+        const points = arrived.current && field && !field.isDiffusing ? field.pointsInClient() : []
+        if (points.length) {
+          const k = Math.floor((Math.random() * points.length) / 2) * 2
+          crt.blast(points[k], points[k + 1], true)
+        }
+        nameIdle()
+      }, 3000 + Math.random() * 2000)
+    }
+    const wordIdle = () => {
+      wordTimer = window.setTimeout(() => {
+        if (arrived.current) tagline.scrambleGroup()
+        wordIdle()
+      }, 7000 + Math.random() * 4000)
+    }
+    const reset = () => {
+      window.clearTimeout(nameTimer)
+      window.clearTimeout(wordTimer)
+      nameIdle()
+      wordIdle()
+    }
+    reset()
+    const off = crt.subscribe((event) => {
+      if (event.type === 'activity') reset()
+    })
+    return () => {
+      off()
+      window.clearTimeout(nameTimer)
+      window.clearTimeout(wordTimer)
+    }
+  }, [crt, tagline])
+
   const onLanguage = useEffectEvent((index: number) => regenerate(index))
 
   useEffect(() => {
@@ -139,7 +177,7 @@ const HomeScreen = () => {
       <SignalLog store={log} />
       <h1 className="name">
         <button type="button" className="name-button" data-blast onClick={() => regenerate((nameIndex.current + 1) % NAME_ORDER.length)}>
-          <span className="sr-only">Cuong Duong</span>
+          <span className="sr-only">{t('home.heading')}</span>
           <canvas ref={canvasRef} className="name-canvas" aria-hidden="true" />
         </button>
       </h1>

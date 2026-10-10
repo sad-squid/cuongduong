@@ -16,7 +16,7 @@ type FieldCallbacks = {
 }
 
 const STEPS = 28
-const MAX_POINTS = 2600
+const MAX_POINTS = 5200
 
 export class NameField {
   private readonly canvas: HTMLCanvasElement
@@ -56,6 +56,7 @@ export class NameField {
   private peak = 0
   private disturbedAt = 0
   private blasted = false
+  private touched = false
   private hidden = false
   private ready = false
   private queued: { text: string; apply: (text: string) => void } | null = null
@@ -192,6 +193,7 @@ export class NameField {
     const y = clientY - this.rect.top
     const R = PHYSICS.radius
     const near = x > this.box.x0 - R && x < this.box.x1 + R && y > this.box.y0 - R && y < this.box.y1 + R
+    if (near) this.touched = true
     if (near || this.mouseX > -1e3) {
       this.mouseX = near ? x : -1e4
       this.mouseY = near ? y : -1e4
@@ -260,12 +262,16 @@ export class NameField {
     if (!this.sampler) this.sampler = document.createElement('canvas').getContext('2d', { willReadFrequently: true })
     const x = this.sampler
     if (!x) return []
-    const font = `${this.layout.weight} ${this.fontSize}px ${NAME_FONT_STACK}`
+    x.font = `${this.layout.weight} ${this.fontSize}px ${NAME_FONT_STACK}`
+    const room = W * 0.94 - 24
+    const natural = x.measureText(text).width
+    const size = natural > room ? Math.floor((this.fontSize * room) / natural) : this.fontSize
+    const font = `${this.layout.weight} ${size}px ${NAME_FONT_STACK}`
     const left = this.layout.align === 'left'
     x.font = font
     const ox = left ? Math.max(0, this.layout.inset - 12) : Math.floor((W - Math.min(W, Math.ceil(x.measureText(text).width) + 24)) / 2)
     const sw = Math.min(W - ox, Math.ceil(x.measureText(text).width) + 24)
-    const sh = Math.min(H, Math.ceil(this.fontSize * 1.8))
+    const sh = Math.min(H, Math.ceil(size * 1.8))
     const oy = Math.floor((H - sh) / 2)
     if (x.canvas.width !== sw || x.canvas.height !== sh) {
       x.canvas.width = sw
@@ -399,10 +405,11 @@ export class NameField {
     }
     this.paint(1)
     if (energy < 0.25 && mx < -1e3 && !tearing) {
-      if (this.peak > 40 && !this.blasted) this.callbacks.onPerturbed(this.peak, (t - this.disturbedAt) / 1000)
+      if (this.peak > 40 && this.touched && !this.blasted) this.callbacks.onPerturbed(this.peak, (t - this.disturbedAt) / 1000)
       this.peak = 0
       this.disturbedAt = 0
       this.blasted = false
+      this.touched = false
       this.running = false
       return
     }

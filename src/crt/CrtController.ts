@@ -239,7 +239,7 @@ export class CrtController {
     this.lattice?.setTear(tear)
   }
 
-  blast(clientX: number, clientY: number) {
+  blast(clientX: number, clientY: number, quiet = false) {
     if (this.reduceMotion || !this.lattice) return
     const { radius, strength, sparks } = BLAST
     let moved = this.field?.impulse(clientX, clientY, radius, strength) ?? 0
@@ -252,7 +252,7 @@ export class CrtController {
     }
     this.tear(1.2, true)
     const now = performance.now()
-    if (now - this.lastPulse < 2500) return
+    if (quiet || now - this.lastPulse < 2500) return
     this.lastPulse = now
     this.pulseWords = new Set()
     window.clearTimeout(this.pulseTimer)

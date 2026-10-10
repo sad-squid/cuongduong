@@ -1,5 +1,5 @@
 export const NAMES = {
-  en: { text: 'Cuong', lang: 'en', note: 'given name' },
+  en: { text: "hi, I'm Cuong", lang: 'en', note: 'a greeting with the given name' },
   vi: { text: 'Cường', lang: 'vi', note: 'the same name in Vietnamese' },
   ja: { text: 'コン', lang: 'ja', note: 'the name in Japanese katakana' },
   zh: { text: '志強', lang: 'zh', note: '志 zhì is Trí, the middle name; 強 qiáng is Cường' },
