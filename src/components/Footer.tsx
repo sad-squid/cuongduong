@@ -5,7 +5,7 @@ import { LANGUAGE_META, SUPPORTED_LANGUAGES, toLanguage, type Language } from '@
 import { useCrt } from '@/crt/context'
 import { setLanguage } from '@/router'
 import { LINKS } from '@/content/names'
-import { IconDoor, RouteDoor } from './Doors'
+import { IconDoor } from './Doors'
 import { DotIcon } from './DotIcon'
 
 const FireworksButton = () => {
@@ -83,11 +83,6 @@ export const Footer = () => {
 
   return (
     <footer className="footer" data-no-blast>
-      <nav className="doors pages" aria-label={t('footer.pages')}>
-        <RouteDoor key={`home-${lang}`} label={t('footer.home')} to="/" />
-        <RouteDoor key={`about-${lang}`} label={t('footer.about')} to="/about" />
-        <RouteDoor key={`work-${lang}`} label={t('footer.work')} to="/work" />
-      </nav>
       <nav className="doors links" aria-label={t('footer.elsewhere')}>
         <IconDoor icon="github" name="GitHub" href={LINKS.github} />
         <IconDoor icon="linkedin" name="LinkedIn" href={LINKS.linkedin} />

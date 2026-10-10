@@ -314,7 +314,7 @@ textarea {
 }
 
 .signal-log {
-  position: fixed;
+  position: absolute;
   left: 24px;
   bottom: 96px;
   z-index: 2;
@@ -658,10 +658,6 @@ button.icon-door:focus-visible {
 
 html:has(.screen.playing) {
   overflow: hidden;
-}
-
-.stack-section:not(.active) .signal-log {
-  visibility: hidden;
 }
 
 .credits {
@@ -1124,10 +1120,6 @@ html:has(.screen.playing) body {
   .lang-cycle:focus-visible {
     outline: 2px solid var(--warm-coral);
     outline-offset: -2px;
-  }
-
-  .doors.pages {
-    display: none;
   }
 
   .doors.links {
