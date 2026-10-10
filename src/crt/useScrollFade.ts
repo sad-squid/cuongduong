@@ -3,7 +3,8 @@ import { useEffect, type RefObject } from 'react'
 const TOP_BAND = 0.3
 const BOTTOM_BAND = 0.18
 const FOOTER_SPACE = 110
-const COMPACT_BOTTOM_BAND = 0.08
+const COMPACT_BOTTOM_BAND = 0.06
+const COMPACT_TOP_BAND = 0.15
 const COMPACT_FOOTER_SPACE = 64
 
 export const useScrollFade = (root: RefObject<HTMLElement | null>) => {
@@ -30,7 +31,7 @@ export const useScrollFade = (root: RefObject<HTMLElement | null>) => {
     const update = () => {
       frame = 0
       const vh = window.innerHeight
-      const top = vh * TOP_BAND
+      const top = vh * (compact.matches ? COMPACT_TOP_BAND : TOP_BAND)
       const footer = compact.matches ? COMPACT_FOOTER_SPACE : FOOTER_SPACE
       const bottomStart = vh - footer - vh * (compact.matches ? COMPACT_BOTTOM_BAND : BOTTOM_BAND)
       const bottomEnd = vh - footer
@@ -43,13 +44,15 @@ export const useScrollFade = (root: RefObject<HTMLElement | null>) => {
       targets.forEach((el, i) => {
         const r = rects[i]
         const center = r.top + Math.min(r.height, vh * 0.5) / 2
+        const leaving = compact.matches ? r.bottom : center
+        const arriving = compact.matches ? r.top : center
         let visible = 1
         let shift = 0
-        if (center < top) {
-          visible = 1 - (1 - Math.max(0, center / top)) * topStrength
+        if (leaving < top) {
+          visible = 1 - (1 - Math.max(0, leaving / top)) * topStrength
           shift = -(1 - visible) * 14
-        } else if (center > bottomStart) {
-          visible = 1 - (1 - Math.max(0, Math.min(1, (bottomEnd - center) / (bottomEnd - bottomStart)))) * bottomStrength
+        } else if (arriving > bottomStart) {
+          visible = 1 - (1 - Math.max(0, Math.min(1, (bottomEnd - arriving) / (bottomEnd - bottomStart)))) * bottomStrength
           shift = (1 - visible) * 18
         }
         if (visible >= 0.999) {
