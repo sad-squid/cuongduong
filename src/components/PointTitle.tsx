@@ -8,7 +8,7 @@ const INSET = 48
 
 const TITLE_LAYOUT: FieldLayout = { align: 'left', inset: INSET, fontSize: (w) => (w < 560 ? 40 : 52), weight: 700 }
 
-export const PointTitle = ({ titleKey }: { titleKey: string }) => {
+export const PointTitle = ({ titleKey, onLanded }: { titleKey: string; onLanded: () => void }) => {
   const crt = useCrt()
   const { t, i18n } = useTranslation()
   const lang = toSiteLang(i18n.resolvedLanguage)
@@ -23,6 +23,8 @@ export const PointTitle = ({ titleKey }: { titleKey: string }) => {
     const order = [lang, ...SITE_LANGS.filter((code) => code !== lang)]
     return order.map((code) => i18n.getFixedT(code)(titleKey))
   }
+
+  const landedEvent = useEffectEvent(() => onLanded())
 
   const regenerate = (text: string) => {
     const field = fieldRef.current
@@ -44,6 +46,7 @@ export const PointTitle = ({ titleKey }: { titleKey: string }) => {
         onSettled: () => {
           landed.current = true
           crt.liftName()
+          landedEvent()
         },
         onPerturbed: () => {},
       },

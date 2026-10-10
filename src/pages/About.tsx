@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { PointTitle } from '@/components/PointTitle'
+import { useArrival } from '@/crt/useArrival'
 import { useReveal } from '@/crt/useReveal'
 
 type NameRow = { lang: string; label: string; value: string; say: string }
@@ -12,12 +13,13 @@ export const About = () => {
   const story = t('about.story', { returnObjects: true }) as string[]
   const languages = t('about.languages', { returnObjects: true }) as LanguageRow[]
   const recognition = t('about.recognition', { returnObjects: true }) as string[]
+  const { land, stage } = useArrival()
 
   return (
     <article className="page split">
       <header className="page-aside">
-        <PointTitle titleKey="about.title" />
-        <section aria-labelledby="about-name">
+        <PointTitle titleKey="about.title" onLanded={land} />
+        <section aria-labelledby="about-name" {...stage(0)}>
           <h2 id="about-name" className="section-label">{t('about.nameHeading')}</h2>
           <dl className="names">
             {names.map((row) => (
@@ -35,12 +37,14 @@ export const About = () => {
 
       <div className="page-main">
         <section className="prose">
-          {story.map((paragraph) => (
-            <p key={paragraph}>{paragraph}</p>
+          {story.map((paragraph, i) => (
+            <p key={paragraph} {...stage(i + 1)}>
+              {paragraph}
+            </p>
           ))}
         </section>
 
-        <div className="facts">
+        <div className={`facts ${stage(story.length + 1).className}`} style={stage(story.length + 1).style}>
           <section aria-labelledby="about-languages">
             <h2 id="about-languages" className="section-label">{t('about.languagesHeading')}</h2>
             <dl className="pairs">
