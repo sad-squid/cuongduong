@@ -90,6 +90,12 @@ for (const lang of langs) {
   }
 }
 
+for (const lang of langs) {
+  const { title, description } = read(`src/i18n/locales/${lang}.json`).play
+  const path = lang === 'en' ? '/play' : `/${lang}/play`
+  write(`${path.slice(1)}.html`, render({ lang, title: `${title} · ${names[lang]}`, description, url: `${seo.site}${path}`, robots: 'noindex' }))
+}
+
 write('404.html', render({ lang: 'en', title: 'Not found · Cuong Duong', description: seo.pages.en.home.description, robots: 'noindex' }))
 
 const sitemap = [

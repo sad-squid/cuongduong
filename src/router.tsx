@@ -16,6 +16,7 @@ const homeRoute = createRoute({ getParentRoute: () => rootRoute, path: '/', comp
 const aboutRoute = createRoute({ getParentRoute: () => rootRoute, path: '/about', component: About })
 const workRoute = createRoute({ getParentRoute: () => rootRoute, path: '/work', component: Work })
 const creditsRoute = createRoute({ getParentRoute: () => rootRoute, path: '/credits', component: lazyRouteComponent(() => import('@/pages/Credits'), 'Credits') })
+const playRoute = createRoute({ getParentRoute: () => rootRoute, path: '/play', component: lazyRouteComponent(() => import('@/pages/Play'), 'Play') })
 const notesRoute = createRoute({ getParentRoute: () => rootRoute, path: '/notes', component: Notes })
 
 const blogRedirectRoute = createRoute({
@@ -26,7 +27,7 @@ const blogRedirectRoute = createRoute({
   },
 })
 
-const routeTree = rootRoute.addChildren([homeRoute, aboutRoute, workRoute, notesRoute, creditsRoute, blogRedirectRoute])
+const routeTree = rootRoute.addChildren([homeRoute, aboutRoute, workRoute, notesRoute, creditsRoute, playRoute, blogRedirectRoute])
 
 export const router = createRouter({
   routeTree,

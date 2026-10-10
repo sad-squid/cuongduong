@@ -319,5 +319,9 @@
     "on": "bật",
     "off": "tắt",
     "back": "quay lại"
+  },
+  "play": {
+    "title": "Invaders",
+    "description": "Một trò bắn space invaders kiểu bullet-hell ngớ ngẩn giấu trong cuongduong.dev. Vịt, máy nướng bánh, trùm, power-up, bảng top 5."
   }
 }

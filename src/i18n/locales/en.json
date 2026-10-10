@@ -321,5 +321,9 @@
     "on": "on",
     "off": "off",
     "back": "back"
+  },
+  "play": {
+    "title": "Invaders",
+    "description": "A silly little bullet-hell space invaders game hidden in cuongduong.dev. Ducks, toasters, bosses, power-ups, top-5 scores."
   }
 }
