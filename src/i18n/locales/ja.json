@@ -10,7 +10,9 @@
     "pages": "ページ",
     "elsewhere": "リンク",
     "language": "言語",
-    "fireworks": "花火"
+    "fireworks": "花火",
+    "languageCycle": "言語：{{current}}。{{next}}に切り替え",
+    "scrollTo": "{{page}}へスクロール"
   },
   "palette": {
     "label": "コマンドパレット",

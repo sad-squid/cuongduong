@@ -1,6 +1,6 @@
 import { useId, type ReactNode } from 'react'
 
-export type IconName = 'github' | 'linkedin' | 'fireworks'
+export type IconName = 'github' | 'linkedin' | 'fireworks' | 'chevron' | 'globe'
 
 const SIZE = 22
 const PITCH = 2
@@ -32,6 +32,20 @@ const ICONS: Record<IconName, { box: number; draw: (fill: string) => ReactNode }
         <path fill={fill} d="M10 2 12.3 8.7 19 11 12.3 13.3 10 20 7.7 13.3 1 11 7.7 8.7Z" />
         <path fill={fill} d="M19 14.5 20.1 17.4 23 18.5 20.1 19.6 19 22.5 17.9 19.6 15 18.5 17.9 17.4Z" />
       </>
+    ),
+  },
+  chevron: {
+    box: 24,
+    draw: (fill) => <path fill={fill} d="M1.5 6.5 4.5 3.5 12 11 19.5 3.5 22.5 6.5 12 17Z" />,
+  },
+  globe: {
+    box: 24,
+    draw: (fill) => (
+      <g fill="none" stroke={fill} strokeWidth={2.4}>
+        <circle cx={12} cy={12} r={10.3} />
+        <ellipse cx={12} cy={12} rx={4.4} ry={10.3} />
+        <path d="M1.7 12h20.6M3.6 6.6h16.8M3.6 17.4h16.8" />
+      </g>
     ),
   },
 }

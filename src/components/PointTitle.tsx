@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { SUPPORTED_LANGUAGES, toLanguage } from '@/i18n'
 import { useCrt, loadNameFonts } from '@/crt/context'
 import { NameField, type FieldLayout } from '@/crt/NameField'
+import { useSection } from '@/app/section'
 
 const spanViewport = (canvas: HTMLCanvasElement) => {
   const rect = canvas.parentElement?.getBoundingClientRect()
@@ -17,6 +18,7 @@ export const PointTitle = ({ titleKey, onLanded }: { titleKey: string; onLanded:
   const { t, i18n } = useTranslation()
   const lang = toLanguage(i18n.resolvedLanguage)
   const title = t(titleKey)
+  const { active, armed } = useSection()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const fieldRef = useRef<NameField | null>(null)
   const shown = useRef<string | null>(null)
@@ -34,9 +36,19 @@ export const PointTitle = ({ titleKey, onLanded }: { titleKey: string; onLanded:
     if (field) crt.regenerate(field, text)
   }
 
+  const activeRef = useRef(active)
+
+  useEffect(() => {
+    activeRef.current = active
+    const field = fieldRef.current
+    if (!active || !field) return
+    crt.setField(field)
+    crt.liftName()
+  }, [crt, active])
+
   useEffect(() => {
     const canvas = canvasRef.current
-    if (!canvas) return
+    if (!canvas || !armed) return
     let span = spanViewport(canvas)
     const layout: FieldLayout = {
       align: 'left',
@@ -61,7 +73,7 @@ export const PointTitle = ({ titleKey, onLanded }: { titleKey: string; onLanded:
       layout,
     )
     fieldRef.current = field
-    crt.setField(field)
+    if (activeRef.current) crt.setField(field)
     let cancelled = false
     loadNameFonts().then(() => {
       if (cancelled) return
@@ -80,7 +92,7 @@ export const PointTitle = ({ titleKey, onLanded }: { titleKey: string; onLanded:
       crt.release(field)
       fieldRef.current = null
     }
-  }, [crt])
+  }, [crt, armed])
 
   const onTitle = useEffectEvent((text: string) => {
     if (shown.current === null || shown.current === text) return

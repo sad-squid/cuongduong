@@ -10,7 +10,9 @@
     "pages": "Pages",
     "elsewhere": "Elsewhere",
     "language": "Language",
-    "fireworks": "fireworks"
+    "fireworks": "fireworks",
+    "languageCycle": "Language: {{current}}. Switch to {{next}}",
+    "scrollTo": "Scroll to {{page}}"
   },
   "palette": {
     "label": "Command palette",
