@@ -1,12 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { ArcadeInitials } from '@/components/ArcadeInitials'
 import { useCrt } from '@/crt/context'
-import { Invaders, type ActivePower, type InputKind, type InvadersHud, type SoundCue } from '@/crt/Invaders'
+import { bestScore, insertScore, loadScores, qualifies, saveScores, type HighScore } from '@/crt/HighScores'
+import { Invaders, type ActivePower, type InputKind, type InvadersHud, type SoundCue, type WaveInfo } from '@/crt/Invaders'
 import type { PlayOptions, SoundApi, SoundName } from '@/crt/Sound'
 import { POWER_TYPES, type PowerType } from '@/crt/powers'
 
+type Phase = 'play' | 'entry' | 'table'
+
 const BAR = 10
 const CALLOUT_MS = 800
+const WAVE_MS = 1600
 const OVER_DELAY_MS = 320
 
 const CUES: Record<SoundCue, readonly (readonly [SoundName, PlayOptions])[]> = {
@@ -23,6 +28,20 @@ const CUES: Record<SoundCue, readonly (readonly [SoundName, PlayOptions])[]> = {
   glitch: [['tear', { intensity: 0.6 }]],
   clear: [['clear', { intensity: 0.7 }]],
   over: [['over', {}]],
+  rocket: [['shot', { intensity: 0.12, duration: 0.28 }]],
+  burst: [['burst', { intensity: 0.75 }]],
+  boss: [
+    ['tear', { intensity: 0.55 }],
+    ['burst', { intensity: 0.45 }],
+  ],
+  enrage: [
+    ['tear', { intensity: 0.22 }],
+    ['hurt', { intensity: 0.25 }],
+  ],
+  wow: [
+    ['powerup', {}],
+    ['burst', { intensity: 0.6 }],
+  ],
 }
 
 const playCue = (sound: SoundApi, cue: SoundCue, pan: number) => {
@@ -40,7 +59,14 @@ export const Arcade = ({ onExit }: { onExit: () => void }) => {
   const rootRef = useRef<HTMLDivElement>(null)
   const gameRef = useRef<Invaders | null>(null)
   const [hud, setHud] = useState<InvadersHud>({ score: 0, wave: 1, lives: 3 })
-  const [over, setOver] = useState(false)
+  const [phase, setPhase] = useState<Phase>('play')
+  const [scores, setScores] = useState<HighScore[]>(() => loadScores())
+  const [result, setResult] = useState({ score: 0, wave: 1 })
+  const [rank, setRank] = useState(-1)
+  const [waveCall, setWaveCall] = useState<(WaveInfo & { id: number }) | null>(null)
+  const scoresRef = useRef(scores)
+  const againRef = useRef<HTMLButtonElement>(null)
+  const over = phase !== 'play'
   const [hint, setHint] = useState(true)
   const [input, setInput] = useState(initialInput)
   const [hintY, setHintY] = useState(0)
@@ -52,11 +78,16 @@ export const Arcade = ({ onExit }: { onExit: () => void }) => {
     if (!canvas) return
     let calloutTimer = 0
     let overTimer = 0
+    let waveTimer = 0
     const game = new Invaders(
       canvas,
       {
         onHud: setHud,
-        onOver: () => setOver(true),
+        onOver: (score, wave) => {
+          setResult({ score, wave })
+          setRank(-1)
+          setPhase(qualifies(scoresRef.current, score) ? 'entry' : 'table')
+        },
         onHit: (x, y) => crt.ripple(x, y),
         onInput: setInput,
         onShot: () => setHint(false),
@@ -68,6 +99,12 @@ export const Arcade = ({ onExit }: { onExit: () => void }) => {
           calloutTimer = window.setTimeout(() => setCallout(null), CALLOUT_MS)
         },
         onGlitch: () => crt.tear(1.8, true),
+        onTear: (strength) => crt.tear(strength, true),
+        onWave: (info) => {
+          window.clearTimeout(waveTimer)
+          setWaveCall((was) => ({ ...info, id: (was?.id ?? 0) + 1 }))
+          waveTimer = window.setTimeout(() => setWaveCall(null), WAVE_MS)
+        },
         onSound: (cue, pan) => {
           if (cue !== 'over') {
             playCue(crt.sound, cue, pan)
@@ -85,11 +122,23 @@ export const Arcade = ({ onExit }: { onExit: () => void }) => {
     rootRef.current?.focus()
     const timer = window.setTimeout(() => setHint(false), 3000)
     const debug = window as unknown as { __invaders?: unknown }
-    if (debugEnabled()) debug.__invaders = { types: POWER_TYPES, give: (type: PowerType) => game.give(type), drop: (type: PowerType) => game.drop(type) }
+    if (debugEnabled()) {
+      debug.__invaders = {
+        types: POWER_TYPES,
+        give: (type: PowerType) => game.give(type),
+        drop: (type: PowerType) => game.drop(type),
+        wave: (n: number) => game.jump(n),
+        enrage: () => game.enrage(),
+        god: (on = true) => game.setGod(on),
+        die: () => game.die(),
+        stats: () => game.stats(),
+      }
+    }
     return () => {
       window.clearTimeout(timer)
       window.clearTimeout(calloutTimer)
       window.clearTimeout(overTimer)
+      window.clearTimeout(waveTimer)
       delete debug.__invaders
       game.destroy()
       gameRef.current = null
@@ -97,10 +146,23 @@ export const Arcade = ({ onExit }: { onExit: () => void }) => {
   }, [crt])
 
   const restart = () => {
-    setOver(false)
+    setPhase('play')
     gameRef.current?.start()
     rootRef.current?.focus()
   }
+
+  const record = (initials: string) => {
+    const next = insertScore(scoresRef.current, { initials, score: result.score, wave: result.wave })
+    scoresRef.current = next.list
+    setScores(next.list)
+    setRank(next.rank)
+    saveScores(next.list)
+    setPhase('table')
+  }
+
+  useEffect(() => {
+    if (phase === 'table') againRef.current?.focus()
+  }, [phase])
 
   useEffect(() => {
     const root = rootRef.current
@@ -128,15 +190,17 @@ export const Arcade = ({ onExit }: { onExit: () => void }) => {
         onExit()
         return
       }
-      if (!over || (e.key !== 'Enter' && e.key !== ' ')) return
+      if (phase !== 'table' || (e.key !== 'Enter' && e.key !== ' ')) return
       if ((e.target as Element | null)?.closest?.('button')) return
       e.preventDefault()
-      setOver(false)
+      setPhase('play')
       gameRef.current?.start()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [over, onExit])
+  }, [phase, onExit])
+
+  const best = Math.max(bestScore(scores), hud.score)
 
   return (
     <div ref={rootRef} className="arcade" data-no-blast role="region" aria-label={t('arcade.label')} tabIndex={-1}>
@@ -144,6 +208,9 @@ export const Arcade = ({ onExit }: { onExit: () => void }) => {
       <div className="arcade-hud">
         <span>
           {t('arcade.score')} <b>{String(hud.score).padStart(5, '0')}</b>
+        </span>
+        <span>
+          {t('arcade.best')} <b>{String(best).padStart(5, '0')}</b>
         </span>
         <span>
           {t('arcade.wave')} <b>{hud.wave}</b>
@@ -160,7 +227,10 @@ export const Arcade = ({ onExit }: { onExit: () => void }) => {
       <ul className="arcade-powers" aria-label={t('arcade.powers')}>
         {powers.map((power) => (
           <li key={power.type}>
-            <span>{t(`arcade.power.${power.type}`)}</span>
+            <span>
+              {t(`arcade.power.${power.type}`)}
+              {power.count && power.count > 1 ? ` ×${power.count}` : null}
+            </span>
             <span className="arcade-bar" aria-hidden="true">
               {Array.from({ length: BAR }, (_, i) => (
                 <i key={i} className={i < Math.ceil(power.left * BAR) ? 'on' : undefined} />
@@ -180,15 +250,61 @@ export const Arcade = ({ onExit }: { onExit: () => void }) => {
       <p className="sr-only" aria-live="polite">
         {over ? `${t('arcade.over')} ${hud.score}` : ''}
       </p>
-      {over ? (
+      {waveCall ? (
+        <p key={`wave-${waveCall.id}`} className="arcade-callout arcade-wave" aria-hidden="true">
+          <span>
+            {t('arcade.wave')} {waveCall.wave}
+          </span>
+          {waveCall.boss ? t(`arcade.boss.${waveCall.boss}`) : t(`arcade.waves.${waveCall.formation}`)}
+        </p>
+      ) : null}
+      <p className="sr-only" aria-live="polite">
+        {waveCall ? `${t('arcade.wave')} ${waveCall.wave}` : ''}
+      </p>
+      {phase === 'entry' ? (
+        <div className="arcade-over">
+          <ArcadeInitials score={result.score} onDone={record} />
+        </div>
+      ) : null}
+      {phase === 'table' ? (
         <div className="arcade-over">
           <p className="arcade-over-title">{t('arcade.over')}</p>
           <p className="arcade-over-score">
-            {t('arcade.score')} {String(hud.score).padStart(5, '0')}
+            {t('arcade.score')} {String(result.score).padStart(6, '0')} · {t('arcade.wave')} {result.wave}
           </p>
-          <button type="button" className="press-start" onClick={restart}>
-            {t('arcade.again')}
-          </button>
+          <table className="arcade-table">
+            <caption>{t('arcade.top')}</caption>
+            <thead>
+              <tr>
+                <th scope="col">{t('arcade.rank')}</th>
+                <th scope="col">{t('arcade.name')}</th>
+                <th scope="col">{t('arcade.score')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {scores.length ? (
+                scores.map((entry, index) => (
+                  <tr key={`${index}-${entry.initials}-${entry.score}`} className={index === rank ? 'new' : undefined} aria-current={index === rank ? 'true' : undefined}>
+                    <td>{index + 1}</td>
+                    <td>{entry.initials}</td>
+                    <td>{String(entry.score).padStart(6, '0')}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={3}>{t('arcade.empty')}</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+          <div className="arcade-actions">
+            <button ref={againRef} type="button" className="press-start" onClick={restart}>
+              {t('arcade.again')}
+            </button>
+            <button type="button" className="arcade-exit" onClick={onExit}>
+              {t('arcade.exit')}
+            </button>
+          </div>
         </div>
       ) : null}
       <p className={hint && !over && hintY ? 'arcade-hint on' : 'arcade-hint'} style={{ top: hintY }} aria-hidden="true">

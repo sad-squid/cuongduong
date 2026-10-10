@@ -272,6 +272,34 @@
       "wingmen": "僚機",
       "big": "ビッグショット",
       "chain": "連鎖"
+    },
+    "best": "hi",
+    "newHigh": "ハイスコア！",
+    "initials": "イニシャルを入力",
+    "letter": "{{n}}文字目（3文字中）",
+    "letterUp": "{{n}}文字目：次",
+    "letterDown": "{{n}}文字目：前",
+    "ok": "ok",
+    "top": "top 5",
+    "rank": "順位",
+    "name": "名前",
+    "exit": "やめる",
+    "empty": "まだスコアなし",
+    "waves": {
+      "grid": "インベーダー",
+      "minis": "ミニインベーダー",
+      "swarm": "虫の大群",
+      "snake": "アヒルのコンガ",
+      "boss": "ボス",
+      "tanks": "自販機軍団",
+      "ring": "UFOねこの輪",
+      "rain": "洗濯日和",
+      "chonk": "でぶ部隊"
+    },
+    "boss": {
+      "face": "でっかい顔",
+      "toaster": "メガトースター",
+      "duck": "母アヒル"
     }
   }
 }

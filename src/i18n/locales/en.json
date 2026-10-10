@@ -274,6 +274,34 @@
       "wingmen": "WINGMEN",
       "big": "BIG SHOT",
       "chain": "CHAIN"
+    },
+    "best": "hi",
+    "newHigh": "new high score!",
+    "initials": "enter your initials",
+    "letter": "letter {{n}} of 3",
+    "letterUp": "letter {{n}}: next",
+    "letterDown": "letter {{n}}: previous",
+    "ok": "ok",
+    "top": "top 5",
+    "rank": "rank",
+    "name": "name",
+    "exit": "exit",
+    "empty": "no scores yet",
+    "waves": {
+      "grid": "INVADERS",
+      "minis": "MINI INVADERS",
+      "swarm": "BUG SWARM",
+      "snake": "DUCK CONGA",
+      "boss": "BOSS",
+      "tanks": "VENDING MACHINES",
+      "ring": "UFO CAT RING",
+      "rain": "LAUNDRY DAY",
+      "chonk": "CHONK SQUAD"
+    },
+    "boss": {
+      "face": "BIG GOOFY FACE",
+      "toaster": "MEGA TOASTER",
+      "duck": "MOTHER DUCK"
     }
   }
 }

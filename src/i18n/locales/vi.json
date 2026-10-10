@@ -272,6 +272,34 @@
       "wingmen": "YỂM TRỢ",
       "big": "ĐẠN TO",
       "chain": "DÂY CHUYỀN"
+    },
+    "best": "kỷ lục",
+    "newHigh": "kỷ lục mới!",
+    "initials": "nhập tên viết tắt",
+    "letter": "chữ {{n}} trên 3",
+    "letterUp": "chữ {{n}}: tiếp",
+    "letterDown": "chữ {{n}}: trước",
+    "ok": "ok",
+    "top": "top 5",
+    "rank": "hạng",
+    "name": "tên",
+    "exit": "thoát",
+    "empty": "chưa có điểm",
+    "waves": {
+      "grid": "KẺ XÂM LĂNG",
+      "minis": "XÂM LĂNG MINI",
+      "swarm": "BẦY BỌ",
+      "snake": "VỊT CONGA",
+      "boss": "TRÙM",
+      "tanks": "MÁY BÁN NƯỚC",
+      "ring": "VÒNG MÈO UFO",
+      "rain": "NGÀY GIẶT ĐỒ",
+      "chonk": "ĐỘI BÉO"
+    },
+    "boss": {
+      "face": "MẶT BỰ NGỐ",
+      "toaster": "MÁY NƯỚNG KHỔNG LỒ",
+      "duck": "VỊT MẸ"
     }
   }
 }

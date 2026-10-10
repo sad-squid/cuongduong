@@ -1141,6 +1141,7 @@ html:has(.screen.playing) {
 .arcade-over {
   position: absolute;
   inset: 0;
+  background: color-mix(in srgb, var(--bg) 62%, transparent);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1188,6 +1189,168 @@ html:has(.screen.playing) {
   opacity: 1;
 }
 
+.arcade-wave {
+  top: 56%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: clamp(20px, 4.4vw, 34px);
+}
+
+.arcade-wave span {
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  text-shadow: none;
+}
+
+.arcade-initials {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  pointer-events: auto;
+}
+
+.arcade-initials-help {
+  font-size: 12px;
+  color: var(--beige);
+}
+
+.arcade-slots {
+  display: flex;
+  gap: 18px;
+  margin: 4px 0;
+}
+
+.arcade-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.arcade-slot button {
+  all: unset;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 36px;
+  font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.arcade-slot button:hover,
+.arcade-slot button:focus-visible {
+  color: var(--cream);
+  text-shadow: var(--glow-1);
+}
+
+.arcade-slot button:focus-visible {
+  outline: 2px solid var(--warm-coral);
+  outline-offset: -2px;
+}
+
+.arcade-letter {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 52px;
+  font-family: var(--font-mono);
+  font-size: 36px;
+  color: var(--cream);
+  border-bottom: 2px solid var(--line);
+  outline: none;
+  cursor: default;
+}
+
+.arcade-slot.on .arcade-letter {
+  border-bottom-color: var(--warm-coral);
+  text-shadow: var(--glow-2);
+}
+
+.arcade-letter:focus-visible {
+  outline: 2px solid var(--warm-coral);
+  outline-offset: 2px;
+}
+
+.arcade-table {
+  margin-top: 6px;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--beige);
+}
+
+.arcade-table caption {
+  padding-bottom: 8px;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+}
+
+.arcade-table th {
+  padding: 0 14px 6px;
+  font-weight: 400;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.arcade-table td {
+  padding: 3px 14px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.arcade-table td:last-child {
+  text-align: right;
+}
+
+.arcade-table tr.new td {
+  color: var(--cream);
+  text-shadow: var(--glow-2);
+}
+
+.arcade-table tr.new td:first-child::before {
+  content: '▸ ';
+  color: var(--warm-coral);
+}
+
+.arcade-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.arcade-actions .press-start {
+  pointer-events: auto;
+}
+
+.arcade-exit {
+  all: unset;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+
+.arcade-exit:hover,
+.arcade-exit:focus-visible {
+  color: var(--cream);
+  text-shadow: var(--glow-1);
+}
+
+.arcade-exit:focus-visible {
+  outline: 2px solid var(--warm-coral);
+  outline-offset: 2px;
+}
+
 html:has(.screen.playing),
 html:has(.screen.playing) body {
   overflow: hidden;
@@ -1209,6 +1372,10 @@ html:has(.screen.playing) body {
 
   .arcade-callout {
     animation: callout 800ms steps(16) both;
+  }
+
+  .arcade-wave {
+    animation-duration: 1600ms;
   }
 
   .tap-count i.new {
