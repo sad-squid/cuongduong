@@ -2,7 +2,7 @@ import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { PointTitle } from '@/components/PointTitle'
 import { useArrival } from '@/crt/useArrival'
-import { useDocumentTitle } from '@/crt/useDocumentTitle'
+import { usePageTitle } from '@/crt/useDocumentTitle'
 import { useReveal } from '@/crt/useReveal'
 import { useScrollFade } from '@/crt/useScrollFade'
 
@@ -13,7 +13,7 @@ export const Work = () => {
   const { t } = useTranslation()
   const roles = t('work.roles', { returnObjects: true }) as Role[]
   const { land, stage } = useArrival()
-  useDocumentTitle(t('work.title'))
+  usePageTitle('work')
   const pageRef = useRef<HTMLElement>(null)
   useScrollFade(pageRef)
 

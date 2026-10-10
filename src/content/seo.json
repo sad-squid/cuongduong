@@ -1,0 +1,48 @@
+{
+  "site": "https://cuongduong.dev",
+  "image": "/og.png",
+  "pages": {
+    "en": {
+      "home": {
+        "title": "Cuong Duong · Software Engineer in Tokyo",
+        "description": "Cuong Duong is a software engineer in Tokyo, focused on agentic coding and workflows for AI-generated content. Now at SmartNews; previously Google, Zoom and Target."
+      },
+      "about": {
+        "title": "About · Cuong Duong, Software Engineer in Tokyo",
+        "description": "About Cuong Duong: a Viet-Chinese-American software engineer in Tokyo, born in Ho Chi Minh City, raised in Minnesota, working on the web, accessibility and AI content tools."
+      },
+      "work": {
+        "title": "Work · Cuong Duong, Software Engineer in Tokyo",
+        "description": "Cuong Duong's work: senior software engineer at SmartNews in Tokyo on AI content infrastructure, after engineering roles at Google, Zoom and Target."
+      }
+    },
+    "ja": {
+      "home": {
+        "title": "Cuong Duong（コン）· 東京のソフトウェアエンジニア",
+        "description": "Cuong Duong（コン）は東京を拠点とするソフトウェアエンジニア。エージェントを活用した開発と、AI生成コンテンツのワークフロー構築に取り組んでいます。現在はSmartNews、以前はGoogle、Zoom、Targetに在籍。"
+      },
+      "about": {
+        "title": "自己紹介 · Cuong Duong（東京のソフトウェアエンジニア）",
+        "description": "Cuong Duong（コン）の自己紹介。ホーチミン市生まれ、ミネソタ育ちのベトナム系・中国系アメリカ人エンジニアとして、東京でWeb、アクセシビリティ、AIコンテンツのツールに携わっています。"
+      },
+      "work": {
+        "title": "仕事 · Cuong Duong（東京のソフトウェアエンジニア）",
+        "description": "Cuong Duong（コン）の仕事。東京のSmartNewsでAIコンテンツ基盤を担当するシニアソフトウェアエンジニア。以前はGoogle、Zoom、Targetでエンジニアを務めました。"
+      }
+    },
+    "vi": {
+      "home": {
+        "title": "Cuong Duong (Dương Trí Cường) · Kỹ sư phần mềm tại Tokyo",
+        "description": "Cuong Duong (Dương Trí Cường) là kỹ sư phần mềm tại Tokyo, tập trung vào lập trình với AI agent và quy trình tạo nội dung bằng AI. Hiện làm tại SmartNews; trước đây ở Google, Zoom và Target."
+      },
+      "about": {
+        "title": "Giới thiệu · Cuong Duong, kỹ sư phần mềm tại Tokyo",
+        "description": "Giới thiệu Cuong Duong (Dương Trí Cường): kỹ sư người Mỹ gốc Việt – Hoa tại Tokyo, sinh ra ở Thành phố Hồ Chí Minh, lớn lên ở Minnesota, làm về web, khả năng tiếp cận và công cụ nội dung AI."
+      },
+      "work": {
+        "title": "Công việc · Cuong Duong, kỹ sư phần mềm tại Tokyo",
+        "description": "Công việc của Cuong Duong: kỹ sư phần mềm cấp cao tại SmartNews ở Tokyo, phụ trách hạ tầng nội dung AI; trước đó làm kỹ sư tại Google, Zoom và Target."
+      }
+    }
+  }
+}

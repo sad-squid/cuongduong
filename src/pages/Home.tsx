@@ -4,7 +4,7 @@ import { toLanguage } from '@/i18n'
 import { Tagline } from '@/components/Tagline'
 import { SignalLog } from '@/components/SignalLog'
 import { useCrt, loadNameFonts } from '@/crt/context'
-import { useDocumentTitle } from '@/crt/useDocumentTitle'
+import { usePageTitle } from '@/crt/useDocumentTitle'
 import { LogStore } from '@/crt/LogStore'
 import { NameField } from '@/crt/NameField'
 import { TaglineStore } from '@/crt/TaglineStore'
@@ -189,7 +189,7 @@ const HomeScreen = () => {
 
 export const Home = () => {
   const crt = useCrt()
-  useDocumentTitle(null)
+  usePageTitle('home')
   const [run, setRun] = useState(0)
 
   useEffect(

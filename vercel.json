@@ -1,4 +1,19 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/notes",
+      "destination": "/404.html"
+    },
+    {
+      "source": "/:lang(ja|vi)/notes",
+      "destination": "/404.html"
+    },
+    {
+      "source": "/blog",
+      "destination": "/404.html"
+    }
+  ]
 }
