@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
-import { Outlet, useRouterState } from '@tanstack/react-router'
+import { Outlet, useRouter, useRouterState } from '@tanstack/react-router'
 import { Footer } from '@/components/Footer'
 import { CommandPalette } from '@/components/CommandPalette'
 import { CrtController } from '@/crt/CrtController'
 import { CrtContext, prefersReducedMotion } from '@/crt/context'
+
+const SWIPE_ORDER = ['/', '/about', '/work'] as const
 
 export const Layout = () => {
   const [crt] = useState(() => new CrtController(prefersReducedMotion()))
@@ -15,6 +17,34 @@ export const Layout = () => {
   const path = useRouterState({ select: (s) => s.location.pathname })
   const [announcement, setAnnouncement] = useState('')
   const firstPath = useRef(path)
+  const router = useRouter()
+
+  useEffect(() => {
+    let start: { x: number; y: number; t: number } | null = null
+    const down = (e: TouchEvent) => {
+      const touch = e.touches[0]
+      start = e.touches.length === 1 && touch ? { x: touch.clientX, y: touch.clientY, t: performance.now() } : null
+    }
+    const up = (e: TouchEvent) => {
+      const from = start
+      start = null
+      const touch = e.changedTouches[0]
+      if (!from || !touch) return
+      const dx = touch.clientX - from.x
+      const dy = touch.clientY - from.y
+      if (performance.now() - from.t > 700 || Math.abs(dx) < 64 || Math.abs(dx) < Math.abs(dy) * 1.6) return
+      if ((e.target as Element | null)?.closest?.('.palette, input, textarea')) return
+      const index = SWIPE_ORDER.indexOf(router.state.location.pathname as (typeof SWIPE_ORDER)[number])
+      const next = index < 0 ? undefined : SWIPE_ORDER[index + (dx < 0 ? 1 : -1)]
+      if (next) router.navigate({ to: next })
+    }
+    window.addEventListener('touchstart', down, { passive: true })
+    window.addEventListener('touchend', up, { passive: true })
+    return () => {
+      window.removeEventListener('touchstart', down)
+      window.removeEventListener('touchend', up)
+    }
+  }, [router])
 
   useEffect(() => {
     const canvas = latticeRef.current
