@@ -242,7 +242,7 @@ export class CrtController {
     }
     this.ejectFromName()
     field.generate(text, false, null)
-    this.sound.play('generate', { duration: 0.9 })
+    this.sound.play('generate', { duration: 0.9, landing: false })
     this.tear(1.6, true)
   }
 
