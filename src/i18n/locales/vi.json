@@ -205,6 +205,20 @@
     "mouse": "di chuột để di chuyển · bấm để bắn",
     "touch": "kéo để di chuyển · giữ để bắn",
     "over": "game over",
-    "again": "press start để chơi lại"
+    "again": "press start để chơi lại",
+    "powers": "Vật phẩm",
+    "power": {
+      "spread": "BẮN TỎA",
+      "rapid": "BẮN NHANH",
+      "laser": "LASER",
+      "hanabi": "PHÁO HOA",
+      "shield": "KHIÊN",
+      "slow": "CHẬM",
+      "wow": "MUCH WOW",
+      "homing": "ĐẠN ĐUỔI",
+      "glitch": "GLITCH",
+      "tiny": "TÍ HON",
+      "mirror": "NGƯỢC"
+    }
   }
 }

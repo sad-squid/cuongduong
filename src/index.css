@@ -458,6 +458,10 @@ button.icon-door:focus-visible {
   .page-dot::before {
     transition: none;
   }
+
+  .arcade-callout {
+    opacity: 1;
+  }
 }
 
 .door[data-status='active'] {
@@ -899,6 +903,60 @@ button.icon-door:focus-visible {
   outline-offset: 2px;
 }
 
+.arcade-powers {
+  position: absolute;
+  top: calc(44px + env(safe-area-inset-top, 0px));
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: min(100%, 792px);
+  margin: 0;
+  padding: 0 16px;
+  list-style: none;
+  font-size: 11px;
+  color: var(--beige);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.arcade-powers li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.arcade-bar {
+  display: inline-flex;
+  gap: 3px;
+}
+
+.arcade-bar i {
+  width: 3px;
+  height: 3px;
+  background: var(--line);
+}
+
+.arcade-bar i.on {
+  background: var(--cream);
+}
+
+.arcade-callout {
+  position: absolute;
+  top: 46%;
+  left: 0;
+  right: 0;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: clamp(28px, 6vw, 48px);
+  letter-spacing: 0.12em;
+  text-align: center;
+  color: var(--cream);
+  text-shadow: var(--glow-2);
+  pointer-events: none;
+  opacity: 0;
+}
+
 .arcade-over {
   position: absolute;
   inset: 0;
@@ -966,6 +1024,10 @@ html:has(.screen.playing) body {
 
   .beam {
     animation: flick 90ms steps(2) infinite;
+  }
+
+  .arcade-callout {
+    animation: callout 800ms steps(16) both;
   }
 
   .tap-count i.new {
@@ -1164,6 +1226,31 @@ html:has(.screen.playing) body {
 @keyframes flick {
   50% {
     opacity: 0.82;
+  }
+}
+
+@keyframes callout {
+  0% {
+    opacity: 0;
+    transform: translateX(-14px);
+    clip-path: inset(0 0 55% 0);
+  }
+  8% {
+    opacity: 1;
+    transform: translateX(10px);
+    clip-path: inset(40% 0 0 0);
+  }
+  16% {
+    transform: translateX(-4px);
+    clip-path: inset(0 0 0 0);
+  }
+  24%,
+  70% {
+    opacity: 1;
+    transform: none;
+  }
+  100% {
+    opacity: 0;
   }
 }
 

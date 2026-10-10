@@ -1,7 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useCrt } from '@/crt/context'
-import { Invaders, type InputKind, type InvadersHud } from '@/crt/Invaders'
+import { Invaders, type ActivePower, type InputKind, type InvadersHud } from '@/crt/Invaders'
+import { POWER_TYPES, type PowerType } from '@/crt/powers'
+
+const BAR = 10
+const CALLOUT_MS = 800
+
+const debugEnabled = () => import.meta.env.DEV || new URLSearchParams(window.location.search).has('invaders-debug')
 
 const initialInput = (): InputKind => (window.matchMedia('(pointer: coarse)').matches ? 'touch' : 'mouse')
 
@@ -16,24 +22,43 @@ export const Arcade = ({ onExit }: { onExit: () => void }) => {
   const [hint, setHint] = useState(true)
   const [input, setInput] = useState(initialInput)
   const [hintY, setHintY] = useState(0)
+  const [powers, setPowers] = useState<ActivePower[]>([])
+  const [callout, setCallout] = useState<{ type: PowerType; id: number } | null>(null)
 
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
-    const game = new Invaders(canvas, {
-      onHud: setHud,
-      onOver: () => setOver(true),
-      onHit: (x, y) => crt.ripple(x, y),
-      onInput: setInput,
-      onShot: () => setHint(false),
-      onLayout: setHintY,
-    }, initialInput())
+    let calloutTimer = 0
+    const game = new Invaders(
+      canvas,
+      {
+        onHud: setHud,
+        onOver: () => setOver(true),
+        onHit: (x, y) => crt.ripple(x, y),
+        onInput: setInput,
+        onShot: () => setHint(false),
+        onLayout: setHintY,
+        onPowers: setPowers,
+        onPower: (type) => {
+          window.clearTimeout(calloutTimer)
+          setCallout((was) => ({ type, id: (was?.id ?? 0) + 1 }))
+          calloutTimer = window.setTimeout(() => setCallout(null), CALLOUT_MS)
+        },
+        onGlitch: () => crt.tear(1.8, true),
+      },
+      initialInput(),
+      crt.reduceMotion,
+    )
     gameRef.current = game
     game.start()
     rootRef.current?.focus()
     const timer = window.setTimeout(() => setHint(false), 3000)
+    const debug = window as unknown as { __invaders?: unknown }
+    if (debugEnabled()) debug.__invaders = { types: POWER_TYPES, give: (type: PowerType) => game.give(type), drop: (type: PowerType) => game.drop(type) }
     return () => {
       window.clearTimeout(timer)
+      window.clearTimeout(calloutTimer)
+      delete debug.__invaders
       game.destroy()
       gameRef.current = null
     }
@@ -100,6 +125,26 @@ export const Arcade = ({ onExit }: { onExit: () => void }) => {
           esc ×
         </button>
       </div>
+      <ul className="arcade-powers" aria-label={t('arcade.powers')}>
+        {powers.map((power) => (
+          <li key={power.type}>
+            <span>{t(`arcade.power.${power.type}`)}</span>
+            <span className="arcade-bar" aria-hidden="true">
+              {Array.from({ length: BAR }, (_, i) => (
+                <i key={i} className={i < Math.ceil(power.left * BAR) ? 'on' : undefined} />
+              ))}
+            </span>
+          </li>
+        ))}
+      </ul>
+      {callout ? (
+        <p key={callout.id} className="arcade-callout" aria-hidden="true">
+          {t(`arcade.power.${callout.type}`)}
+        </p>
+      ) : null}
+      <p className="sr-only" aria-live="polite">
+        {callout ? t(`arcade.power.${callout.type}`) : ''}
+      </p>
       <p className="sr-only" aria-live="polite">
         {over ? `${t('arcade.over')} ${hud.score}` : ''}
       </p>

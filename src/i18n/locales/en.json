@@ -207,6 +207,20 @@
     "mouse": "move the mouse · click to fire",
     "touch": "drag to move · hold to fire",
     "over": "game over",
-    "again": "press start to play again"
+    "again": "press start to play again",
+    "powers": "Power-ups",
+    "power": {
+      "spread": "SPREAD",
+      "rapid": "RAPID",
+      "laser": "LASER",
+      "hanabi": "花火",
+      "shield": "SHIELD",
+      "slow": "SLOW-MO",
+      "wow": "MUCH WOW",
+      "homing": "HOMING",
+      "glitch": "GLITCH",
+      "tiny": "TINY",
+      "mirror": "MIRROR"
+    }
   }
 }

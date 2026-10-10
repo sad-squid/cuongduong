@@ -205,6 +205,20 @@
     "mouse": "マウスで移動 · クリックで発射",
     "touch": "ドラッグで移動 · 長押しで発射",
     "over": "game over",
-    "again": "press start でもう一度"
+    "again": "press start でもう一度",
+    "powers": "パワーアップ",
+    "power": {
+      "spread": "拡散",
+      "rapid": "連射",
+      "laser": "レーザー",
+      "hanabi": "花火",
+      "shield": "シールド",
+      "slow": "スロー",
+      "wow": "MUCH WOW",
+      "homing": "ホーミング",
+      "glitch": "GLITCH",
+      "tiny": "ちびっこ",
+      "mirror": "あべこべ"
+    }
   }
 }
