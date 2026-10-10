@@ -730,7 +730,7 @@ button.icon-door:focus-visible {
   display: none;
 }
 
-.lang-cycle {
+button.lang-cycle {
   display: none;
 }
 
@@ -752,25 +752,8 @@ button.icon-door:focus-visible {
     display: none;
   }
 
-  .lang-cycle {
-    all: unset;
-    position: relative;
-    display: inline-grid;
-    place-items: center;
-    min-width: 52px;
-    min-height: 44px;
-    color: #fff1ec;
-    letter-spacing: 0.06em;
-    text-shadow: var(--glow-2);
-    cursor: pointer;
-  }
-
-  .lang-cycle::before {
-    content: '';
-    position: absolute;
-    inset: 9px 6px;
-    border: 1px dotted var(--line);
-    background: var(--scanline-fill);
+  button.lang-cycle {
+    display: inline-flex;
   }
 
   .lang-cycle:focus-visible {
@@ -870,6 +853,18 @@ button.icon-door:focus-visible {
   position: relative;
   display: flex;
   flex-direction: column;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+@media (max-width: 720px) {
+  html:has(.stack) {
+    scroll-snap-type: y mandatory;
+  }
+
+  .stack .page {
+    padding-bottom: calc(112px + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 .stack-home {
@@ -932,37 +927,33 @@ button.icon-door:focus-visible {
   flex-direction: column;
 }
 
-.section-dots li + li {
-  margin-top: -14px;
-}
-
 .section-dot {
   all: unset;
   display: grid;
   place-items: center;
   width: 44px;
-  height: 44px;
+  height: 24px;
   cursor: pointer;
 }
 
 .section-dot::before {
   content: '';
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: var(--muted);
   transition: height 0.25s ease, background-color 0.25s ease;
 }
 
 .section-dot[aria-current]::before {
-  height: 18px;
+  height: 16px;
   border-radius: 3px;
   background: var(--warm-coral);
 }
 
 .section-dot:focus-visible {
   outline: 2px solid var(--warm-coral);
-  outline-offset: -8px;
+  outline-offset: -2px;
 }
 
 .section-now {

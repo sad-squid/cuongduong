@@ -3,12 +3,15 @@ import { useEffect, type RefObject } from 'react'
 const TOP_BAND = 0.3
 const BOTTOM_BAND = 0.18
 const FOOTER_SPACE = 110
+const COMPACT_BOTTOM_BAND = 0.08
+const COMPACT_FOOTER_SPACE = 64
 
 export const useScrollFade = (root: RefObject<HTMLElement | null>) => {
   useEffect(() => {
     const container = root.current
     if (!container || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const wide = window.matchMedia('(min-width: 1080px)')
+    const compact = window.matchMedia('(max-width: 720px)')
     let frame = 0
     let targets: HTMLElement[] = []
     let pinned: HTMLElement[] = []
@@ -28,8 +31,10 @@ export const useScrollFade = (root: RefObject<HTMLElement | null>) => {
       frame = 0
       const vh = window.innerHeight
       const top = vh * TOP_BAND
-      const bottomStart = vh - FOOTER_SPACE - vh * BOTTOM_BAND
-      const bottomEnd = vh - FOOTER_SPACE
+      const footer = compact.matches ? COMPACT_FOOTER_SPACE : FOOTER_SPACE
+      const bottomStart = vh - footer - vh * (compact.matches ? COMPACT_BOTTOM_BAND : BOTTOM_BAND)
+      const bottomEnd = vh - footer
+      const blur = compact.matches ? 1.5 : 3
       const scrolled = window.scrollY
       const remaining = Math.max(0, document.documentElement.scrollHeight - vh - scrolled)
       const topStrength = Math.min(1, scrolled / top)
@@ -51,7 +56,7 @@ export const useScrollFade = (root: RefObject<HTMLElement | null>) => {
           clear(el)
           return
         }
-        el.style.filter = `opacity(${visible.toFixed(3)}) blur(${((1 - visible) * 3).toFixed(2)}px)`
+        el.style.filter = `opacity(${visible.toFixed(3)}) blur(${((1 - visible) * blur).toFixed(2)}px)`
         el.style.translate = `0 ${shift.toFixed(1)}px`
       })
     }

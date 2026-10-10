@@ -63,11 +63,11 @@ const LangCycle = ({ current }: { current: Language }) => {
   return (
     <button
       type="button"
-      className="lang-cycle"
+      className="icon-door lang-cycle"
       aria-label={t('footer.languageCycle', { current: LANGUAGE_META[current].name, next: LANGUAGE_META[next].name })}
       onClick={() => setLanguage(next)}
     >
-      {LANGUAGE_META[current].code}
+      <DotIcon icon="globe" />
     </button>
   )
 }
