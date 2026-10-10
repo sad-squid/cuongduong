@@ -59,6 +59,7 @@ export class CrtController {
   private revealed = false
   private fireworksPaused = false
   private show: CreditsShow | null = null
+  private gaming = false
   private lastTune = false
   private shows: Shows | null = null
   private loading: Promise<Shows> | null = null
@@ -224,10 +225,10 @@ export class CrtController {
     const show = tune && this.shows ? new this.shows.CreditsShow(this.sound, this.fireworks) : null
     const started = this.fireworks.play(
       {
-        onLaunch: (x) => (show ? null : this.sound.play('rocket', { pan: this.pan(x), intensity: 0.7 })),
+        onLaunch: (x) => (show?.playing ? null : this.sound.play('rocket', { pan: this.pan(x), intensity: 0.7 })),
         onBurst: (x, y, name, at) => {
-          if (show) show.trace?.bursts.push(at)
-          else {
+          show?.trace?.bursts.push(at)
+          if (!show?.playing) {
             this.sound.play(name ? 'sprite' : 'burst', { pan: this.pan(x), intensity: 0.35 })
             this.sound.play('generate', { pan: this.pan(x), duration: name ? 0.55 : 0.4, intensity: name ? 1 : 0.6 + Math.random() * 0.4 })
           }
@@ -295,10 +296,12 @@ export class CrtController {
 
   setHomeMusic(on: boolean) {
     this.homeWanted = on
-    this.home?.setWanted(on)
+    this.home?.setWanted(on && !this.gaming)
   }
 
   setGame(on: boolean) {
+    this.gaming = on
+    this.home?.setWanted(this.homeWanted && !on)
     this.emit({ type: 'game', on })
   }
 

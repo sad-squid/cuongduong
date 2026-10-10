@@ -22,14 +22,6 @@ export class HomeMusic {
     this.sound = sound
   }
 
-  get playing() {
-    return this.bus !== null
-  }
-
-  get bar() {
-    return this.nextBar
-  }
-
   mount() {
     window.clearInterval(this.timer)
     this.timer = window.setInterval(this.tick, TICK_MS)
@@ -53,6 +45,7 @@ export class HomeMusic {
   }
 
   private tick = () => {
+    if (!document.hidden) this.sound.wake()
     const clock = this.sound.audioClock()
     const live = this.wanted && this.sound.musicActive && !document.hidden && clock !== null
     if (!live) return this.release(FADE_OUT)
@@ -62,6 +55,7 @@ export class HomeMusic {
       if (!this.bus) return
       this.origin = now + 0.12 - this.nextBar * BAR
     }
+    if (now - (this.origin + this.nextBar * BAR) > BAR) this.origin = now + 0.12 - this.nextBar * BAR
     while (this.origin + this.nextBar * BAR - AHEAD <= now) this.scheduleBar(this.nextBar++)
   }
 

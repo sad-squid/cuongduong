@@ -137,6 +137,7 @@ const SoundControl = () => {
       crt.sound.setEnabled(true)
     } else if (kind === 'sfx') crt.sound.setSfx(!crt.sound.sfx)
     else crt.sound.setMusic(!crt.sound.music)
+    if (!crt.sound.sfx && !crt.sound.music) crt.sound.setEnabled(false)
     if (kind === 'sfx' && crt.sound.sfx) crt.sound.play('toggle')
     changed()
     if (!held.current) open()
@@ -156,7 +157,7 @@ const SoundControl = () => {
     return (
       <button type="button" className="sound-option" aria-pressed={on} onClick={() => pick(kind)}>
         <span>{t(`footer.${kind}`)}</span>
-        <b>{on ? t('footer.on') : t('footer.off')}</b>
+        <b aria-hidden="true">{on ? t('footer.on') : t('footer.off')}</b>
       </button>
     )
   }

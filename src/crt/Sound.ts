@@ -55,6 +55,7 @@ export type SoundApi = {
   setVariant(name: SoundName, variant: Variant): void
   setSettings(next: Partial<ChainSettings>): void
   audioClock(): { time: number; latency: number } | null
+  wake(): void
   musicBus(echoTime: number, level?: number, fadeIn?: number): MusicBus | null
 }
 
@@ -1178,6 +1179,9 @@ export const createSound = (initial: Partial<ChainSettings> = {}): SoundApi => {
       syncRoom()
     },
     play,
+    wake: () => {
+      if (enabled && ctx !== null && ctx.state === 'suspended') ctx.resume().catch(() => undefined)
+    },
     audioClock: () => (enabled && ctx !== null && ctx.state === 'running' ? { time: ctx.currentTime, latency: ctx.outputLatency || ctx.baseLatency || 0 } : null),
     musicBus,
     setVariant: (name: SoundName, variant: Variant) => {

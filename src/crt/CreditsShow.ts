@@ -116,6 +116,7 @@ export class CreditsShow {
 
   private tick = () => {
     if (this.done) return
+    if (!document.hidden) this.sound.wake()
     const now = this.now()
     this.syncAudio()
     if (now >= this.endAt + TAIL_MS) return this.stop(FADE_S)

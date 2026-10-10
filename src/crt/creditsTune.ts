@@ -3,9 +3,9 @@ import { RISE_MS, type ShotKind } from './Fireworks'
 export { RISE_MS }
 export const BPM = 126
 export const BEAT_MS = 60000 / BPM
-export const BAR_BEATS = 4
+const BAR_BEATS = 4
 export const BAR_MS = BAR_BEATS * BEAT_MS
-export const BARS = 16
+const BARS = 16
 export const ENDS: readonly number[] = [3, 7, 11, 15]
 export const WHISTLE_LEAD = 0.6
 
@@ -76,7 +76,7 @@ const LO = Math.min(...MELODY.map((n) => n.midi))
 const HI = Math.max(...MELODY.map((n) => n.midi))
 
 export const loopBar = (bar: number) => ((bar % BARS) + BARS) % BARS
-export const isEnd = (bar: number) => ENDS.includes(loopBar(bar))
+const isEnd = (bar: number) => ENDS.includes(loopBar(bar))
 export const nextEnd = (bar: number) => {
   let b = bar
   while (!isEnd(b)) b++
@@ -84,7 +84,7 @@ export const nextEnd = (bar: number) => {
 }
 
 
-export type Kick = { bar: number; beat: number; at: number; launch: number; fill: boolean; whistle: boolean; level: number; kind: ShotKind }
+type Kick = { bar: number; beat: number; at: number; launch: number; fill: boolean; whistle: boolean; level: number; kind: ShotKind }
 
 export const barStart = (origin: number, bar: number) => origin + bar * BAR_MS
 
