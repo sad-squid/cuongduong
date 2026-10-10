@@ -3,6 +3,7 @@ import { Transit } from './Transit'
 import { Fireworks } from './Fireworks'
 import type { NameField } from './NameField'
 import { BLAST, type Tear } from './tokens'
+import { createSound } from './Sound'
 
 export type CrtEvent =
   | { type: 'activity' }
@@ -24,6 +25,7 @@ const INTERACTIVE = 'a, button, input, textarea, select, label, [role="dialog"],
 
 export class CrtController {
   readonly reduceMotion: boolean
+  readonly sound = createSound()
   private lattice: Lattice | null = null
   private field: NameField | null = null
   private transit: Transit | null = null
@@ -152,6 +154,7 @@ export class CrtController {
     }
     if (!handoff || !transit || performance.now() - handoff.at > 1500) {
       field.generate(text, true, this.latticeAnchor())
+      this.sound.play('generate', { duration: 0.95 })
       this.arriveLater(field, onArriving, 1100 * ARRIVAL_POINT)
       return
     }
@@ -162,6 +165,7 @@ export class CrtController {
       this.flightField = null
       field.land(performance.now() - started)
     })
+    this.sound.play('generate', { duration: duration / 1000, landing: false })
     this.arriveLater(field, onArriving, duration * ARRIVAL_POINT)
   }
 
@@ -173,7 +177,10 @@ export class CrtController {
     if (this.reduceMotion || !this.fireworks) return
     const started = this.fireworks.play(
       {
+        onLaunch: (x) => this.sound.play('rocket', { pan: this.pan(x), intensity: 0.7 }),
         onBurst: (x, y, name) => {
+          this.sound.play(name ? 'sprite' : 'burst', { pan: this.pan(x), intensity: 0.35 })
+          this.sound.play('generate', { pan: this.pan(x), duration: name ? 0.55 : 0.4, intensity: name ? 1 : 0.6 + Math.random() * 0.4 })
           this.lattice?.impulse(x, y, 180, 5)
           this.emit({ type: 'burst', name })
         },
@@ -191,6 +198,7 @@ export class CrtController {
     }
     this.ejectFromName()
     field.generate(text, false, null)
+    this.sound.play('generate', { duration: 0.9 })
     this.tear(1.6, true)
   }
 
@@ -261,6 +269,7 @@ export class CrtController {
       this.lattice.addSpark(clientX, clientY, Math.cos(a) * speed, Math.sin(a) * speed)
     }
     this.tear(1.2, true)
+    if (!quiet) this.sound.play('blast', { pan: this.pan(clientX), intensity: 0.45 })
     const now = performance.now()
     if (quiet || now - this.lastPulse < 2500) return
     this.lastPulse = now
@@ -282,6 +291,10 @@ export class CrtController {
   private clearArrival(field: NameField) {
     window.clearTimeout(this.arrivalTimers.get(field))
     this.arrivalTimers.delete(field)
+  }
+
+  private pan(clientX: number) {
+    return (clientX / Math.max(1, window.innerWidth)) * 1.2 - 0.6
   }
 
   private emit(event: CrtEvent) {

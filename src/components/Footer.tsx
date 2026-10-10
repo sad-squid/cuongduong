@@ -72,12 +72,31 @@ const LangCycle = ({ current }: { current: Language }) => {
   )
 }
 
+const SoundButton = () => {
+  const crt = useCrt()
+  const { t } = useTranslation()
+  const [on, setOn] = useState(crt.sound.enabled)
+
+  const toggle = () => {
+    const next = !on
+    crt.sound.setEnabled(next)
+    if (next) crt.sound.play('toggle')
+    setOn(next)
+  }
+
+  return (
+    <button type="button" className={on ? 'icon-door sound on' : 'icon-door sound'} aria-label={t('footer.sound')} aria-pressed={on} onClick={toggle}>
+      <DotIcon icon={on ? 'sound' : 'muted'} />
+    </button>
+  )
+}
+
 export const Footer = () => {
   const { t, i18n } = useTranslation()
   const lang = toLanguage(i18n.resolvedLanguage)
 
   return (
-    <footer className="footer">
+    <footer className="footer" data-no-blast>
       <nav className="doors pages" aria-label={t('footer.pages')}>
         <RouteDoor key={`home-${lang}`} label={t('footer.home')} to="/" />
         <RouteDoor key={`about-${lang}`} label={t('footer.about')} to="/about" />
@@ -87,6 +106,7 @@ export const Footer = () => {
         <IconDoor icon="github" name="GitHub" href={LINKS.github} />
         <IconDoor icon="linkedin" name="LinkedIn" href={LINKS.linkedin} />
         <FireworksButton />
+        <SoundButton />
       </nav>
       <div className="langs" role="group" aria-label={t('footer.language')}>
         {SUPPORTED_LANGUAGES.map((code) => (

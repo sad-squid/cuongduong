@@ -12,7 +12,8 @@
     "language": "Language",
     "fireworks": "fireworks",
     "languageCycle": "Language: {{current}}. Switch to {{next}}",
-    "scrollTo": "Scroll to {{page}}"
+    "scrollTo": "Scroll to {{page}}",
+    "sound": "sound"
   },
   "palette": {
     "label": "Command palette",

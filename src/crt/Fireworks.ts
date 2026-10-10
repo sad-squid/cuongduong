@@ -42,6 +42,7 @@ type Rocket = { x: number; y: number; fromY: number; toY: number; start: number;
 type Burst = { kind: 'sprite'; sprite: GridSprite } | { kind: 'shell'; colors: number[] }
 
 export type FireworksEvents = {
+  onLaunch: (x: number) => void
   onBurst: (x: number, y: number, name: string | null) => void
   onEnd: () => void
 }
@@ -185,6 +186,7 @@ export class Fireworks {
       const half = (burst.sprite.grid[0].length * this.spriteHeight()) / BASE_ROWS / 2 + 12
       x = Math.min(this.w - half, Math.max(half, x))
     }
+    this.events?.onLaunch(x)
     this.rockets.push({ x, y: this.h + 10, fromY: this.h + 10, toY, start: now, burst, trail: this.colorIndex('#9A958B') })
   }
 

@@ -15,7 +15,13 @@ export const RouteDoor = ({ label, to }: Labels & { to: '/' | '/about' | '/work'
   const crt = useCrt()
   const [text, trigger] = useScramble(label, crt.reduceMotion)
   return (
-    <Link className="door" to={to} aria-label={label} onPointerEnter={trigger} onFocus={trigger}>
+    <Link
+      className="door"
+      to={to}
+      aria-label={label}
+      onPointerEnter={trigger}
+      onFocus={trigger}
+    >
       {text}
     </Link>
   )

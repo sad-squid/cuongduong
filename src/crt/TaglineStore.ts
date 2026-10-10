@@ -54,6 +54,7 @@ export class TaglineStore {
   private hitGlyph: string[] = []
   private hitShimmer = 0
   private onMeasured: () => void = () => {}
+  private onHit: () => void = () => {}
 
   constructor(reduceMotion: boolean) {
     this.reduceMotion = reduceMotion
@@ -128,11 +129,15 @@ export class TaglineStore {
     return { box: this.box, test: (x, y) => this.hitAt(x, y) }
   }
 
+  setOnHit(onHit: () => void) {
+    this.onHit = onHit
+  }
+
   scrambleGroup() {
     if (this.sweeping || this.reduceMotion || !this.words.length) return
     const start = Math.floor(Math.random() * this.words.length)
     const count = 2 + Math.floor(Math.random() * 3)
-    for (const word of this.words.slice(start, start + count)) this.hitAt((word.left + word.right) / 2, (word.top + word.bottom) / 2)
+    for (const word of this.words.slice(start, start + count)) this.hitAt((word.left + word.right) / 2, (word.top + word.bottom) / 2, true)
   }
 
   measure() {
@@ -172,7 +177,7 @@ export class TaglineStore {
     this.listeners.clear()
   }
 
-  private hitAt(x: number, y: number) {
+  private hitAt(x: number, y: number, quiet = false) {
     if (this.sweeping || this.reduceMotion) return null
     const index = this.words.findIndex((w) => x >= w.left && x <= w.right && y >= w.top && y <= w.bottom)
     if (index < 0) return null
@@ -185,6 +190,7 @@ export class TaglineStore {
       this.hitGlyph[i] = pick(set)
     }
     if (!this.hitRaf) this.hitRaf = requestAnimationFrame(this.hitTick)
+    if (!quiet) this.onHit()
     return word.start
   }
 
