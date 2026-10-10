@@ -138,5 +138,22 @@
     "title": "Không tìm thấy trang",
     "body": "Trang này không tồn tại, hoặc tín hiệu đã bị mất.",
     "home": "về trang chủ"
+  },
+  "log": {
+    "notes": {
+      "en": "tên gọi",
+      "vi": "cùng tên đó bằng tiếng Việt",
+      "ja": "tên viết bằng katakana tiếng Nhật",
+      "zh": "志 (zhì) là Trí, tên đệm; 強 (qiáng) là Cường"
+    },
+    "request": "tên -> \"{{text}}\" ({{lang}}): {{note}}",
+    "carry": "chuyển {{points}} điểm từ tiêu đề trước trong {{seconds}} giây",
+    "generate": "{{points}} điểm / {{steps}} bước / {{seconds}} giây / seed {{seed}}",
+    "check": "agent: độ tương phản {{ratio}}:1 so với nền, đạt chuẩn AAA",
+    "gate": "người: là bạn. bấm vào tên để xem cách viết khác",
+    "note": "cách mình làm nội dung AI: tạo, agent kiểm tra, người duyệt",
+    "perturb": "con trỏ làm xê dịch {{moved}} điểm; trở lại sau {{seconds}} giây",
+    "launch": "花火: màn pháo hoa 15 giây, nhân vật ngẫu nhiên",
+    "pulse_other": "cú bấm làm xê dịch {{moved}} điểm; nhiễu lan tới {{count}} chữ"
   }
 }

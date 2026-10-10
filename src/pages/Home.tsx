@@ -1,6 +1,6 @@
 import { useEffect, useEffectEvent, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { toLanguage } from '@/i18n'
+import i18next, { toLanguage } from '@/i18n'
 import { Tagline } from '@/components/Tagline'
 import { SignalLog } from '@/components/SignalLog'
 import { useCrt, loadNameFonts } from '@/crt/context'
@@ -10,6 +10,15 @@ import { NameField } from '@/crt/NameField'
 import { TaglineStore } from '@/crt/TaglineStore'
 import { COLORS, contrastRatio } from '@/crt/tokens'
 import { NAMES, NAME_ORDER } from '@/content/names'
+
+const say = (key: string, options: Record<string, unknown> = {}) => i18next.t(`log.${key}`, options)
+const num = (value: number, digits = 0) => value.toLocaleString(i18next.resolvedLanguage, { minimumFractionDigits: digits, maximumFractionDigits: digits })
+
+const requestName = (log: LogStore, index: number) => {
+  const name = NAMES[NAME_ORDER[index]]
+  log.log(true, `request  ${say('request', { text: name.text, lang: name.lang, note: say(`notes.${name.lang}`) })}`)
+  return name.text
+}
 
 const HomeScreen = () => {
   const crt = useCrt()
@@ -28,11 +37,7 @@ const HomeScreen = () => {
   const [tagline] = useState(() => new TaglineStore(crt.reduceMotion))
   const [lit, setLit] = useState(false)
 
-  const request = (index: number) => {
-    const name = NAMES[NAME_ORDER[index]]
-    log.log(true, `request  name -> "${name.text}" (${name.lang}): ${name.note}`)
-    return name.text
-  }
+  const request = (index: number) => requestName(log, index)
 
   const regenerate = (index: number) => {
     const field = fieldRef.current
@@ -68,24 +73,24 @@ const HomeScreen = () => {
       onSettled: (result) => {
         showStep(null)
         crt.liftName()
-        if (result.carried) log.log(true, `carry    ${result.points.toLocaleString('en-US')} points from the previous heading in ${(result.ms / 1000).toFixed(2)}s`)
+        if (result.carried) log.log(true, `carry    ${say('carry', { points: num(result.points), seconds: num(result.ms / 1000, 2) })}`)
         else if (!crt.reduceMotion) {
-          const seconds = (result.ms / 1000).toFixed(2)
+          const seconds = num(result.ms / 1000, 2)
           const seed = result.seed.toString(16).padStart(4, '0')
-          log.log(true, `generate ${result.points.toLocaleString('en-US')} points / ${result.steps} steps / ${seconds}s / seed ${seed}`)
+          log.log(true, `generate ${say('generate', { points: num(result.points), steps: result.steps, seconds, seed })}`)
         }
         arriveEvent()
         if (landed.current) return
         landed.current = true
-        log.log(true, `check    agent: contrast ${contrastRatio(COLORS.cream, COLORS.bg).toFixed(1)}:1 against the background, passes AAA`)
-        log.log(true, 'gate     human: you. click the name to ask for another')
-        log.log(false, 'note     how I ship AI content: generate, agent check, human gate')
+        log.log(true, `check    ${say('check', { ratio: num(contrastRatio(COLORS.cream, COLORS.bg), 1) })}`)
+        log.log(true, `gate     ${say('gate')}`)
+        log.log(false, `note     ${say('note')}`)
       },
       onPerturbed: (moved, seconds) => {
         const now = performance.now()
         if (now - lastPerturb.current < 5000) return
         lastPerturb.current = now
-        log.log(true, `perturb  cursor moved ${moved.toLocaleString('en-US')} points; restored in ${seconds.toFixed(1)}s`)
+        log.log(true, `perturb  ${say('perturb', { moved: num(moved), seconds: num(seconds, 1) })}`)
       },
     })
     fieldRef.current = field
@@ -95,16 +100,14 @@ const HomeScreen = () => {
     loadNameFonts().then(() => {
       if (cancelled) return
       field.setup()
-      const name = NAMES[NAME_ORDER[nameIndex.current]]
-      log.log(true, `request  name -> "${name.text}" (${name.lang}): ${name.note}`)
-      crt.introduce(field, name.text, () => arriveEvent())
+      crt.introduce(field, requestName(log, nameIndex.current), () => arriveEvent())
     })
     const off = crt.subscribe((event) => {
       if (event.type === 'activity') log.activity()
       if (event.type === 'layout') tagline.measure()
-      if (event.type === 'fireworks' && event.on) log.log(true, 'launch   花火: 15s show, random cast')
+      if (event.type === 'fireworks' && event.on) log.log(true, `launch   ${say('launch')}`)
       if (event.type === 'burst' && event.name) log.log(true, `burst    ${event.name}`)
-      if (event.type === 'pulse') log.log(true, `pulse    click moved ${event.moved.toLocaleString('en-US')} points; interference reached ${event.words} ${event.words === 1 ? 'word' : 'words'}`)
+      if (event.type === 'pulse') log.log(true, `pulse    ${say('pulse', { moved: num(event.moved), count: event.words })}`)
     })
     return () => {
       cancelled = true

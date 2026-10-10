@@ -138,5 +138,23 @@
     "title": "Page not found",
     "body": "This page doesn't exist, or the signal dropped.",
     "home": "back to home"
+  },
+  "log": {
+    "notes": {
+      "en": "given name",
+      "vi": "the same name in Vietnamese",
+      "ja": "the name in Japanese katakana",
+      "zh": "志 zhì is Trí, the middle name; 強 qiáng is Cường"
+    },
+    "request": "name -> \"{{text}}\" ({{lang}}): {{note}}",
+    "carry": "{{points}} points from the previous heading in {{seconds}}s",
+    "generate": "{{points}} points / {{steps}} steps / {{seconds}}s / seed {{seed}}",
+    "check": "agent: contrast {{ratio}}:1 against the background, passes AAA",
+    "gate": "human: you. click the name to ask for another",
+    "note": "how I ship AI content: generate, agent check, human gate",
+    "perturb": "cursor moved {{moved}} points; restored in {{seconds}}s",
+    "launch": "花火: 15s show, random cast",
+    "pulse_one": "click moved {{moved}} points; interference reached {{count}} word",
+    "pulse_other": "click moved {{moved}} points; interference reached {{count}} words"
   }
 }

@@ -1,8 +1,8 @@
 export const NAMES = {
-  en: { text: 'Cuong', lang: 'en', note: 'given name' },
-  vi: { text: 'Cường', lang: 'vi', note: 'the same name in Vietnamese' },
-  ja: { text: 'コン', lang: 'ja', note: 'the name in Japanese katakana' },
-  zh: { text: '志強', lang: 'zh', note: '志 zhì is Trí, the middle name; 強 qiáng is Cường' },
+  en: { text: 'Cuong', lang: 'en' },
+  vi: { text: 'Cường', lang: 'vi' },
+  ja: { text: 'コン', lang: 'ja' },
+  zh: { text: '志強', lang: 'zh' },
 } as const
 
 export const NAME_ORDER = ['en', 'vi', 'ja', 'zh'] as const
