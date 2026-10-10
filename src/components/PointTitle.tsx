@@ -4,9 +4,13 @@ import { SUPPORTED_LANGUAGES, toLanguage } from '@/i18n'
 import { useCrt, loadNameFonts } from '@/crt/context'
 import { NameField, type FieldLayout } from '@/crt/NameField'
 
-const INSET = 48
-
-const TITLE_LAYOUT: FieldLayout = { align: 'left', inset: INSET, fontSize: (w) => (w < 560 ? 40 : 52), weight: 700 }
+const spanViewport = (canvas: HTMLCanvasElement) => {
+  const rect = canvas.parentElement?.getBoundingClientRect()
+  const left = rect?.left ?? 0
+  canvas.style.left = `${-left}px`
+  canvas.style.width = `${document.documentElement.clientWidth}px`
+  return { left, column: rect?.width ?? 0 }
+}
 
 export const PointTitle = ({ titleKey, onLanded }: { titleKey: string; onLanded: () => void }) => {
   const crt = useCrt()
@@ -33,6 +37,15 @@ export const PointTitle = ({ titleKey, onLanded }: { titleKey: string; onLanded:
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
+    let span = spanViewport(canvas)
+    const layout: FieldLayout = {
+      align: 'left',
+      get inset() {
+        return span.left
+      },
+      fontSize: () => (span.column < 464 ? 40 : 52),
+      weight: 700,
+    }
     const field = new NameField(
       canvas,
       crt.reduceMotion,
@@ -45,7 +58,7 @@ export const PointTitle = ({ titleKey, onLanded }: { titleKey: string; onLanded:
         },
         onPerturbed: () => {},
       },
-      TITLE_LAYOUT,
+      layout,
     )
     fieldRef.current = field
     crt.setField(field)
@@ -56,8 +69,14 @@ export const PointTitle = ({ titleKey, onLanded }: { titleKey: string; onLanded:
       shown.current = canvas.dataset.title ?? ''
       crt.introduce(field, shown.current, () => landedEvent())
     })
+    const onResize = () => {
+      span = spanViewport(canvas)
+      field.setup()
+    }
+    window.addEventListener('resize', onResize)
     return () => {
       cancelled = true
+      window.removeEventListener('resize', onResize)
       crt.release(field)
       fieldRef.current = null
     }
