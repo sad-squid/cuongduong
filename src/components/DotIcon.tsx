@@ -29,13 +29,8 @@ const ICONS: Record<IconName, { box: number; draw: (fill: string) => ReactNode }
     box: 24,
     draw: (fill) => (
       <>
-        <path
-          stroke={fill}
-          strokeWidth={3.2}
-          strokeLinecap="round"
-          d="M12 1.8v4.6M12 17.6v4.6M1.8 12h4.6M17.6 12h4.6M4.8 4.8l3.2 3.2M16 16l3.2 3.2M19.2 4.8 16 8M8 16l-3.2 3.2"
-        />
-        <circle cx={12} cy={12} r={3.4} fill={fill} />
+        <path fill={fill} d="M10 2 12.3 8.7 19 11 12.3 13.3 10 20 7.7 13.3 1 11 7.7 8.7Z" />
+        <path fill={fill} d="M19 14.5 20.1 17.4 23 18.5 20.1 19.6 19 22.5 17.9 19.6 15 18.5 17.9 17.4Z" />
       </>
     ),
   },
