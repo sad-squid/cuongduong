@@ -1,10 +1,8 @@
-import { CHIIKAWA, PIKACHU } from './spriteArt'
+import { CHIIKAWA, HACHIWARE, KIRBY, PIKACHU, SQUIDWARD, USAGI } from './spriteArt'
 
 export type GridSprite = {
   name: string
   palette: string[]
-  ega: string[]
-  pico: string[]
   grid: string[]
 }
 
@@ -13,7 +11,6 @@ export type Sprite = {
   w: number
   h: number
   palette: string[]
-  ega: string[]
   pico: string[]
   draw: (c: CanvasRenderingContext2D) => void
 }
@@ -49,12 +46,15 @@ const stroke = (c: CanvasRenderingContext2D, color: string, width: number, path:
 export const SPRITES: (Sprite | GridSprite)[] = [
   PIKACHU,
   CHIIKAWA,
+  HACHIWARE,
+  USAGI,
+  SQUIDWARD,
+  KIRBY,
   {
     name: 'pepe',
     w: 110,
     h: 90,
     palette: ['#5FA052', '#F4F1EA', '#B5503E', '#3F7A38', HOLE],
-    ega: ['#00AA00', '#FFFFFF', '#AA5500', '#555555', HOLE],
     pico: ['#008751', '#FFF1E8', '#AB5236', '#1D2B53', HOLE],
     draw: (c) => {
       ell(c, '#5FA052', 55, 56, 50, 30)
@@ -84,7 +84,6 @@ export const SPRITES: (Sprite | GridSprite)[] = [
     w: 100,
     h: 100,
     palette: ['#E3A857', '#F4E7CF', HOLE],
-    ega: ['#AA5500', '#FFFFFF', HOLE],
     pico: ['#FFA300', '#FFF1E8', HOLE],
     draw: (c) => {
       poly(c, '#E3A857', [10, 50, 16, 4, 44, 30])
@@ -115,7 +114,6 @@ export const SPRITES: (Sprite | GridSprite)[] = [
     w: 100,
     h: 110,
     palette: ['#D9534F', '#A8393A', '#9ED6E8', '#FFFFFF'],
-    ega: ['#FF5555', '#AA0000', '#55FFFF', '#FFFFFF'],
     pico: ['#FF004D', '#7E2553', '#29ADFF', '#FFF1E8'],
     draw: (c) => {
       c.fillStyle = '#A8393A'
@@ -137,30 +135,5 @@ export const SPRITES: (Sprite | GridSprite)[] = [
       ell(c, '#FFFFFF', 64, 32, 10, 4)
     },
   },
-  {
-    name: 'kirby',
-    w: 110,
-    h: 100,
-    palette: ['#F4A7C4', '#E25B6E', '#C9416A', '#FFFFFF', HOLE],
-    ega: ['#FF55FF', '#FF5555', '#AA0000', '#FFFFFF', HOLE],
-    pico: ['#FF77A8', '#FF004D', '#7E2553', '#FFF1E8', HOLE],
-    draw: (c) => {
-      ell(c, '#C9416A', 30, 88, 20, 11, -0.2)
-      ell(c, '#C9416A', 80, 88, 20, 11, 0.2)
-      ell(c, '#F4A7C4', 12, 54, 11, 9, -0.5)
-      ell(c, '#F4A7C4', 98, 44, 11, 9, 0.5)
-      ell(c, '#F4A7C4', 55, 50, 40, 38)
-      ell(c, HOLE, 47, 42, 4, 9.5)
-      ell(c, HOLE, 63, 42, 4, 9.5)
-      ell(c, '#FFFFFF', 47, 37, 2.6, 3.8)
-      ell(c, '#FFFFFF', 63, 37, 2.6, 3.8)
-      ell(c, '#E25B6E', 34, 56, 7, 3.5)
-      ell(c, '#E25B6E', 76, 56, 7, 3.5)
-      ell(c, HOLE, 55, 60, 4, 3)
-      ell(c, '#E25B6E', 55, 61.5, 2.4, 1.5)
-    },
-  },
 ]
 
-
-export type ColorMode = 'full' | 'ega' | 'pico'
