@@ -7,6 +7,8 @@ import { useScramble } from './useScramble'
 
 const LANG_LABELS: Record<SiteLang, string> = { en: 'EN', ja: '日本語', vi: 'Tiếng Việt' }
 
+const LANG_CODES: Record<SiteLang, string> = { en: 'EN', ja: 'JA', vi: 'VI' }
+
 const LangButton = ({ code, current }: { code: SiteLang; current: boolean }) => {
   const crt = useCrt()
   const { i18n } = useTranslation()
@@ -23,7 +25,10 @@ const LangButton = ({ code, current }: { code: SiteLang; current: boolean }) => 
       onFocus={trigger}
       onClick={() => i18n.changeLanguage(code)}
     >
-      {text}
+      <span className="label-long">{text}</span>
+      <span className="label-short" aria-hidden="true">
+        {LANG_CODES[code]}
+      </span>
     </button>
   )
 }
@@ -35,15 +40,14 @@ export const Footer = () => {
 
   return (
     <footer className="footer">
-      {path === '/' ? (
-        <nav className="doors" aria-label={t('footer.pages')}>
-          <RouteDoor label={t('footer.about')} to="/about" />
-          <RouteDoor label={t('footer.work')} to="/work" />
-        </nav>
-      ) : null}
+      <nav className="doors" aria-label={t('footer.pages')}>
+        {path === '/' ? null : <RouteDoor label={t('footer.home')} to="/" />}
+        <RouteDoor label={t('footer.about')} to="/about" />
+        <RouteDoor label={t('footer.work')} to="/work" />
+      </nav>
       <nav className="doors" aria-label={t('footer.elsewhere')}>
-        <ExternalDoor label="github" name="GitHub" href={LINKS.github} />
-        <ExternalDoor label="linkedin" name="LinkedIn" href={LINKS.linkedin} />
+        <ExternalDoor label="github" short="gh" name="GitHub" href={LINKS.github} />
+        <ExternalDoor label="linkedin" short="in" name="LinkedIn" href={LINKS.linkedin} />
       </nav>
       <div className="langs" role="group" aria-label={t('footer.language')}>
         {SITE_LANGS.map((code) => (

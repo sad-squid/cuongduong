@@ -134,8 +134,5 @@
     "title": "Page not found",
     "body": "This page doesn't exist, or the signal dropped.",
     "home": "back to home"
-  },
-  "header": {
-    "home": "Cuong Duong, home"
   }
 }

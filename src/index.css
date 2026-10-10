@@ -251,14 +251,16 @@ body {
 }
 
 .footer {
-  position: relative;
-  z-index: 2;
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   gap: 20px 40px;
-  padding: 0 24px 44px;
+  padding: 36px 24px 36px;
+  background: linear-gradient(to top, var(--bg) 0%, var(--bg) 62%, transparent 100%);
   font-family: var(--font-mono);
   font-size: 12px;
   line-height: 1.8;
@@ -320,21 +322,6 @@ body {
   text-shadow: var(--glow-1);
 }
 
-.topbar {
-  position: sticky;
-  top: 0;
-  z-index: 3;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 24px;
-  padding: 22px max(24px, calc((100% - 680px) / 2)) 30px;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  line-height: 1.8;
-  background: linear-gradient(to bottom, var(--bg) 0%, var(--bg) 72%, transparent 100%);
-}
-
 .door[data-status='active'] {
   color: var(--cream);
   text-shadow: var(--glow-1);
@@ -343,7 +330,7 @@ body {
 .page {
   width: min(100%, 680px);
   margin: 0 auto;
-  padding: 56px 24px 80px;
+  padding: 120px 24px 48px;
 }
 
 .page-title {
@@ -573,9 +560,39 @@ body {
   animation: none;
 }
 
+.label-short {
+  display: none;
+}
+
 @media (max-width: 720px) {
   .signal-log {
     display: none;
+  }
+
+  .footer {
+    flex-wrap: nowrap;
+    gap: 16px;
+    padding: 28px 16px 24px;
+  }
+
+  .doors {
+    gap: 14px;
+  }
+
+  .langs button {
+    padding: 6px 9px;
+  }
+
+  .label-long {
+    display: none;
+  }
+
+  .label-short {
+    display: inline;
+  }
+
+  .page {
+    padding-top: 72px;
   }
 
   .name-row,
