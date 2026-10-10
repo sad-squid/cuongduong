@@ -379,7 +379,7 @@ export class Lattice {
     c.fill(hot)
     c.setTransform(d, 0, 0, d, 0, 0)
     c.fillStyle = COLORS.cream
-    c.globalAlpha = 0.6
+    c.globalAlpha = this.w < 720 ? 0.95 : 0.6
     c.fill(hot)
     c.globalCompositeOperation = 'source-over'
     c.globalAlpha = 1
@@ -405,6 +405,7 @@ export class Lattice {
     const my = this.mouseY
     const rect = this.rect
     const target = this.hitTarget
+    const spark = this.w < 720 ? DOT * 1.9 : DOT
     for (let k = 0; k < this.sparkCount; ) {
       let x = this.sx[k]
       let y = this.sy[k]
@@ -454,7 +455,8 @@ export class Lattice {
       this.svx[k] = vx
       this.svy[k] = vy
       this.life[k] = life
-      ;(fast ? hot : settling).rect(x, y, DOT, DOT)
+      if (fast) hot.rect(x - (spark - DOT) / 2, y - (spark - DOT) / 2, spark, spark)
+      else settling.rect(x, y, DOT, DOT)
       k++
     }
   }

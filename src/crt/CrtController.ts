@@ -241,13 +241,15 @@ export class CrtController {
 
   blast(clientX: number, clientY: number, quiet = false) {
     if (this.reduceMotion || !this.lattice) return
-    const { radius, strength, sparks } = BLAST
+    const compact = window.innerWidth < 720
+    const radius = BLAST.radius * (compact ? 0.55 : 1)
+    const strength = BLAST.strength * (compact ? 0.8 : 1)
     let moved = this.field?.impulse(clientX, clientY, radius, strength) ?? 0
     moved += this.lattice.impulse(clientX, clientY, radius, strength)
-    const count = this.lowPower ? sparks / 2 : sparks
+    const count = (this.lowPower ? BLAST.sparks / 2 : BLAST.sparks) * (compact ? 1.4 : 1)
     for (let k = 0; k < count; k++) {
       const a = Math.random() * Math.PI * 2
-      const speed = 7 + Math.random() * 8
+      const speed = compact ? 6 + Math.random() * 11 : 7 + Math.random() * 8
       this.lattice.addSpark(clientX, clientY, Math.cos(a) * speed, Math.sin(a) * speed)
     }
     this.tear(1.2, true)
