@@ -5,6 +5,7 @@ import { About } from '@/pages/About'
 import { Work } from '@/pages/Work'
 import { Notes } from '@/pages/Notes'
 import { NotFound } from '@/pages/NotFound'
+import { Credits } from '@/pages/Credits'
 import i18n, { languageFromPath, stripLanguage, toLanguage, withLanguage, type Language } from '@/i18n'
 
 const rootRoute = createRootRoute({
@@ -15,6 +16,7 @@ const rootRoute = createRootRoute({
 const homeRoute = createRoute({ getParentRoute: () => rootRoute, path: '/', component: Home })
 const aboutRoute = createRoute({ getParentRoute: () => rootRoute, path: '/about', component: About })
 const workRoute = createRoute({ getParentRoute: () => rootRoute, path: '/work', component: Work })
+const creditsRoute = createRoute({ getParentRoute: () => rootRoute, path: '/credits', component: Credits })
 const notesRoute = createRoute({ getParentRoute: () => rootRoute, path: '/notes', component: Notes })
 
 const blogRedirectRoute = createRoute({
@@ -25,7 +27,7 @@ const blogRedirectRoute = createRoute({
   },
 })
 
-const routeTree = rootRoute.addChildren([homeRoute, aboutRoute, workRoute, notesRoute, blogRedirectRoute])
+const routeTree = rootRoute.addChildren([homeRoute, aboutRoute, workRoute, notesRoute, creditsRoute, blogRedirectRoute])
 
 export const router = createRouter({
   routeTree,

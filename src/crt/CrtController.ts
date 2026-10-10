@@ -13,6 +13,7 @@ export type CrtEvent =
   | { type: 'layout' }
   | { type: 'fireworks'; on: boolean }
   | { type: 'burst'; name: string | null }
+  | { type: 'game'; on: boolean }
 
 type Listener = (event: CrtEvent) => void
 
@@ -174,6 +175,19 @@ export class CrtController {
       this.lowPower,
     )
     if (started) this.emit({ type: 'fireworks', on: true })
+  }
+
+  stopFireworks() {
+    if (this.fireworks?.isRunning) this.fireworks.stop()
+  }
+
+  setGame(on: boolean) {
+    this.emit({ type: 'game', on })
+  }
+
+  ripple(clientX: number, clientY: number) {
+    if (this.reduceMotion) return
+    this.lattice?.impulse(clientX, clientY, 140, 5)
   }
 
   regenerate(field: NameField, text: string) {

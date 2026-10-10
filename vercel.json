@@ -12,6 +12,14 @@
       "destination": "/404.html"
     },
     {
+      "source": "/credits",
+      "destination": "/404.html"
+    },
+    {
+      "source": "/:lang(ja|vi)/credits",
+      "destination": "/404.html"
+    },
+    {
       "source": "/blog",
       "destination": "/404.html"
     }
