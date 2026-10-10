@@ -171,7 +171,8 @@ export class CrtController {
       {
         onLaunch: (x) => this.sound.play('rocket', { pan: this.pan(x), intensity: 0.7 }),
         onBurst: (x, y, name) => {
-          this.sound.play(name ? 'sprite' : 'burst', { pan: this.pan(x), intensity: name ? 1 : 0.6 + Math.random() * 0.4 })
+          this.sound.play(name ? 'sprite' : 'burst', { pan: this.pan(x), intensity: 0.35 })
+          this.sound.play('generate', { pan: this.pan(x), duration: name ? 0.55 : 0.4, intensity: name ? 1 : 0.6 + Math.random() * 0.4 })
           this.lattice?.impulse(x, y, 180, 5)
           this.emit({ type: 'burst', name })
         },
@@ -308,7 +309,7 @@ export class CrtController {
     if (near && !this.field.isDiffusing) {
       const dt = Math.max(1, t - this.last.t)
       const v = Math.hypot(e.clientX - this.last.x, e.clientY - this.last.y) / dt
-      if (v > 1.8) this.tear(Math.min(1.6, v / 2))
+      if (v > 1.8) this.tear(Math.min(1.6, v / 2), false, true)
     }
     this.last = { x: e.clientX, y: e.clientY, t }
   }

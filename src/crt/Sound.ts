@@ -80,7 +80,7 @@ type Limit = { max: number; gap: number; steal: boolean }
 const LIMITS: Record<SoundName, Limit> = {
   blast: { max: 3, gap: 0.06, steal: true },
   tear: { max: 2, gap: 0.08, steal: true },
-  generate: { max: 1, gap: 0.1, steal: true },
+  generate: { max: 3, gap: 0.08, steal: true },
   tick: { max: 3, gap: 0.03, steal: false },
   flight: { max: 1, gap: 0.1, steal: true },
   lang: { max: 1, gap: 0.1, steal: true },
