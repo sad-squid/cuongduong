@@ -146,7 +146,7 @@ export class CrtController {
     }
     if (!handoff || !transit || performance.now() - handoff.at > 1500) {
       field.generate(text, true, this.latticeAnchor())
-      this.sound.play('generate', { duration: 1.1 })
+      this.sound.play('generate', { duration: 0.95 })
       this.arrivalTimer = window.setTimeout(onArriving, 1100 * ARRIVAL_POINT)
       return
     }
@@ -189,7 +189,7 @@ export class CrtController {
     }
     this.ejectFromName()
     field.generate(text, false, null)
-    this.sound.play('generate', { duration: 1 })
+    this.sound.play('generate', { duration: 0.9 })
     this.tear(1.6, true, true)
   }
 

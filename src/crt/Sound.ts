@@ -70,7 +70,7 @@ export const DEFAULT_VARIANTS: Record<SoundName, Variant> = {
   burst: 'A',
   sprite: 'A',
   hover: 'A',
-  toggle: 'B',
+  toggle: 'A',
 }
 
 export const DEFAULT_ROOM_VARIANT: Variant = 'A'
@@ -93,15 +93,31 @@ const LIMITS: Record<SoundName, Limit> = {
 
 const MAX_VOICES = 14
 
+const LEVEL_SPREAD = 0.12
+
+const PITCH_SPREAD: Record<SoundName, number> = {
+  blast: 0.07,
+  tear: 0.06,
+  generate: 0.04,
+  tick: 0.08,
+  flight: 0.06,
+  lang: 0.04,
+  rocket: 0.07,
+  burst: 0.07,
+  sprite: 0.06,
+  hover: 0.06,
+  toggle: 0.04,
+}
+
 const TRIM: Record<SoundName, Record<Variant, number>> = {
-  blast: { A: 1, B: 1.3, C: 1.1 },
-  tear: { A: 2.8, B: 1.9, C: 3 },
-  generate: { A: 0.75, B: 0.95, C: 0.95 },
-  tick: { A: 1.2, B: 1.3, C: 1.3 },
-  flight: { A: 1, B: 1, C: 1 },
-  lang: { A: 0.9, B: 1.1, C: 1.25 },
-  rocket: { A: 1, B: 1, C: 1 },
-  burst: { A: 1, B: 1.3, C: 1.2 },
+  blast: { A: 0.8, B: 1.3, C: 1.1 },
+  tear: { A: 2.1, B: 1.9, C: 3 },
+  generate: { A: 0.65, B: 0.95, C: 0.95 },
+  tick: { A: 1.1, B: 1.3, C: 1.3 },
+  flight: { A: 1.05, B: 1, C: 1 },
+  lang: { A: 1.5, B: 1.1, C: 1.25 },
+  rocket: { A: 1.15, B: 1, C: 1 },
+  burst: { A: 0.88, B: 1.3, C: 1.2 },
   sprite: { A: 1, B: 1.5, C: 1.4 },
   hover: { A: 1, B: 1, C: 1 },
   toggle: { A: 1, B: 1.3, C: 1 },
@@ -153,6 +169,11 @@ const fz = (kit: Kit, kind: NoiseKind, t: number, peak: number, release: number,
   return flt
 }
 
+const hit = (kit: Kit, t: number, peak: number, f = 2600, click = 0): void => {
+  fz(kit, 'white', t, peak, 0.006, 'bandpass', f, 0.9)
+  if (click > 0) pip(kit, 'p25', 1100, t, click, 0.005, 3000)
+}
+
 const run = (t: number, span: number, n: number, each: (at: number, i: number, p: number) => void): void => {
   for (let i = 0; i < n; i += 1) {
     const p = i / n
@@ -163,17 +184,20 @@ const run = (t: number, span: number, n: number, each: (at: number, i: number, p
 const SOUNDS: Record<SoundName, Record<Variant, SoundFn>> = {
   blast: {
     A: (kit, t) => {
-      tup(kit, 'triangle', 170 + 40 * kit.k, 52, t, 0.55, 0.12, 1800)
-      fz(kit, 'white', t + 0.004, 0.22, 0.05, 'lowpass', 2600, 0.6)
-      return 0.21
+      hit(kit, t, 0.4, 2400, 0.12)
+      tup(kit, 'triangle', 210 + 30 * kit.k, 58, t, 0.6, 0.07, 1600)
+      fz(kit, 'crackle', t + 0.004, 0.45, 0.035, 'bandpass', 1800, 0.8)
+      return 0.12
     },
     B: (kit, t) => {
-      tup(kit, 'p25', 240, 60, t, 0.32, 0.1, 1800)
+      hit(kit, t, 0.25, 2000, 0.1)
+      tup(kit, 'p25', 240, 60, t, 0.32, 0.08, 1800)
       fz(kit, 'white', t, 0.34, 0.06, 'bandpass', 1800, 0.9)
       return 0.18
     },
     C: (kit, t) => {
-      tup(kit, 'triangle', 140, 48, t, 0.38, 0.11, 1500)
+      hit(kit, t, 0.3, 3000)
+      tup(kit, 'triangle', 140, 48, t, 0.38, 0.09, 1500)
       fz(kit, 'crackle', t + 0.006, 0.7, 0.09, 'bandpass', 2600, 0.7)
       fz(kit, 'white', t, 0.18, 0.03, 'highpass', 1500, 0.5)
       return 0.2
@@ -181,10 +205,12 @@ const SOUNDS: Record<SoundName, Record<Variant, SoundFn>> = {
   },
   tear: {
     A: (kit, t) => {
-      const bp = fz(kit, 'white', t, 0.34, 0.06, 'bandpass', 1500, 1.2)
-      kit.flutter(bp.frequency, t, t + 0.12, 34, 380)
-      tup(kit, 'triangle', 110, 80, t, 0.12, 0.06, 900)
-      return 0.12
+      hit(kit, t, 0.26, 3200)
+      const o = kit.osc('square', 118, t, t + 0.11)
+      kit.flutter(o.frequency, t, t + 0.11, 45, 14)
+      o.connect(kit.filt('bandpass', 1700, 1.8)).connect(kit.env(kit.out, t, 0.4, 0.003, 0.055))
+      fz(kit, 'white', t + 0.01, 0.12, 0.04, 'highpass', 2500, 0.6)
+      return 0.1
     },
     B: (kit, t) => {
       const o = kit.osc('p25', 170, t, t + 0.12)
@@ -204,11 +230,13 @@ const SOUNDS: Record<SoundName, Record<Variant, SoundFn>> = {
   generate: {
     A: (kit, t) => {
       const d = kit.dur
-      run(t, d * 0.72, 12, (at, _i, p) => {
-        fz(kit, 'white', at, 0.24 - 0.1 * p, 0.014, 'bandpass', 2400 - 1000 * p, 1.2)
+      run(t, d * 0.68, 11, (at, _i, p) => {
+        fz(kit, 'white', at, 0.14 + 0.08 * p, 0.009, 'bandpass', 1200 * Math.pow(2.6, p), 2)
       })
-      pip(kit, 'triangle', 523.25, t + d * 0.8, 0.32, 0.16, 2400)
-      return d * 0.8 + 0.27
+      const at = t + d * 0.76
+      hit(kit, at, 0.12, 3000)
+      pip(kit, 'triangle', 659.25, at, 0.34, 0.11, 2800, 880)
+      return d * 0.76 + 0.19
     },
     B: (kit, t) => {
       const d = kit.dur
@@ -231,8 +259,9 @@ const SOUNDS: Record<SoundName, Record<Variant, SoundFn>> = {
   },
   tick: {
     A: (kit, t) => {
-      tup(kit, 'triangle', 1800 * rand(0.94, 1.06), 1100, t, 0.13 * rand(0.7, 1), 0.012, 3000)
-      return 0.022
+      fz(kit, 'white', t, 0.07, 0.003, 'bandpass', 4000, 1)
+      tup(kit, 'triangle', 2000, 1400, t, 0.11, 0.01, 3200)
+      return 0.018
     },
     B: (kit, t) => {
       pip(kit, 'p25', 1400 * rand(0.97, 1.03), t, 0.1 * rand(0.7, 1), 0.009, 2600)
@@ -246,12 +275,12 @@ const SOUNDS: Record<SoundName, Record<Variant, SoundFn>> = {
   flight: {
     A: (kit, t) => {
       const d = kit.dur
-      const bp = kit.filt('bandpass', 600, 1)
-      sweep(bp.frequency, t, [[d * 0.6, 2200], [d, 1200]])
-      kit.noise('white', t, t + d + 0.02).connect(bp).connect(kit.curve(kit.out, t, [[0, 0], [0.012, 0.16], [d * 0.45, 0.3], [d, 0]]))
-      const o = kit.osc('triangle', 330, t, t + d)
-      o.frequency.exponentialRampToValueAtTime(495, t + d * 0.8)
-      o.connect(kit.curve(kit.out, t, [[0, 0], [0.01, 0.09], [d * 0.5, 0.06], [d, 0]]))
+      const bp = kit.filt('bandpass', 800, 1.1)
+      sweep(bp.frequency, t, [[d * 0.5, 3000], [d, 1400]])
+      kit.noise('white', t, t + d + 0.02).connect(bp).connect(kit.curve(kit.out, t, [[0, 0], [0.015, 0.34], [d * 0.35, 0.26], [d, 0]]))
+      const o = kit.osc('triangle', 400, t, t + d)
+      o.frequency.exponentialRampToValueAtTime(600, t + d * 0.6)
+      o.connect(kit.curve(kit.out, t, [[0, 0], [0.01, 0.08], [d, 0]]))
       return d
     },
     B: (kit, t) => {
@@ -275,10 +304,10 @@ const SOUNDS: Record<SoundName, Record<Variant, SoundFn>> = {
   },
   lang: {
     A: (kit, t) => {
-      fz(kit, 'white', t, 0.28, 0.022, 'bandpass', 1900, 1)
-      fz(kit, 'white', t + 0.045, 0.22, 0.022, 'bandpass', 1200, 1)
-      pip(kit, 'triangle', 659.25, t + 0.09, 0.28, 0.12, 2400)
-      return 0.29
+      hit(kit, t, 0.16, 3000)
+      pip(kit, 'p25', 880, t + 0.004, 0.26, 0.06, 2400, 988)
+      fz(kit, 'white', t + 0.03, 0.08, 0.03, 'bandpass', 1800, 1)
+      return 0.11
     },
     B: (kit, t) => {
       fz(kit, 'white', t, 0.26, 0.02, 'bandpass', 2200, 1.2)
@@ -297,10 +326,12 @@ const SOUNDS: Record<SoundName, Record<Variant, SoundFn>> = {
   rocket: {
     A: (kit, t) => {
       const d = kit.dur
+      fz(kit, 'white', t, 0.3, 0.02, 'lowpass', 1800, 0.6)
+      tup(kit, 'triangle', 160, 90, t, 0.25, 0.03, 900)
       const o = kit.osc('triangle', 700, t, t + d + 0.02)
       o.frequency.exponentialRampToValueAtTime(1500, t + d)
       kit.flutter(o.frequency, t, t + d, 8, 10)
-      o.connect(kit.curve(kit.out, t, [[0, 0], [0.02, 0.1], [d * 0.7, 0.16], [d, 0]]))
+      o.connect(kit.curve(kit.out, t, [[0, 0], [0.03, 0.1], [d * 0.7, 0.16], [d, 0]]))
       kit.noise('white', t, t + d).connect(kit.filt('highpass', 2500, 0.5)).connect(kit.filt('lowpass', 5000, 0.5)).connect(kit.curve(kit.out, t, [[0, 0], [0.03, 0.06], [d, 0]]))
       return d
     },
@@ -322,47 +353,52 @@ const SOUNDS: Record<SoundName, Record<Variant, SoundFn>> = {
   },
   burst: {
     A: (kit, t) => {
-      tup(kit, 'triangle', 120, 45, t, 0.5 * (0.6 + 0.4 * kit.k), 0.14, 1200)
-      fz(kit, 'crackle', t + 0.02, 0.6, 0.38, 'bandpass', 2000, 0.6)
-      return 0.65
+      hit(kit, t, 0.42, 2200, 0.1)
+      tup(kit, 'triangle', 150, 44, t, 0.55 * (0.6 + 0.4 * kit.k), 0.11, 1300)
+      fz(kit, 'crackle', t + 0.03, 0.6, 0.25, 'bandpass', 2200, 0.6)
+      return 0.44
     },
     B: (kit, t) => {
-      tup(kit, 'p25', 160, 50, t, 0.3, 0.12, 1500)
+      hit(kit, t, 0.3, 2000, 0.1)
+      tup(kit, 'p25', 160, 50, t, 0.3, 0.1, 1500)
       fz(kit, 'white', t, 0.3, 0.035, 'lowpass', 1300, 0.6)
-      fz(kit, 'crackle', t + 0.03, 0.55, 0.34, 'bandpass', 2400, 0.7)
-      return 0.6
+      fz(kit, 'crackle', t + 0.03, 0.55, 0.26, 'bandpass', 2400, 0.7)
+      return 0.46
     },
     C: (kit, t) => {
       fz(kit, 'white', t, 0.4, 0.06, 'bandpass', 1500, 0.8)
       tup(kit, 'triangle', 100, 45, t, 0.3, 0.1, 1000)
-      fz(kit, 'crackle', t + 0.02, 0.75, 0.42, 'bandpass', 3000, 0.7)
-      return 0.7
+      fz(kit, 'crackle', t + 0.02, 0.75, 0.28, 'bandpass', 3000, 0.7)
+      return 0.48
     },
   },
   sprite: {
     A: (kit, t) => {
-      tup(kit, 'triangle', 130, 48, t, 0.45, 0.13, 1200)
-      fz(kit, 'crackle', t + 0.02, 0.5, 0.32, 'bandpass', 2200, 0.6)
-      pip(kit, 'triangle', 783.99, t + 0.07, 0.2, 0.18, 2400)
-      return 0.6
+      hit(kit, t, 0.36, 2400, 0.08)
+      tup(kit, 'triangle', 170, 55, t, 0.48, 0.09, 1300)
+      fz(kit, 'crackle', t + 0.03, 0.45, 0.2, 'bandpass', 2800, 0.7)
+      pip(kit, 'triangle', 1567.98, t + 0.05, 0.2, 0.09, 4000, 1760)
+      return 0.38
     },
     B: (kit, t) => {
-      tup(kit, 'p25', 170, 55, t, 0.28, 0.11, 1500)
-      fz(kit, 'crackle', t + 0.02, 0.5, 0.3, 'bandpass', 2400, 0.7)
-      pip(kit, 'p25', 1046.5, t + 0.07, 0.12, 0.14, 2400)
-      return 0.55
+      hit(kit, t, 0.26, 2200, 0.08)
+      tup(kit, 'p25', 170, 55, t, 0.28, 0.09, 1500)
+      fz(kit, 'crackle', t + 0.02, 0.5, 0.22, 'bandpass', 2400, 0.7)
+      pip(kit, 'p25', 1046.5, t + 0.06, 0.12, 0.1, 2600)
+      return 0.4
     },
     C: (kit, t) => {
       fz(kit, 'white', t, 0.36, 0.05, 'bandpass', 1500, 0.8)
-      fz(kit, 'crackle', t + 0.02, 0.7, 0.4, 'bandpass', 2800, 0.7)
-      pip(kit, 'sine', 659.25, t + 0.08, 0.14, 0.18, 2000)
-      return 0.7
+      fz(kit, 'crackle', t + 0.02, 0.7, 0.26, 'bandpass', 2800, 0.7)
+      pip(kit, 'sine', 1318.5, t + 0.06, 0.12, 0.1, 3000)
+      return 0.45
     },
   },
   hover: {
     A: (kit, t) => {
-      pip(kit, 'triangle', 1200, t, 0.06, 0.01, 2600)
-      return 0.02
+      fz(kit, 'white', t, 0.04, 0.003, 'bandpass', 3200, 1)
+      pip(kit, 'triangle', 1500, t, 0.05, 0.007, 3000)
+      return 0.015
     },
     B: (kit, t) => {
       pip(kit, 'p25', 900, t, 0.045, 0.01, 2000)
@@ -375,9 +411,11 @@ const SOUNDS: Record<SoundName, Record<Variant, SoundFn>> = {
   },
   toggle: {
     A: (kit, t) => {
-      fz(kit, 'white', t, 0.2, 0.04, 'lowpass', 2000, 0.6)
-      pip(kit, 'triangle', 440, t + 0.03, 0.3, 0.12, 2400, 880)
-      return 0.24
+      hit(kit, t, 0.18, 2600)
+      pip(kit, 'p25', 523.25, t + 0.005, 0.2, 0.045, 2400)
+      pip(kit, 'triangle', 783.99, t + 0.06, 0.26, 0.09, 2600)
+      fz(kit, 'white', t + 0.06, 0.07, 0.04, 'lowpass', 2200, 0.6)
+      return 0.21
     },
     B: (kit, t) => {
       fz(kit, 'white', t, 0.18, 0.03, 'bandpass', 1800, 1)
@@ -394,8 +432,8 @@ const SOUNDS: Record<SoundName, Record<Variant, SoundFn>> = {
 }
 
 const DEFAULT_DURATIONS: Partial<Record<SoundName, number>> = {
-  generate: 1,
-  flight: 0.45,
+  generate: 0.9,
+  flight: 0.3,
   rocket: 0.8,
 }
 
@@ -660,11 +698,23 @@ const createEngine = (ctx: BaseAudioContext, initial: ChainSettings): Engine => 
   const voice = (name: SoundName, variant: Variant, t: number, opts: PlayOptions): { gain: GainNode; end: number } => {
     const k = clamp(opts.intensity ?? 1, 0, 1)
     const gain = ctx.createGain()
-    gain.gain.value = (0.45 + 0.55 * k) * TRIM[name][variant]
+    const spread = PITCH_SPREAD[name]
+    const cents = 1200 * Math.log2(1 + rand(-spread, spread))
+    gain.gain.value = (0.45 + 0.55 * k) * TRIM[name][variant] * rand(1 - LEVEL_SPREAD, 1 + LEVEL_SPREAD)
     const pan = ctx.createStereoPanner()
     pan.pan.value = clamp(opts.pan ?? 0, -1, 1)
     gain.connect(pan).connect(bus)
-    const kit: Kit = { ctx, out: gain, k, dur: opts.duration ?? DEFAULT_DURATIONS[name] ?? 0.5, osc, env, curve, noise, filt, flutter, wobble, tail }
+    const vOsc = (shape: Shape, freq: number, at: number, end: number): OscillatorNode => {
+      const o = osc(shape, freq, at, end)
+      o.detune.value = cents
+      return o
+    }
+    const vFilt = (type: BiquadFilterType, freq: number, q: number): BiquadFilterNode => {
+      const f = filt(type, freq, q)
+      f.detune.value = cents
+      return f
+    }
+    const kit: Kit = { ctx, out: gain, k, dur: opts.duration ?? DEFAULT_DURATIONS[name] ?? 0.5, osc: vOsc, env, curve, noise, filt: vFilt, flutter, wobble, tail }
     const len = SOUNDS[name][variant](kit, t)
     return { gain, end: t + len }
   }
