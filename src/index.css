@@ -50,6 +50,13 @@ html {
   -webkit-tap-highlight-color: transparent;
 }
 
+.name-button,
+.title-button {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 a[href],
 button:not(:disabled),
 [role='option'] {

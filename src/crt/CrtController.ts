@@ -23,6 +23,8 @@ const TAP_MS = 500
 const TAP_SLOP = 10
 
 const INTERACTIVE = 'a, button, input, textarea, select, label, [role="dialog"], [data-no-blast]'
+const HOLD_SKIP = `${INTERACTIVE}, p, li, dl, h2, h3, input, textarea`
+const HOLD_MS = 320
 
 export class CrtController {
   readonly reduceMotion: boolean
@@ -34,6 +36,7 @@ export class CrtController {
   private handoff: { points: number[]; at: number } | null = null
   private arrivalTimers = new Map<NameField, number>()
   private tap: { x: number; y: number; t: number; id: number } | null = null
+  private hold: { x: number; y: number; timer: number; on: boolean } | null = null
   private flightField: NameField | null = null
   private suppressHandoff = false
   private scrollFrame = 0
@@ -82,6 +85,10 @@ export class CrtController {
     window.addEventListener('pointerdown', this.onDown, { passive: true })
     window.addEventListener('pointerup', this.onUp, { passive: true })
     window.addEventListener('pointercancel', this.onCancel, { passive: true })
+    window.addEventListener('touchstart', this.onTouchStart, { passive: true })
+    window.addEventListener('touchmove', this.onTouchMove, { passive: false })
+    window.addEventListener('touchend', this.onTouchEnd, { passive: true })
+    window.addEventListener('touchcancel', this.onTouchEnd, { passive: true })
     window.addEventListener('pointerout', this.onOut, { passive: true })
     window.addEventListener('resize', this.onResize)
     window.addEventListener('scroll', this.onScroll, { passive: true })
@@ -103,6 +110,10 @@ export class CrtController {
     window.removeEventListener('pointerdown', this.onDown)
     window.removeEventListener('pointerup', this.onUp)
     window.removeEventListener('pointercancel', this.onCancel)
+    window.removeEventListener('touchstart', this.onTouchStart)
+    window.removeEventListener('touchmove', this.onTouchMove)
+    window.removeEventListener('touchend', this.onTouchEnd)
+    window.removeEventListener('touchcancel', this.onTouchEnd)
     window.removeEventListener('pointerout', this.onOut)
     window.removeEventListener('resize', this.onResize)
     window.removeEventListener('scroll', this.onScroll)
@@ -390,6 +401,53 @@ export class CrtController {
 
   private onCancel = () => {
     this.tap = null
+  }
+
+  private onTouchStart = (e: TouchEvent) => {
+    this.endHold()
+    const touch = e.touches[0]
+    const target = e.target as Element | null
+    if (e.touches.length !== 1 || !touch || this.reduceMotion) return
+    if (target?.closest?.(HOLD_SKIP) && !target.closest('[data-blast]')) return
+    const hold = { x: touch.clientX, y: touch.clientY, timer: 0, on: false }
+    hold.timer = window.setTimeout(() => {
+      hold.on = true
+      this.tap = null
+      this.press(hold.x, hold.y)
+    }, HOLD_MS)
+    this.hold = hold
+  }
+
+  private onTouchMove = (e: TouchEvent) => {
+    const hold = this.hold
+    const touch = e.touches[0]
+    if (!hold || !touch) return
+    if (hold.on) {
+      e.preventDefault()
+      this.press(touch.clientX, touch.clientY)
+      return
+    }
+    if (Math.hypot(touch.clientX - hold.x, touch.clientY - hold.y) > TAP_SLOP) this.endHold()
+  }
+
+  private onTouchEnd = () => {
+    this.endHold()
+  }
+
+  private press(x: number, y: number) {
+    this.emit({ type: 'activity' })
+    this.lattice?.pointer(x, y)
+    this.field?.pointer(x, y)
+  }
+
+  private endHold() {
+    const hold = this.hold
+    if (!hold) return
+    window.clearTimeout(hold.timer)
+    this.hold = null
+    if (!hold.on) return
+    this.lattice?.clearPointer()
+    this.field?.clearPointer()
   }
 
   private onOut = (e: PointerEvent) => {
