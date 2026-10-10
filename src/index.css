@@ -1324,55 +1324,9 @@ html:has(.screen.playing) body {
 
 .section-dot::before {
   content: '';
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--muted);
-}
-
-.section-marker {
-  position: absolute;
-  left: 50%;
-  top: var(--marker-top, 6.5px);
-  width: 5px;
-  height: var(--marker-h, 11px);
-  border-radius: 3px;
-  background: var(--warm-coral);
-  translate: -50% 0;
-  pointer-events: none;
-}
-
-.dots-track .section-dot::before {
-  opacity: 0;
-}
-
-.dots-track::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 6.5px;
-  width: 1px;
-  height: 35px;
-  background-image: radial-gradient(circle, var(--muted) 0 0.7px, transparent 1px);
-  background-size: 3px 3px;
-  translate: -50% 0;
-  pointer-events: none;
-}
-
-.dots-track .section-marker {
-  top: var(--thumb-top, 6.5px);
-  width: 3px;
-  height: var(--thumb, 11px);
-  border-radius: 2px;
-}
-
-.dots-near .section-marker {
-  display: none;
-}
-
-.dots-near .section-dot::before {
   width: calc(5px + var(--near, 0) * 4px);
   height: calc(5px + var(--near, 0) * 4px);
+  border-radius: 50%;
   background: color-mix(in srgb, var(--warm-coral) calc(var(--near, 0) * 100%), var(--muted));
 }
 
