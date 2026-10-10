@@ -227,7 +227,7 @@ export class Fireworks {
     const art = sampleSprite(sprite, this.spriteHeight())
     const colors = art.colors.map((hex) => this.colorIndex(hex))
     for (let k = 0; k < art.xs.length; k++) {
-      const i = this.add(x + (Math.random() - 0.5) * 8, y + (Math.random() - 0.5) * 8, 0, 0, 0, colors[art.ci[k]], art.pitch * 0.55, now)
+      const i = this.add(x + (Math.random() - 0.5) * 8, y + (Math.random() - 0.5) * 8, art.xs[k], art.ys[k], 0, colors[art.ci[k]], art.pitch * 0.55, now)
       if (i < 0) break
       this.tx[i] = x + art.xs[k]
       this.ty[i] = y + art.ys[k]
@@ -268,9 +268,11 @@ export class Fireworks {
         }
         this.forming[i] = 0
         this.born[i] = now
-        this.life[i] = 1300 + Math.random() * 500
-        this.vx[i] = (Math.random() - 0.5) * 50
-        this.vy[i] = -20 - Math.random() * 40
+        const dist = Math.hypot(this.vx[i], this.vy[i]) || 1
+        const speed = 50 + Math.random() * 130
+        this.life[i] = 1800 + Math.random() * 800
+        this.vx[i] = (this.vx[i] / dist) * speed + (Math.random() - 0.5) * 60
+        this.vy[i] = (this.vy[i] / dist) * speed - 40 - Math.random() * 50
       }
       const age = now - this.born[i]
       if (age > this.life[i] || this.y[i] > this.h + 20) {
