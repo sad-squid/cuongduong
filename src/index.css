@@ -1093,8 +1093,20 @@ html:has(.screen.playing) {
   cursor: none;
 }
 
+.arcade::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: calc(52px + env(safe-area-inset-top, 0px));
+  background: linear-gradient(to bottom, var(--bg) 0 62%, transparent);
+  pointer-events: none;
+  z-index: 1;
+}
+
 .arcade-hud {
   position: absolute;
+  z-index: 2;
+  white-space: nowrap;
   top: 0;
   left: 50%;
   display: flex;
@@ -1246,6 +1258,7 @@ html:has(.screen.playing) {
 
 .arcade-powers {
   position: absolute;
+  z-index: 2;
   top: calc(44px + env(safe-area-inset-top, 0px));
   left: 50%;
   display: flex;
@@ -1265,6 +1278,30 @@ html:has(.screen.playing) {
   display: flex;
   align-items: center;
   gap: 10px;
+  width: fit-content;
+  padding: 1px 6px;
+  margin-left: -6px;
+  background: color-mix(in srgb, var(--bg) 78%, transparent);
+}
+
+@media (max-width: 480px) {
+  .arcade-hud {
+    gap: 14px;
+    font-size: 11px;
+    padding-inline: 12px;
+  }
+
+  .arcade-powers {
+    top: calc(56px + env(safe-area-inset-top, 0px));
+    padding-inline: 12px;
+  }
+}
+
+@media (max-width: 360px) {
+  .arcade-hud {
+    gap: 9px;
+    padding-inline: 8px;
+  }
 }
 
 .arcade-bar {
@@ -1301,6 +1338,7 @@ html:has(.screen.playing) {
 .arcade-over {
   position: absolute;
   inset: 0;
+  z-index: 3;
   background: color-mix(in srgb, var(--bg) 62%, transparent);
   display: flex;
   flex-direction: column;
