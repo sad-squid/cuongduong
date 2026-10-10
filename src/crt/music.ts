@@ -1,10 +1,4 @@
-export type Band = {
-  ctx: BaseAudioContext
-  bus: GainNode
-  echo: DelayNode
-  noise: AudioBuffer
-  pulse(duty: number): PeriodicWave
-}
+import type { Band } from './Sound'
 
 const hz = (midi: number) => 440 * Math.pow(2, (midi - 69) / 12)
 
@@ -13,25 +7,6 @@ const pan = (band: Band, x: number) => {
   p.pan.value = x
   p.connect(band.bus)
   return p
-}
-
-export const noiseBuffer = (ctx: BaseAudioContext) => {
-  const b = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate)
-  const d = b.getChannelData(0)
-  let last = 0
-  for (let i = 0; i < d.length; i++) {
-    last = (last + 0.04 * (Math.random() * 2 - 1)) / 1.04
-    d[i] = last * 3.2
-  }
-  return b
-}
-
-export const pulseWave = (ctx: BaseAudioContext, duty: number) => {
-  const n = 48
-  const real = new Float32Array(n)
-  const imag = new Float32Array(n)
-  for (let k = 1; k < n; k++) real[k] = (2 / (k * Math.PI)) * Math.sin(k * Math.PI * duty)
-  return ctx.createPeriodicWave(real, imag)
 }
 
 type ChipOpts = { echo?: boolean; vibrato?: boolean; cutoff?: number; sustain?: number }
@@ -66,8 +41,21 @@ export const chip = (band: Band, t: number, midi: number, len: number, level: nu
   o.stop(t + len + 0.05)
 }
 
-export const chipDrum = (band: Band, t: number, kind: 'snare' | 'hat') => {
+export const chipDrum = (band: Band, t: number, kind: 'kick' | 'snare' | 'hat') => {
   const { ctx } = band
+  if (kind === 'kick') {
+    const o = ctx.createOscillator()
+    o.type = 'triangle'
+    o.frequency.setValueAtTime(160, t)
+    o.frequency.exponentialRampToValueAtTime(45, t + 0.1)
+    const g = ctx.createGain()
+    g.gain.setValueAtTime(0.22, t)
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.16)
+    o.connect(g).connect(pan(band, 0))
+    o.start(t)
+    o.stop(t + 0.18)
+    return
+  }
   const src = ctx.createBufferSource()
   src.buffer = band.noise
   const f = ctx.createBiquadFilter()
@@ -89,7 +77,7 @@ export const chipDrum = (band: Band, t: number, kind: 'snare' | 'hat') => {
   src.stop(t + 0.2)
 }
 
-export const arcade = (band: Band, t: number, notes: readonly number[], len: number, beats: number) => {
+export const arcade = (band: Band, t: number, notes: readonly number[], len: number, beats: number, drums = false) => {
   const step = len / beats
   const root = Math.min(...notes) - 12
   const bassRoot = (root % 12) + 36
@@ -101,6 +89,13 @@ export const arcade = (band: Band, t: number, notes: readonly number[], len: num
     chip(band, t + at * step, bassRoot + up, step * hold * 0.6, 0.1, 0.5, 0, { cutoff: 1400, sustain: 0.6 })
   const arp = [notes[0] + 12, notes[1] + 12, notes[2] + 12, notes[1] + 24]
   for (let k = 0; k < beats * 4; k++) chip(band, t + (k * step) / 4, arp[k % 4], step * 0.22, 0.025, 0.125, k % 2 ? 0.35 : -0.35, { cutoff: 4200, sustain: 0.4 })
+  if (!drums) return
+  for (let k = 0; k < beats * 2; k++) {
+    const at = t + (k * step) / 2
+    if (k % 8 === 0 || k % 8 === 3 || k % 8 === 6) chipDrum(band, at, 'kick')
+    if (k % 4 === 2) chipDrum(band, at, 'snare')
+    chipDrum(band, at, 'hat')
+  }
 }
 
 export const firework = (band: Band, t: number, kind: 'whistle' | 'boom', x = 0, level = 1) => {

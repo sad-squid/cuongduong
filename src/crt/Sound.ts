@@ -1,4 +1,4 @@
-import { noiseBuffer, pulseWave as musicPulse, type Band } from './music'
+import { readPrefs, writePrefs } from './soundLevel'
 
 export type SoundName =
   | 'blast'
@@ -37,6 +37,11 @@ export type ChainSettings = {
 
 export type SoundApi = {
   readonly enabled: boolean
+  readonly sfx: boolean
+  readonly music: boolean
+  readonly musicActive: boolean
+  setSfx(on: boolean): void
+  setMusic(on: boolean): void
   readonly muted: boolean
   readonly room: boolean
   readonly state: AudioContextState | 'none'
@@ -50,12 +55,40 @@ export type SoundApi = {
   setVariant(name: SoundName, variant: Variant): void
   setSettings(next: Partial<ChainSettings>): void
   audioClock(): { time: number; latency: number } | null
-  musicBus(echoTime: number): MusicBus | null
+  musicBus(echoTime: number, level?: number, fadeIn?: number): MusicBus | null
 }
 
 export type MusicBus = { band: Band; stop(fade: number): void }
 
 const MUSIC_LEVEL = 1.6
+
+export type Band = {
+  ctx: BaseAudioContext
+  bus: GainNode
+  echo: DelayNode
+  noise: AudioBuffer
+  pulse(duty: number): PeriodicWave
+}
+
+const noiseBuffer = (ctx: BaseAudioContext) => {
+  const b = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate)
+  const d = b.getChannelData(0)
+  let last = 0
+  for (let i = 0; i < d.length; i++) {
+    last = (last + 0.04 * (Math.random() * 2 - 1)) / 1.04
+    d[i] = last * 3.2
+  }
+  return b
+}
+
+const musicPulse = (ctx: BaseAudioContext, duty: number) => {
+  const n = 48
+  const real = new Float32Array(n)
+  const imag = new Float32Array(n)
+  for (let k = 1; k < n; k++) real[k] = (2 / (k * Math.PI)) * Math.sin(k * Math.PI * duty)
+  return ctx.createPeriodicWave(real, imag)
+}
+
 
 export const SOUND_NAMES: readonly SoundName[] = [
   'blast',
@@ -950,6 +983,7 @@ export const createSound = (initial: Partial<ChainSettings> = {}): SoundApi => {
   let engine: Engine | null = null
   let ctx: AudioContext | null = null
   let enabled = false
+  const prefs = readPrefs()
   let muted = false
   let live: Live[] = []
   const lastAt: Partial<Record<SoundName, number>> = {}
@@ -957,10 +991,12 @@ export const createSound = (initial: Partial<ChainSettings> = {}): SoundApi => {
   let noise: AudioBuffer | null = null
   const waves = new Map<number, PeriodicWave>()
 
-  const musicBus = (echoTime: number): MusicBus | null => {
-    if (!enabled || engine === null || ctx === null || ctx.state !== 'running') return null
+  const musicBus = (echoTime: number, level = 1, fadeIn = 0): MusicBus | null => {
+    if (!enabled || !prefs.music || engine === null || ctx === null || ctx.state !== 'running') return null
     const c = ctx
     const bus = c.createGain()
+    bus.gain.setValueAtTime(fadeIn > 0 ? 0 : level, c.currentTime)
+    if (fadeIn > 0) bus.gain.linearRampToValueAtTime(level, c.currentTime + fadeIn)
     bus.connect(engine.musicInput())
     const echo = c.createDelay(1)
     echo.delayTime.value = echoTime
@@ -993,7 +1029,12 @@ export const createSound = (initial: Partial<ChainSettings> = {}): SoundApi => {
       stop: (fade) => {
         if (stopped) return
         stopped = true
-        bus.gain.cancelScheduledValues(c.currentTime)
+        const g = bus.gain
+        if (typeof g.cancelAndHoldAtTime === 'function') g.cancelAndHoldAtTime(c.currentTime)
+        else {
+          g.cancelScheduledValues(c.currentTime)
+          g.setValueAtTime(g.value, c.currentTime)
+        }
         bus.gain.setTargetAtTime(0, c.currentTime, fade / 4)
         window.setTimeout(() => {
           echo.disconnect()
@@ -1041,7 +1082,7 @@ export const createSound = (initial: Partial<ChainSettings> = {}): SoundApi => {
   }
 
   const play = (name: SoundName, opts: PlayOptions = {}): void => {
-    if (!enabled || muted || engine === null || ctx === null) return
+    if (!enabled || !prefs.sfx || muted || engine === null || ctx === null) return
     if (ctx.state === 'suspended') void ctx.resume()
     const now = ctx.currentTime
     const limit = LIMITS[name]
@@ -1090,6 +1131,23 @@ export const createSound = (initial: Partial<ChainSettings> = {}): SoundApi => {
   return {
     get enabled() {
       return enabled
+    },
+    get sfx() {
+      return prefs.sfx
+    },
+    get music() {
+      return prefs.music
+    },
+    get musicActive() {
+      return enabled && prefs.music
+    },
+    setSfx: (on: boolean) => {
+      prefs.sfx = on
+      writePrefs(prefs)
+    },
+    setMusic: (on: boolean) => {
+      prefs.music = on
+      writePrefs(prefs)
     },
     get muted() {
       return muted

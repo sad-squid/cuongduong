@@ -1,6 +1,5 @@
 import { DOT } from './tokens'
 import { SPRITES, type GridSprite } from './sprites'
-import { RISE_MS, type ShotKind } from './creditsTune'
 
 const SHOW_MS = 15000
 const CYCLE_MS = 12000
@@ -20,6 +19,8 @@ const CYCLE: [number, 'shell' | 'sprite'][] = [
 const FINALE = [0, 200, 400, 600]
 const MAX = 14000
 const GRAVITY = 220
+export const RISE_MS = 900
+export type ShotKind = 'shell' | 'sprite' | 'big'
 const GAP_MS = 250
 const STALE_MS = 150
 const SHELL_COLORS = ['#F0EEE9', '#DCD7C9', '#C9C4B8', '#9A958B']

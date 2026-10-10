@@ -4,7 +4,10 @@ import { Fireworks } from './Fireworks'
 import type { NameField } from './NameField'
 import { BLAST, type Tear } from './tokens'
 import { createSound } from './Sound'
-import { CreditsShow } from './CreditsShow'
+import type { CreditsShow } from './CreditsShow'
+import type { HomeMusic } from './HomeMusic'
+
+type Shows = typeof import('./musicShows')
 
 export type CrtEvent =
   | { type: 'activity' }
@@ -57,6 +60,12 @@ export class CrtController {
   private fireworksPaused = false
   private show: CreditsShow | null = null
   private lastTune = false
+  private shows: Shows | null = null
+  private loading: Promise<Shows> | null = null
+  private pendingLaunch = 0
+  private home: HomeMusic | null = null
+  private homeWanted = true
+  private mounted = false
 
   constructor(reduceMotion: boolean) {
     this.reduceMotion = reduceMotion
@@ -80,6 +89,8 @@ export class CrtController {
     this.transit.setup()
     this.fireworks = new Fireworks(fireworksCanvas)
     this.fireworks.setup()
+    this.mounted = true
+    this.home?.mount()
     if (import.meta.env.DEV) (window as unknown as { __crt?: CrtController }).__crt = this
     if (this.revealed) {
       this.lattice.enable()
@@ -100,6 +111,11 @@ export class CrtController {
   }
 
   unmount() {
+    this.mounted = false
+    this.pendingLaunch++
+    this.home?.unmount()
+    this.show?.stop()
+    this.show = null
     this.lattice?.destroy()
     this.lattice = null
     this.transit?.destroy()
@@ -191,13 +207,21 @@ export class CrtController {
     return this.fireworks?.isRunning ?? false
   }
 
-  get creditsShow() {
-    return this.show
+  private loadShows() {
+    this.loading ??= import('./musicShows').then((m) => (this.shows = m))
+    return this.loading
   }
 
   launchFireworks(endless = false, tune = false) {
     if (this.reduceMotion || !this.fireworks || this.fireworks.isRunning) return
-    const show = tune ? new CreditsShow(this.sound, this.fireworks) : null
+    const token = ++this.pendingLaunch
+    if (tune && !this.shows) {
+      this.loadShows()
+        .then(() => token === this.pendingLaunch && this.launchFireworks(endless, true))
+        .catch(() => token === this.pendingLaunch && this.launchFireworks(endless, false))
+      return
+    }
+    const show = tune && this.shows ? new this.shows.CreditsShow(this.sound, this.fireworks) : null
     const started = this.fireworks.play(
       {
         onLaunch: (x) => (show ? null : this.sound.play('rocket', { pan: this.pan(x), intensity: 0.7 })),
@@ -234,6 +258,7 @@ export class CrtController {
   }
 
   stopFireworks() {
+    this.pendingLaunch++
     if (this.fireworks?.isRunning) this.fireworks.stop()
   }
 
@@ -256,7 +281,21 @@ export class CrtController {
   }
 
   soundChanged() {
+    if (this.sound.musicActive && !this.home)
+      void this.loadShows()
+        .then((m) => {
+          if (this.home) return
+          this.home = new m.HomeMusic(this.sound)
+          this.home.setWanted(this.homeWanted)
+          if (this.mounted) this.home.mount()
+        })
+        .catch(() => undefined)
     this.emit({ type: 'sound' })
+  }
+
+  setHomeMusic(on: boolean) {
+    this.homeWanted = on
+    this.home?.setWanted(on)
   }
 
   setGame(on: boolean) {

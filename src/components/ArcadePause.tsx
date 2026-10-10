@@ -9,7 +9,7 @@ export const ArcadePause = ({ shake, onShake, onResume, onExit }: { shake: boole
   const crt = useCrt()
   const { t } = useTranslation()
   const [view, setView] = useState<View>('menu')
-  const [on, setOn] = useState(crt.sound.enabled)
+  const [on, setOn] = useState(crt.sound.enabled && crt.sound.sfx)
   const [level, setLevel] = useState(readLevel)
   const firstRef = useRef<HTMLButtonElement>(null)
 
@@ -17,8 +17,12 @@ export const ArcadePause = ({ shake, onShake, onResume, onExit }: { shake: boole
     firstRef.current?.focus()
   }, [view])
 
+  useEffect(() => crt.subscribe((event) => (event.type === 'sound' ? setOn(crt.sound.enabled && crt.sound.sfx) : undefined)), [crt])
+
   const enable = (next: boolean) => {
-    crt.sound.setEnabled(next)
+    crt.sound.setSfx(next)
+    if (next) crt.sound.setEnabled(true)
+    else if (!crt.sound.music) crt.sound.setEnabled(false)
     if (next) crt.sound.play('toggle')
     setOn(next)
     crt.soundChanged()

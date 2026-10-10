@@ -39,12 +39,14 @@ export const Credits = () => {
       timer = window.setTimeout(() => (playingRef.current || crt.fireworksHeld ? null : crt.launchFireworks(!doneRef.current, !doneRef.current)), RELAUNCH_MS)
     })
     crt.holdFireworks(false)
+    crt.setHomeMusic(false)
     const launch = window.setTimeout(() => crt.launchFireworks(!doneRef.current, !doneRef.current), 400)
     return () => {
       off()
       window.clearTimeout(timer)
       window.clearTimeout(launch)
       crt.stopFireworks()
+      crt.setHomeMusic(true)
     }
   }, [crt])
 

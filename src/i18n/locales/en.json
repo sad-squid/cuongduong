@@ -15,7 +15,11 @@
     "sound": "sound",
     "soundOn": "sound on",
     "soundOff": "sound off",
-    "volume": "volume"
+    "volume": "volume",
+    "sfx": "sound effects",
+    "music": "music",
+    "on": "on",
+    "off": "off"
   },
   "palette": {
     "label": "Command palette",

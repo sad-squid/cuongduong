@@ -15,7 +15,11 @@
     "sound": "âm thanh",
     "soundOn": "bật âm thanh",
     "soundOff": "tắt âm thanh",
-    "volume": "âm lượng"
+    "volume": "âm lượng",
+    "sfx": "hiệu ứng",
+    "music": "nhạc",
+    "on": "bật",
+    "off": "tắt"
   },
   "palette": {
     "label": "Bảng lệnh",

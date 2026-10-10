@@ -125,7 +125,7 @@ export class CreditsShow {
   }
 
   private syncAudio() {
-    const live = this.src === 'audio' && this.sound.enabled && !document.hidden
+    const live = this.src === 'audio' && this.sound.musicActive && !document.hidden
     if (this.music && !live) {
       this.music.stop(0.08)
       this.music = null

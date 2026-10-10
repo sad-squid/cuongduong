@@ -15,7 +15,11 @@
     "sound": "音",
     "soundOn": "サウンド オン",
     "soundOff": "サウンド オフ",
-    "volume": "音量"
+    "volume": "音量",
+    "sfx": "効果音",
+    "music": "音楽",
+    "on": "オン",
+    "off": "オフ"
   },
   "palette": {
     "label": "コマンドパレット",

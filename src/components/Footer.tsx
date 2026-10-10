@@ -64,11 +64,13 @@ const POP_MS = 2400
 const SoundControl = () => {
   const crt = useCrt()
   const { t } = useTranslation()
-  const [on, setOn] = useState(crt.sound.enabled)
+  const read = () => ({ on: crt.sound.enabled, sfx: crt.sound.sfx, music: crt.sound.music })
+  const [state, setState] = useState(read)
   const [level, setLevel] = useState(readLevel)
   const [pop, setPop] = useState<'open' | 'closing' | null>(null)
   const timer = useRef(0)
   const held = useRef(false)
+  const audible = state.on && (state.sfx || state.music)
 
   useEffect(() => {
     crt.sound.setSettings({ volume: levelToVolume(level) })
@@ -78,7 +80,7 @@ const SoundControl = () => {
     () =>
       crt.subscribe((event) => {
         if (event.type !== 'sound') return
-        setOn(crt.sound.enabled)
+        setState({ on: crt.sound.enabled, sfx: crt.sound.sfx, music: crt.sound.music })
         setLevel(readLevel())
       }),
     [crt],
@@ -108,43 +110,85 @@ const SoundControl = () => {
     } else close()
   }
 
+  const changed = () => {
+    setState(read())
+    crt.soundChanged()
+  }
+
   const enable = (next: boolean) => {
+    if (next && !crt.sound.sfx && !crt.sound.music) {
+      crt.sound.setSfx(true)
+      crt.sound.setMusic(true)
+    }
     crt.sound.setEnabled(next)
     if (next) crt.sound.play('toggle')
-    setOn(next)
+    changed()
   }
 
   const toggle = () => {
-    enable(!on)
+    enable(!audible)
     open()
+  }
+
+  const pick = (kind: 'sfx' | 'music') => {
+    if (!crt.sound.enabled) {
+      crt.sound.setSfx(kind === 'sfx')
+      crt.sound.setMusic(kind === 'music')
+      crt.sound.setEnabled(true)
+    } else if (kind === 'sfx') crt.sound.setSfx(!crt.sound.sfx)
+    else crt.sound.setMusic(!crt.sound.music)
+    if (kind === 'sfx' && crt.sound.sfx) crt.sound.play('toggle')
+    changed()
+    if (!held.current) open()
   }
 
   const slide = (value: number) => {
     setLevel(value)
     writeLevel(value)
-    if (value === 0 && on) enable(false)
-    else if (value > 0 && !on) enable(true)
+    if (value === 0 && audible) enable(false)
+    else if (value > 0 && !audible) enable(true)
     else if (value > 0) crt.sound.play('tick')
   }
 
-  const shown = on ? level : 0
+  const shown = audible ? level : 0
+  const option = (kind: 'sfx' | 'music') => {
+    const on = state.on && state[kind]
+    return (
+      <button type="button" className="sound-option" aria-pressed={on} onClick={() => pick(kind)}>
+        <span>{t(`footer.${kind}`)}</span>
+        <b>{on ? t('footer.on') : t('footer.off')}</b>
+      </button>
+    )
+  }
 
   return (
     <span
       className="sound-wrap"
-      onPointerEnter={() => (pop ? hold(true) : undefined)}
+      onPointerEnter={(e) => (pop || e.pointerType === 'mouse' ? hold(true) : undefined)}
       onPointerLeave={() => hold(false)}
-      onFocus={() => (pop ? hold(true) : undefined)}
+      onFocus={() => hold(true)}
       onBlur={(e) => (e.currentTarget.contains(e.relatedTarget) ? undefined : hold(false))}
     >
-      <button type="button" className={on ? 'icon-door sound on' : 'icon-door sound'} aria-label={t('footer.sound')} aria-pressed={on} onClick={toggle}>
-        <DotIcon icon={on ? 'sound' : 'muted'} />
+      <button
+        type="button"
+        className={audible ? 'icon-door sound on' : 'icon-door sound'}
+        aria-label={t('footer.sound')}
+        aria-pressed={audible}
+        onClick={toggle}
+        onContextMenu={(e) => {
+          e.preventDefault()
+          open()
+        }}
+      >
+        <DotIcon icon={audible ? 'sound' : 'muted'} />
       </button>
       {pop ? (
         <span className={pop === 'closing' ? 'crt-pop sound-pop closing' : 'crt-pop sound-pop'}>
           <span className="crt-pop-label" aria-hidden="true">
-            {on ? t('footer.soundOn') : t('footer.soundOff')}
+            {audible ? t('footer.soundOn') : t('footer.soundOff')}
           </span>
+          {option('sfx')}
+          {option('music')}
           <span className="volume" style={{ '--fill': `${shown}%` } as CSSProperties}>
             <input
               type="range"
