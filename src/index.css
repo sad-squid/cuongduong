@@ -45,6 +45,21 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+html {
+  cursor: default;
+}
+
+a[href],
+button:not(:disabled),
+[role='option'] {
+  cursor: pointer;
+}
+
+input,
+textarea {
+  cursor: text;
+}
+
 ::selection {
   background: rgb(240 110 97 / 0.35);
   color: var(--cream);
@@ -336,19 +351,13 @@ button.door {
   all: unset;
   cursor: pointer;
   color: var(--muted);
-  padding-bottom: 5px;
-  background-image: radial-gradient(circle, rgb(220 215 201 / 0.55) 0 0.7px, transparent 1px);
-  background-size: 3px 3px;
-  background-repeat: repeat-x;
-  background-position: 0 100%;
+  padding: 3px;
 }
 
 button.door:hover,
 button.door:focus-visible,
 button.door.on {
   color: var(--cream);
-  background-image: radial-gradient(circle, rgb(240 110 97 / 0.9) 0 0.7px, transparent 1px);
-  text-shadow: var(--glow-1);
 }
 
 button.door:focus-visible {
@@ -592,6 +601,7 @@ button.door:focus-visible {
 .palette-prompt input {
   all: unset;
   flex: 1;
+  cursor: text;
   color: var(--cream);
   caret-color: var(--warm-coral);
 }
@@ -769,10 +779,6 @@ button.door:focus-visible {
     display: block;
   }
 
-  button.door.fireworks {
-    padding: 3px;
-    background-image: none;
-  }
 
   .page {
     padding-top: 72px;

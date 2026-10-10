@@ -33,9 +33,7 @@ const LangButton = ({ code, current }: { code: Language; current: boolean }) => 
 const FireworksButton = () => {
   const crt = useCrt()
   const { t } = useTranslation()
-  const label = t('footer.fireworks')
   const [running, setRunning] = useState(false)
-  const [text, trigger] = useScramble(label, crt.reduceMotion)
 
   useEffect(
     () =>
@@ -49,14 +47,11 @@ const FireworksButton = () => {
     <button
       type="button"
       className={running ? 'door fireworks on' : 'door fireworks'}
-      aria-label={label}
+      aria-label={t('footer.fireworks')}
       aria-pressed={running}
-      onPointerEnter={trigger}
-      onFocus={trigger}
       onClick={() => crt.launchFireworks()}
     >
-      <span className="label-long">{text}</span>
-      <span className="label-short dot-icon dot-icon-fireworks" aria-hidden="true" />
+      <span className="dot-icon dot-icon-fireworks" aria-hidden="true" />
     </button>
   )
 }
