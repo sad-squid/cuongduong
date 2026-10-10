@@ -1322,6 +1322,29 @@ html:has(.screen.playing) body {
   background: color-mix(in srgb, var(--warm-coral) calc(var(--near, 0) * 100%), var(--muted));
 }
 
+@media (min-width: 721px) {
+  .section-dots {
+    right: calc(12px + env(safe-area-inset-right, 0px));
+  }
+
+  .section-dots li + li {
+    margin-top: 0;
+  }
+
+  .section-dot {
+    height: 26px;
+  }
+
+  .section-dot::before {
+    width: calc(7px + var(--near, 0) * 5px);
+    height: calc(7px + var(--near, 0) * 5px);
+  }
+
+  .section-now {
+    font-size: 12px;
+  }
+}
+
 .section-dot:focus-visible {
   outline: 2px solid var(--warm-coral);
   outline-offset: -2px;
