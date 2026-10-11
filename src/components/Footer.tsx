@@ -60,6 +60,7 @@ const LangCycle = ({ current }: { current: Language }) => {
 }
 
 const POP_MS = 2400
+const JUST_OPENED_MS = 250
 
 const SoundControl = () => {
   const crt = useCrt()
@@ -70,6 +71,8 @@ const SoundControl = () => {
   const [pop, setPop] = useState<'open' | 'closing' | null>(null)
   const timer = useRef(0)
   const held = useRef(false)
+  const fresh = useRef(false)
+  const freshTimer = useRef(0)
   const audible = state.on && (state.sfx || state.music)
 
   useEffect(() => {
@@ -86,7 +89,13 @@ const SoundControl = () => {
     [crt],
   )
 
-  useEffect(() => () => window.clearTimeout(timer.current), [])
+  useEffect(
+    () => () => {
+      window.clearTimeout(timer.current)
+      window.clearTimeout(freshTimer.current)
+    },
+    [],
+  )
 
   const close = () => {
     window.clearTimeout(timer.current)
@@ -106,6 +115,13 @@ const SoundControl = () => {
     held.current = on
     if (on) {
       window.clearTimeout(timer.current)
+      if (pop !== 'open') {
+        fresh.current = true
+        window.clearTimeout(freshTimer.current)
+        freshTimer.current = window.setTimeout(() => {
+          fresh.current = false
+        }, JUST_OPENED_MS)
+      }
       setPop('open')
     } else close()
   }
@@ -125,10 +141,14 @@ const SoundControl = () => {
     changed()
   }
 
-  const toggle = () => {
-    enable(!audible)
-    open()
+  const shut = () => {
+    window.clearTimeout(timer.current)
+    held.current = false
+    setPop('closing')
+    timer.current = window.setTimeout(() => setPop(null), 220)
   }
+
+  const toggle = () => (pop === 'open' && !fresh.current ? shut() : open())
 
   const pick = (kind: 'sfx' | 'music') => {
     if (!crt.sound.enabled) {
@@ -169,12 +189,13 @@ const SoundControl = () => {
       onPointerLeave={() => hold(false)}
       onFocus={() => hold(true)}
       onBlur={(e) => (e.currentTarget.contains(e.relatedTarget) ? undefined : hold(false))}
+      onKeyDown={(e) => (e.key === 'Escape' && pop === 'open' ? shut() : undefined)}
     >
       <button
         type="button"
         className={audible ? 'icon-door sound on' : 'icon-door sound'}
         aria-label={t('footer.sound')}
-        aria-pressed={audible}
+        aria-expanded={pop === 'open'}
         onClick={toggle}
         onContextMenu={(e) => {
           e.preventDefault()
