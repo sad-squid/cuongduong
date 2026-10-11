@@ -36,6 +36,39 @@ const person = {
   sameAs: [links.github, links.linkedin],
 }
 
+const { '@context': context, ...personNode } = person
+
+const website = {
+  '@type': 'WebSite',
+  '@id': `${seo.site}/#website`,
+  url: `${seo.site}/`,
+  name: 'Cuong Duong',
+  alternateName: ['cuongduong.dev', 'Dương Trí Cường'],
+  inLanguage: langs,
+  publisher: { '@id': person['@id'] },
+}
+
+const graphFor = (lang, page, title) => ({
+  '@context': context,
+  '@graph': [
+    personNode,
+    ...(page === 'home' ? [website] : []),
+    ...(page === 'about'
+      ? [
+          {
+            '@type': 'ProfilePage',
+            '@id': `${urlFor(lang, page)}#profile`,
+            url: urlFor(lang, page),
+            name: title,
+            inLanguage: lang,
+            isPartOf: { '@id': website['@id'] },
+            mainEntity: { '@id': person['@id'] },
+          },
+        ]
+      : []),
+  ],
+})
+
 const stripHead = (html) =>
   html
     .replace(/\s*<title>[\s\S]*?<\/title>/, '')
@@ -86,7 +119,7 @@ for (const lang of langs) {
     const heading = page === 'home' ? names[lang] : `${copy[page].title} · ${names[lang]}`
     const alternates = [...langs.map((l) => [l, urlFor(l, page)]), ['x-default', urlFor('en', page)]]
     const body = `<div class="sr-only"><h1>${escape(heading)}</h1><p>${escape(description)}</p><nav>${nav}</nav></div>`
-    write(fileFor(lang, page), render({ lang, title, description, url: urlFor(lang, page), alternates, body, jsonLd: person }))
+    write(fileFor(lang, page), render({ lang, title, description, url: urlFor(lang, page), alternates, body, jsonLd: graphFor(lang, page, title) }))
   }
 }
 
