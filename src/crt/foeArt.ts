@@ -64,29 +64,6 @@ export const ONIGIRI: GridSprite = {
   ],
 }
 
-export const CHAIR: GridSprite = {
-  name: 'office chair',
-  crisp: true,
-  palette: ['#9A958B', '#C9C4B8', '#6B6761', '#DCD7C9', '#F06E61'],
-  grid: [
-    '...AAAAAAAA...',
-    '..AAAAAAAAAA..',
-    '..AA.AAAA.AA..',
-    '..AAAAAAAAAA..',
-    '..AAAEEEEAAA..',
-    '..AAAE..EAAA..',
-    '...AAAAAAAA...',
-    'B....CCCC....B',
-    'BBBBBBBBBBBBBB',
-    '.BBBBBBBBBBBB.',
-    '......CC......',
-    '......CC......',
-    '..CCCCCCCCCC..',
-    '.C....CC....C.',
-    'D.....DD.....D',
-  ],
-}
-
 export const SOCK: GridSprite = {
   name: 'angry sock',
   crisp: true,
@@ -199,13 +176,12 @@ export const BIG_FACE: GridSprite = {
   ],
 }
 
-export const FOE_ROSTER: GridSprite[] = [DUCK, TOASTER, ONIGIRI, CHAIR, SOCK, UFO_CAT]
+export const FOE_ROSTER: GridSprite[] = [DUCK, TOASTER, ONIGIRI, SOCK, UFO_CAT]
 
 export const FOE_ART: Record<string, GridSprite> = {
   duck: DUCK,
   toaster: TOASTER,
   onigiri: ONIGIRI,
-  chair: CHAIR,
   sock: SOCK,
   ufo: UFO_CAT,
   bug: BUG,

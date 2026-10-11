@@ -1,6 +1,6 @@
 import { COLORS } from './tokens'
 import { SPRITES, type GridSprite } from './sprites'
-import { BULLET_ART, BUG, DUCK, FOE_ROSTER, BIG_FACE, CHAIR, ONIGIRI, SOCK, TOASTER, UFO_CAT, VENDING, type BulletShape } from './foeArt'
+import { BULLET_ART, BUG, DUCK, FOE_ROSTER, BIG_FACE, ONIGIRI, SOCK, TOASTER, UFO_CAT, VENDING, type BulletShape } from './foeArt'
 import { POWERS, TIMED_SLOTS, dropChance, pickPower, pityKills, type PowerType } from './powers'
 import { bulletCap, enrageCap, enrageGap, patternsFor, planWave, shieldHits, shieldMs, volleyRate, type BossKind, type Formation, type Pattern, type WavePlan } from './waves'
 
@@ -518,7 +518,7 @@ export class Invaders {
       for (let row = 0; row < rows; row++) {
         const rowSprite = pool[row % pool.length]
         for (let col = 0; col < cols; col++) {
-          const sprite = f === 'swarm' ? BUG : f === 'chonk' ? pick([TOASTER, ONIGIRI, CHAIR, DUCK, UFO_CAT, SOCK]) : rowSprite
+          const sprite = f === 'swarm' ? BUG : f === 'chonk' ? pick([TOASTER, ONIGIRI, DUCK, UFO_CAT, SOCK]) : rowSprite
           const points = f === 'swarm' ? 5 : f === 'chonk' ? 50 : f === 'minis' ? 15 : Math.max(10, 30 - row * 10)
           const foe = this.foe(sprite, mult, 'grid', row * cols + col, plan.hp, points, f === 'swarm' ? 0.22 : f === 'chonk' ? 1.6 : f === 'minis' ? 0.7 : 1)
           foe.hx = col * sx
@@ -535,7 +535,7 @@ export class Invaders {
     } else if (f === 'rain') {
       const gap = Math.max(160, 420 - this.wave * 14)
       for (let i = 0; i < plan.count; i++) {
-        const foe = this.foe(pick([SOCK, SOCK, CHAIR, ONIGIRI]), mult, 'rain', i, plan.hp, 20, 0.7)
+        const foe = this.foe(pick([SOCK, SOCK, ONIGIRI]), mult, 'rain', i, plan.hp, 20, 0.7)
         foe.spawnAt = now + READY_MS + i * gap
         this.rainReset(foe)
         foe.y = -9999
