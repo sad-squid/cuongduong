@@ -8,7 +8,7 @@ export type Chunk =
 
 type Word = { start: number; end: number; left: number; top: number; right: number; bottom: number }
 
-export const SCRAMBLE_GLYPHS: Record<string, string> = {
+const SCRAMBLE_GLYPHS: Record<string, string> = {
   en: 'abcdefghijklmnopqrstuvwxyz',
   ja: 'あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん',
   vi: 'aăâbcdđeêghiklmnoôơpqrstuưvxyàảãáạằắặầấậèẻéẹềếệìíịòỏóọồốộờớợùủúụừứựỳýỵ',

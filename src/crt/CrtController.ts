@@ -9,7 +9,7 @@ import type { HomeMusic } from './HomeMusic'
 
 type Shows = typeof import('./musicShows')
 
-export type CrtEvent =
+type CrtEvent =
   | { type: 'activity' }
   | { type: 'pulse'; moved: number; words: number }
   | { type: 'lowPower'; on: boolean }

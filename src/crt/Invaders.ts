@@ -61,9 +61,9 @@ export type WaveInfo = { wave: number; formation: Formation; boss: BossKind | nu
 
 export type SoundCue = 'shot' | 'laser' | 'kill' | 'boom' | 'hurt' | 'shield' | 'power' | 'glitch' | 'clear' | 'over' | 'rocket' | 'burst' | 'boss' | 'enrage' | 'wow'
 
-export type InvadersStats = { foes: number; bullets: number; shots: number; particles: number; words: number; enraged: number; wave: number; formation: Formation; p95: number; work95: number }
+type InvadersStats = { foes: number; bullets: number; shots: number; particles: number; words: number; enraged: number; wave: number; formation: Formation; p95: number; work95: number }
 
-export type InvadersEvents = {
+type InvadersEvents = {
   onHud: (hud: InvadersHud) => void
   onOver: (score: number, wave: number) => void
   onHit: (x: number, y: number) => void
@@ -126,7 +126,7 @@ const rand = (a: number, b: number) => a + Math.random() * (b - a)
 
 const pick = <T,>(list: readonly T[]) => list[Math.floor(Math.random() * list.length)]
 
-export const shrinkSprite = (sprite: GridSprite) => {
+const shrinkSprite = (sprite: GridSprite) => {
   const rows = sprite.grid.length
   const cols = sprite.grid[0].length
   const out: { r: number; c: number; k: number }[] = []

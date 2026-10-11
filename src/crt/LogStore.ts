@@ -1,4 +1,4 @@
-export type LogLine = { key: number; text: string; opacity: number; human: boolean }
+type LogLine = { key: number; text: string; opacity: number; human: boolean }
 
 const VISIBLE = 7
 const QUIET_MS = 3000

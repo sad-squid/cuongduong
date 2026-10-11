@@ -7,8 +7,6 @@ export const NAMES = {
 
 export const NAME_ORDER = ['en', 'vi', 'ja', 'zh'] as const
 
-export type NameKey = (typeof NAME_ORDER)[number]
-
 export const LINKS = {
   github: 'https://github.com/sad-squid/',
   linkedin: 'https://linkedin.com/in/cuongduong-dev/',

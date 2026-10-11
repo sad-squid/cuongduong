@@ -4,7 +4,7 @@ import { toLanguage } from '@/i18n'
 import SEO from '@/content/seo.json'
 import { useSection } from '@/app/section'
 
-export type SeoPage = keyof typeof SEO.pages.en
+type SeoPage = keyof typeof SEO.pages.en
 
 export const useDocumentTitle = (title: string) => {
   useEffect(() => {

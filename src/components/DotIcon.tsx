@@ -1,6 +1,6 @@
 import { useId, type ReactNode } from 'react'
 
-export type IconName = 'github' | 'linkedin' | 'fireworks' | 'chevron' | 'globe' | 'sound' | 'muted'
+type IconName = 'github' | 'linkedin' | 'fireworks' | 'chevron' | 'globe' | 'sound' | 'muted'
 
 const SIZE = 22
 const PITCH = 2

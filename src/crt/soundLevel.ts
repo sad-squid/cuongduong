@@ -21,7 +21,7 @@ export const writeLevel = (value: number) => {
 
 export const levelToVolume = (level: number) => (level / 100) * MAX_VOLUME
 
-export type SoundPrefs = { sfx: boolean; music: boolean }
+type SoundPrefs = { sfx: boolean; music: boolean }
 const PREFS_KEY = 'cd-sound-prefs'
 
 export const readPrefs = (): SoundPrefs => {

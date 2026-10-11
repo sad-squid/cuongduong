@@ -1,8 +1,8 @@
 import { COLORS, DOT, NAME_FONT_STACK, PHYSICS, gaussianStream, jitterTear, type Tear } from './tokens'
 
-export type GenerateResult = { points: number; steps: number; ms: number; seed: number; carried?: boolean }
+type GenerateResult = { points: number; steps: number; ms: number; seed: number; carried?: boolean }
 
-export type LatticeAnchor = { left: number; top: number; spacing: number }
+type LatticeAnchor = { left: number; top: number; spacing: number }
 
 export type FieldLayout = { align: 'center' | 'left'; inset: number; fontSize: (width: number) => number; weight: number }
 

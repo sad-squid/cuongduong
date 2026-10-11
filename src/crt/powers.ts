@@ -4,7 +4,7 @@ export const POWER_TYPES = ['spread', 'rapid', 'laser', 'hanabi', 'shield', 'wow
 
 export type PowerType = (typeof POWER_TYPES)[number]
 
-export type PowerSpec = { glyph: string; tint: string; ms: number; weight: number }
+type PowerSpec = { glyph: string; tint: string; ms: number; weight: number }
 
 export const POWERS: Record<PowerType, PowerSpec> = {
   spread: { glyph: 'Y', tint: COLORS.beige, ms: 8000, weight: 10 },
@@ -22,11 +22,11 @@ export const POWERS: Record<PowerType, PowerSpec> = {
 
 export const dropChance = (wave: number) => Math.min(0.32, 0.15 + 0.016 * (wave - 1))
 
-export const PITY_KILLS = 12
+const PITY_KILLS = 12
 
 export const pityKills = (wave: number) => Math.max(6, PITY_KILLS - Math.floor(wave / 2))
 
-export const SHIELD_FROM_WAVE = 2
+const SHIELD_FROM_WAVE = 2
 
 export const pickPower = (random = Math.random, wave = SHIELD_FROM_WAVE) => {
   const pool = POWER_TYPES.filter((type) => type !== 'shield' || wave >= SHIELD_FROM_WAVE)

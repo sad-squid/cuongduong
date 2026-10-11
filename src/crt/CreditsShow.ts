@@ -8,7 +8,7 @@ const TICK_MS = 100
 const LEAD_MS = 1000
 const SPB = BEAT_MS / 1000
 
-export type ShowTrace = { kicks: number[]; bursts: number[]; audioBars: number[] }
+type ShowTrace = { kicks: number[]; bursts: number[]; audioBars: number[] }
 
 const spread = (w: number) => Math.random() * w * 2 - w
 

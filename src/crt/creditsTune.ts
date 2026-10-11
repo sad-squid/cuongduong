@@ -6,7 +6,7 @@ export const BEAT_MS = 60000 / BPM
 const BAR_BEATS = 4
 export const BAR_MS = BAR_BEATS * BEAT_MS
 const BARS = 16
-export const ENDS: readonly number[] = [3, 7, 11, 15]
+const ENDS: readonly number[] = [3, 7, 11, 15]
 export const WHISTLE_LEAD = 0.6
 
 const KICKS = [0, 1.5, 3]

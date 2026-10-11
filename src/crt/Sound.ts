@@ -5,12 +5,9 @@ export type SoundName =
   | 'tear'
   | 'generate'
   | 'tick'
-  | 'flight'
-  | 'lang'
   | 'rocket'
   | 'burst'
   | 'sprite'
-  | 'hover'
   | 'toggle'
   | 'shot'
   | 'hurt'
@@ -18,17 +15,14 @@ export type SoundName =
   | 'over'
   | 'clear'
 
-export type Variant = 'A' | 'B' | 'C'
-
 export type PlayOptions = {
   intensity?: number
   pan?: number
-  variant?: Variant
   duration?: number
   landing?: boolean
 }
 
-export type ChainSettings = {
+type ChainSettings = {
   volume: number
   bits: number
   rate: number
@@ -42,17 +36,8 @@ export type SoundApi = {
   readonly musicActive: boolean
   setSfx(on: boolean): void
   setMusic(on: boolean): void
-  readonly muted: boolean
-  readonly room: boolean
-  readonly state: AudioContextState | 'none'
-  readonly variants: Readonly<Record<SoundName, Variant>>
-  readonly roomVariant: Variant
-  readonly settings: Readonly<ChainSettings>
   setEnabled(on: boolean): void
-  setMuted(muted: boolean): void
-  setRoom(on: boolean, variant?: Variant): void
   play(name: SoundName, opts?: PlayOptions): void
-  setVariant(name: SoundName, variant: Variant): void
   setSettings(next: Partial<ChainSettings>): void
   audioClock(): { time: number; latency: number } | null
   wake(): void
@@ -90,48 +75,7 @@ const musicPulse = (ctx: BaseAudioContext, duty: number) => {
   return ctx.createPeriodicWave(real, imag)
 }
 
-
-export const SOUND_NAMES: readonly SoundName[] = [
-  'blast',
-  'tear',
-  'generate',
-  'tick',
-  'flight',
-  'lang',
-  'rocket',
-  'burst',
-  'sprite',
-  'hover',
-  'toggle',
-  'shot',
-  'hurt',
-  'powerup',
-  'over',
-  'clear',
-]
-
-export const DEFAULT_SETTINGS: ChainSettings = { volume: 0.3, bits: 10, rate: 18000, tone: 2800 }
-
-export const DEFAULT_VARIANTS: Record<SoundName, Variant> = {
-  blast: 'A',
-  tear: 'A',
-  generate: 'A',
-  tick: 'A',
-  flight: 'A',
-  lang: 'A',
-  rocket: 'A',
-  burst: 'A',
-  sprite: 'A',
-  hover: 'A',
-  toggle: 'A',
-  shot: 'A',
-  hurt: 'A',
-  powerup: 'A',
-  over: 'A',
-  clear: 'A',
-}
-
-export const DEFAULT_ROOM_VARIANT: Variant = 'A'
+const DEFAULT_SETTINGS: ChainSettings = { volume: 0.3, bits: 10, rate: 18000, tone: 2800 }
 
 type Limit = { max: number; gap: number; steal: boolean }
 
@@ -140,12 +84,9 @@ const LIMITS: Record<SoundName, Limit> = {
   tear: { max: 2, gap: 0.08, steal: true },
   generate: { max: 3, gap: 0.08, steal: true },
   tick: { max: 3, gap: 0.03, steal: false },
-  flight: { max: 1, gap: 0.1, steal: true },
-  lang: { max: 1, gap: 0.1, steal: true },
   rocket: { max: 3, gap: 0.08, steal: true },
   burst: { max: 4, gap: 0.05, steal: true },
   sprite: { max: 2, gap: 0.1, steal: true },
-  hover: { max: 1, gap: 0.08, steal: false },
   toggle: { max: 1, gap: 0.1, steal: true },
   shot: { max: 2, gap: 0.12, steal: true },
   hurt: { max: 1, gap: 0.3, steal: true },
@@ -158,46 +99,26 @@ const MAX_VOICES = 14
 
 const LEVEL_SPREAD = 0.1
 
-const PITCH_SPREAD: Record<SoundName, number> = {
-  blast: 0.03,
-  tear: 0.03,
-  generate: 0.03,
-  tick: 0.03,
-  flight: 0.03,
-  lang: 0.03,
-  rocket: 0.03,
-  burst: 0.03,
-  sprite: 0.03,
-  hover: 0.03,
-  toggle: 0.03,
-  shot: 0.03,
-  hurt: 0.03,
-  powerup: 0.03,
-  over: 0.03,
-  clear: 0.03,
+const PITCH_SPREAD = 0.03
+
+const TRIM: Record<SoundName, number> = {
+  blast: 0.85,
+  tear: 1.25,
+  generate: 0.6,
+  tick: 1.8,
+  rocket: 0.95,
+  burst: 0.62,
+  sprite: 0.57,
+  toggle: 1.9,
+  shot: 0.5,
+  hurt: 0.75,
+  powerup: 0.85,
+  over: 0.85,
+  clear: 1,
 }
 
-const TRIM: Record<SoundName, Record<Variant, number>> = {
-  blast: { A: 0.85, B: 0.75, C: 2.4 },
-  tear: { A: 1.25, B: 2, C: 1.15 },
-  generate: { A: 0.6, B: 0.57, C: 0.62 },
-  tick: { A: 1.8, B: 2, C: 0.7 },
-  flight: { A: 0.85, B: 0.5, C: 0.75 },
-  lang: { A: 2.7, B: 1.45, C: 3.5 },
-  rocket: { A: 0.95, B: 0.55, C: 1.15 },
-  burst: { A: 0.62, B: 0.57, C: 0.73 },
-  sprite: { A: 0.57, B: 0.6, C: 0.72 },
-  hover: { A: 1.5, B: 2, C: 0.7 },
-  toggle: { A: 1.9, B: 2, C: 2 },
-  shot: { A: 0.5, B: 0.4, C: 0.55 },
-  hurt: { A: 0.75, B: 0.75, C: 0.75 },
-  powerup: { A: 0.85, B: 0.85, C: 0.85 },
-  over: { A: 0.85, B: 0.9, C: 1 },
-  clear: { A: 1, B: 1, C: 1 },
-}
-
-type Shape = 'sine' | 'triangle' | 'square' | 'p12' | 'p25'
-type NoiseKind = 'white' | 'pink' | 'brown' | 'crackle' | 'vinyl' | 'grit'
+type Shape = 'sine' | 'triangle' | 'square' | 'p25'
+type NoiseKind = 'white' | 'pink' | 'brown' | 'grit'
 type Point = readonly [number, number]
 
 type Kit = {
@@ -213,7 +134,6 @@ type Kit = {
   filt(type: BiquadFilterType, freq: number, q: number): BiquadFilterNode
   flutter(param: AudioParam, t: number, end: number, hz: number, depth: number): void
   wobble(dest: AudioNode, t: number, end: number, hz: number, depth: number): GainNode
-  tail(dest: AudioNode, time: number, feedback: number, wet: number): AudioNode
 }
 
 type SoundFn = (kit: Kit, t: number) => number
@@ -305,296 +225,83 @@ const thump = (kit: Kit, t: number, from: number, to: number, peak: number, rele
   o.connect(kit.filt('lowpass', 520, 0.7)).connect(kit.env(kit.out, t, crunch, 0.004, release * 0.8))
 }
 
-const SOUNDS: Record<SoundName, Record<Variant, SoundFn>> = {
-  blast: {
-    A: (kit, t) => {
-      hit(kit, t, 0.32, 2600, 0.1)
-      tup(kit, 'triangle', 120 + 15 * kit.k, 55, t, 0.6, 0.09, 700)
-      tok(kit, t, 340, 0.14, 0.03)
-      debris(kit, t + 0.008, 0.3, 0.06, 1500)
-      return 0.17
-    },
-    B: (kit, t) => {
-      hit(kit, t, 0.28, 2400, 0.08)
-      tup(kit, 'sine', 100, 48, t, 0.65, 0.1, 600)
-      fz(kit, 'brown', t + 0.005, 0.6, 0.08, 'lowpass', 1200, 0.6)
-      return 0.18
-    },
-    C: (kit, t) => {
-      hit(kit, t, 0.3, 2200)
-      tok(kit, t, 260, 0.2, 0.04)
-      debris(kit, t, 0.36, 0.09, 1800)
-      return 0.17
-    },
+const SOUNDS: Record<SoundName, SoundFn> = {
+  blast: (kit, t) => {
+    hit(kit, t, 0.32, 2600, 0.1)
+    tup(kit, 'triangle', 120 + 15 * kit.k, 55, t, 0.6, 0.09, 700)
+    tok(kit, t, 340, 0.14, 0.03)
+    debris(kit, t + 0.008, 0.3, 0.06, 1500)
+    return 0.17
   },
-  tear: {
-    A: (kit, t) => {
-      hit(kit, t, 0.16, 2400)
-      const o = kit.osc('square', 140, t, t + 0.12)
-      kit.flutter(o.frequency, t, t + 0.12, 35, 16)
-      o.connect(kit.filt('lowpass', 900, 1)).connect(kit.env(kit.out, t, 0.32, 0.004, 0.06))
-      fz(kit, 'white', t, 0.12, 0.04, 'lowpass', 1500, 0.6)
-      return 0.11
-    },
-    B: (kit, t) => {
-      const o = kit.osc('p25', 200, t, t + 0.13)
-      const g = kit.env(kit.out, t, 0.3, 0.004, 0.07)
-      o.connect(kit.filt('lowpass', 1100, 0.8)).connect(kit.wobble(g, t, t + 0.13, 50, 0.8))
-      return 0.12
-    },
-    C: (kit, t) => {
-      kit.osc('square', 120, t, t + 0.13).connect(kit.filt('lowpass', 700, 0.8)).connect(kit.env(kit.out, t, 0.32, 0.004, 0.07))
-      fz(kit, 'brown', t, 0.4, 0.07, 'lowpass', 1500, 0.6)
-      return 0.13
-    },
+  tear: (kit, t) => {
+    hit(kit, t, 0.16, 2400)
+    const o = kit.osc('square', 140, t, t + 0.12)
+    kit.flutter(o.frequency, t, t + 0.12, 35, 16)
+    o.connect(kit.filt('lowpass', 900, 1)).connect(kit.env(kit.out, t, 0.32, 0.004, 0.06))
+    fz(kit, 'white', t, 0.12, 0.04, 'lowpass', 1500, 0.6)
+    return 0.11
   },
-  generate: {
-    A: (kit, t) => {
-      const d = kit.dur
-      settle(kit, t, d, 0.3, 0.26, 1900, 0.5)
-      if (kit.land) landing(kit, t + d * 0.78)
-      return d * 0.78 + 0.15
-    },
-    B: (kit, t) => {
-      const d = kit.dur
-      settle(kit, t, d, 0.22, 0.45, 1800, 0.5)
-      if (kit.land) landing(kit, t + d * 0.78)
-      return d * 0.78 + 0.15
-    },
-    C: (kit, t) => {
-      const d = kit.dur
-      settle(kit, t, d, 0.38, 0.14, 2200, 0.25)
-      if (kit.land) landing(kit, t + d * 0.78)
-      return d * 0.78 + 0.15
-    },
+  generate: (kit, t) => {
+    const d = kit.dur
+    settle(kit, t, d, 0.3, 0.26, 1900, 0.5)
+    if (kit.land) landing(kit, t + d * 0.78)
+    return d * 0.78 + 0.15
   },
-  tick: {
-    A: (kit, t) => {
-      tok(kit, t, 420, 0.08, 0.02)
-      return 0.04
-    },
-    B: (kit, t) => {
-      fz(kit, 'white', t, 0.12, 0.012, 'lowpass', 1200, 0.6)
-      return 0.025
-    },
-    C: (kit, t) => {
-      tup(kit, 'triangle', 300, 200, t, 0.14, 0.02, 900)
-      return 0.04
-    },
+  tick: (kit, t) => {
+    tok(kit, t, 420, 0.08, 0.02)
+    return 0.04
   },
-  flight: {
-    A: (kit, t) => {
-      const d = kit.dur
-      const lp = kit.filt('lowpass', 300, 0.8)
-      sweep(lp.frequency, t, [[d * 0.45, 1200], [d, 500]])
-      kit.noise('white', t, t + d + 0.02).connect(lp).connect(kit.curve(kit.out, t, [[0, 0], [d * 0.4, 0.5], [d, 0]]))
-      return d
-    },
-    B: (kit, t) => {
-      const d = kit.dur
-      const lp = kit.filt('lowpass', 400, 0.8)
-      sweep(lp.frequency, t, [[d * 0.45, 1500], [d, 600]])
-      kit.noise('brown', t, t + d + 0.02).connect(lp).connect(kit.curve(kit.out, t, [[0, 0], [d * 0.4, 0.7], [d, 0]]))
-      return d
-    },
-    C: (kit, t) => {
-      const d = kit.dur
-      const bp = kit.filt('bandpass', 400, 0.7)
-      sweep(bp.frequency, t, [[d * 0.45, 1000], [d, 500]])
-      const g = kit.curve(kit.out, t, [[0, 0], [d * 0.4, 0.55], [d, 0]])
-      kit.noise('white', t, t + d + 0.02).connect(bp).connect(kit.wobble(g, t, t + d + 0.02, 14, 0.3))
-      return d
-    },
+  rocket: (kit, t) => {
+    const d = kit.dur
+    fz(kit, 'brown', t, 0.6, 0.12, 'lowpass', 400, 0.6, 0.01)
+    boom(kit, t, 90, 60, 0.35, 0.1)
+    const lp = kit.filt('lowpass', 250, 0.7)
+    sweep(lp.frequency, t, [[d, 900]])
+    kit.noise('white', t, t + d + 0.02).connect(lp).connect(kit.curve(kit.out, t, [[0, 0], [0.04, 0.2], [d * 0.6, 0.35], [d, 0]]))
+    return d
   },
-  lang: {
-    A: (kit, t) => {
-      hit(kit, t, 0.2, 2600, 0.1)
-      tok(kit, t, 380, 0.22, 0.035)
-      return 0.08
-    },
-    B: (kit, t) => {
-      hit(kit, t, 0.2, 2400)
-      tup(kit, 'triangle', 500, 380, t, 0.3, 0.04, 1000)
-      return 0.08
-    },
-    C: (kit, t) => {
-      tok(kit, t, 330, 0.24, 0.04)
-      fz(kit, 'white', t + 0.02, 0.1, 0.03, 'lowpass', 1500, 0.6)
-      return 0.09
-    },
+  burst: (kit, t) => {
+    boom(kit, t, 70, 40, 0.6 * (0.6 + 0.4 * kit.k), 0.2)
+    tup(kit, 'triangle', 130, 60, t, 0.16, 0.12, 400, 0.01)
+    grit(kit, t + 0.06, 0.55, 0.2, 1800)
+    return 0.45
   },
-  rocket: {
-    A: (kit, t) => {
-      const d = kit.dur
-      fz(kit, 'brown', t, 0.6, 0.12, 'lowpass', 400, 0.6, 0.01)
-      boom(kit, t, 90, 60, 0.35, 0.1)
-      const lp = kit.filt('lowpass', 250, 0.7)
-      sweep(lp.frequency, t, [[d, 900]])
-      kit.noise('white', t, t + d + 0.02).connect(lp).connect(kit.curve(kit.out, t, [[0, 0], [0.04, 0.2], [d * 0.6, 0.35], [d, 0]]))
-      return d
-    },
-    B: (kit, t) => {
-      const d = kit.dur
-      const lp = kit.filt('lowpass', 300, 0.7)
-      sweep(lp.frequency, t, [[d, 900]])
-      kit.noise('brown', t, t + d + 0.02).connect(lp).connect(kit.curve(kit.out, t, [[0, 0], [0.02, 0.6], [d * 0.6, 0.5], [d, 0]]))
-      return d
-    },
-    C: (kit, t) => {
-      const d = kit.dur
-      boom(kit, t, 80, 55, 0.4, 0.09)
-      const bp = kit.filt('bandpass', 300, 1)
-      sweep(bp.frequency, t, [[d, 800]])
-      kit.noise('white', t, t + d + 0.02).connect(bp).connect(kit.curve(kit.out, t, [[0, 0], [0.04, 0.3], [d * 0.6, 0.5], [d, 0]]))
-      return d
-    },
+  sprite: (kit, t) => {
+    boom(kit, t, 75, 40, 0.6, 0.22)
+    tup(kit, 'triangle', 150, 70, t, 0.2, 0.14, 450, 0.01)
+    grit(kit, t + 0.05, 0.5, 0.18, 1800)
+    grit(kit, t + 0.16, 0.3, 0.18, 900)
+    return 0.5
   },
-  burst: {
-    A: (kit, t) => {
-      boom(kit, t, 70, 40, 0.6 * (0.6 + 0.4 * kit.k), 0.2)
-      tup(kit, 'triangle', 130, 60, t, 0.16, 0.12, 400, 0.01)
-      grit(kit, t + 0.06, 0.55, 0.2, 1800)
-      return 0.45
-    },
-    B: (kit, t) => {
-      boom(kit, t, 60, 38, 0.6, 0.22)
-      fz(kit, 'brown', t, 0.45, 0.16, 'lowpass', 300, 0.6, 0.012)
-      grit(kit, t + 0.07, 0.55, 0.2, 1400)
-      return 0.46
-    },
-    C: (kit, t) => {
-      const room = kit.tail(kit.out, 0.1, 0.2, 0.4)
-      boom(kit, t, 70, 40, 0.55, 0.18)
-      grit(kit, t + 0.06, 0.5, 0.16, 1600, room)
-      return 0.5
-    },
+  toggle: (kit, t) => {
+    tok(kit, t, 360, 0.22, 0.03)
+    tok(kit, t + 0.075, 300, 0.2, 0.035)
+    return 0.14
   },
-  sprite: {
-    A: (kit, t) => {
-      boom(kit, t, 75, 40, 0.6, 0.22)
-      tup(kit, 'triangle', 150, 70, t, 0.2, 0.14, 450, 0.01)
-      grit(kit, t + 0.05, 0.5, 0.18, 1800)
-      grit(kit, t + 0.16, 0.3, 0.18, 900)
-      return 0.5
-    },
-    B: (kit, t) => {
-      boom(kit, t, 65, 38, 0.6, 0.22)
-      fz(kit, 'brown', t, 0.5, 0.18, 'lowpass', 350, 0.6, 0.012)
-      grit(kit, t + 0.06, 0.5, 0.18, 1500)
-      grit(kit, t + 0.15, 0.3, 0.16, 1000)
-      return 0.5
-    },
-    C: (kit, t) => {
-      const room = kit.tail(kit.out, 0.1, 0.2, 0.4)
-      boom(kit, t, 75, 40, 0.55, 0.2)
-      grit(kit, t + 0.05, 0.45, 0.16, 1700, room)
-      grit(kit, t + 0.14, 0.28, 0.14, 1000, room)
-      return 0.5
-    },
+  shot: (kit, t) => SOUNDS.rocket(kit, t),
+  hurt: (kit, t) => {
+    thump(kit, t, 120, 42, 0.62, 0.2, 0.2)
+    grit(kit, t + 0.012, 0.42, 0.16, 1300)
+    return 0.38
   },
-  hover: {
-    A: (kit, t) => {
-      tok(kit, t, 400, 0.035, 0.02)
-      return 0.04
-    },
-    B: (kit, t) => {
-      fz(kit, 'white', t, 0.06, 0.008, 'lowpass', 1000, 0.6)
-      return 0.02
-    },
-    C: (kit, t) => {
-      tup(kit, 'triangle', 250, 200, t, 0.06, 0.015, 800)
-      return 0.03
-    },
+  powerup: (kit, t) => {
+    tok(kit, t, 300, 0.1, 0.025)
+    return arp(kit, t, [196, 247, 294], 0.07, 0.3, 0.06, 0.1)
   },
-  toggle: {
-    A: (kit, t) => {
-      tok(kit, t, 360, 0.22, 0.03)
-      tok(kit, t + 0.075, 300, 0.2, 0.035)
-      return 0.14
-    },
-    B: (kit, t) => {
-      tok(kit, t, 300, 0.2, 0.03)
-      tok(kit, t + 0.075, 400, 0.2, 0.035)
-      return 0.14
-    },
-    C: (kit, t) => {
-      hit(kit, t, 0.2, 2400)
-      tok(kit, t, 320, 0.2, 0.03)
-      tok(kit, t + 0.08, 280, 0.18, 0.035)
-      return 0.15
-    },
+  over: (kit, t) => {
+    const end = arp(kit, t, [294, 247, 196, 147], 0.13, 0.28, 0.1, 0.28, 0.3, 1100)
+    boom(kit, t + 0.39, 80, 45, 0.3, 0.25)
+    return end
   },
-  shot: {
-    A: (kit, t) => SOUNDS.rocket.A(kit, t),
-    B: (kit, t) => SOUNDS.rocket.B(kit, t),
-    C: (kit, t) => SOUNDS.rocket.C(kit, t),
-  },
-  hurt: {
-    A: (kit, t) => {
-      thump(kit, t, 120, 42, 0.62, 0.2, 0.2)
-      grit(kit, t + 0.012, 0.42, 0.16, 1300)
-      return 0.38
-    },
-    B: (kit, t) => {
-      thump(kit, t, 110, 40, 0.58, 0.18, 0.12)
-      const o = kit.osc('square', 150, t, t + 0.2)
-      o.frequency.exponentialRampToValueAtTime(70, t + 0.16)
-      kit.flutter(o.frequency, t, t + 0.2, 28, 12)
-      o.connect(kit.filt('lowpass', 650, 0.8)).connect(kit.env(kit.out, t, 0.22, 0.004, 0.1))
-      grit(kit, t + 0.01, 0.35, 0.14, 1100)
-      return 0.36
-    },
-    C: (kit, t) => {
-      thump(kit, t, 115, 55, 0.5, 0.1, 0.14)
-      thump(kit, t + 0.1, 90, 38, 0.5, 0.16, 0.12)
-      grit(kit, t + 0.02, 0.38, 0.2, 1200)
-      return 0.42
-    },
-  },
-  powerup: {
-    A: (kit, t) => {
-      tok(kit, t, 300, 0.1, 0.025)
-      return arp(kit, t, [196, 247, 294], 0.07, 0.3, 0.06, 0.1)
-    },
-    B: (kit, t) => {
-      tok(kit, t, 300, 0.1, 0.025)
-      return arp(kit, t, [220, 277, 330], 0.065, 0.26, 0.055, 0.1, 0.6, 1100)
-    },
-    C: (kit, t) => {
-      tok(kit, t, 280, 0.1, 0.025)
-      return arp(kit, t, [196, 294], 0.08, 0.32, 0.07, 0.12, 0.2)
-    },
-  },
-  over: {
-    A: (kit, t) => {
-      const end = arp(kit, t, [294, 247, 196, 147], 0.13, 0.28, 0.1, 0.28, 0.3, 1100)
-      boom(kit, t + 0.39, 80, 45, 0.3, 0.25)
-      return end
-    },
-    B: (kit, t) => arp(kit, t, [330, 277, 220, 165], 0.14, 0.26, 0.1, 0.3, 0.5, 1000),
-    C: (kit, t) => {
-      const end = arp(kit, t, [294, 220, 147], 0.16, 0.3, 0.12, 0.3, 0.2, 1000)
-      grit(kit, t + 0.32, 0.25, 0.25, 900)
-      return end
-    },
-  },
-  clear: {
-    A: (kit, t) => {
-      const end = arp(kit, t, [196, 294], 0.1, 0.24, 0.08, 0.16)
-      landing(kit, t + 0.28)
-      return Math.max(end, 0.43)
-    },
-    B: (kit, t) => {
-      settle(kit, t, 0.5, 0.18, 0.2, 1600, 0.5)
-      return arp(kit, t + 0.05, [220, 330], 0.1, 0.22, 0.08, 0.16, 0.5, 1100) + 0.05
-    },
-    C: (kit, t) => arp(kit, t, [196, 247, 294, 392], 0.08, 0.22, 0.06, 0.18, 0.2, 1100),
+  clear: (kit, t) => {
+    const end = arp(kit, t, [196, 294], 0.1, 0.24, 0.08, 0.16)
+    landing(kit, t + 0.28)
+    return Math.max(end, 0.43)
   },
 }
 
 const DEFAULT_DURATIONS: Partial<Record<SoundName, number>> = {
   generate: 0.9,
-  flight: 0.3,
   rocket: 0.6,
   shot: 0.14,
 }
@@ -697,17 +404,6 @@ const makeBuffers = (ctx: BaseAudioContext): Buffers => {
     }
     normalize(d, 0.9)
   })
-  const impulses = (density: number) => (d: Float32Array): void => {
-    for (let i = 0; i < d.length - 24; i += 1) {
-      if (Math.random() < density) {
-        const a = (Math.random() < 0.5 ? -1 : 1) * Math.pow(Math.random(), 1.5)
-        const len = 6 + Math.floor(Math.random() * 16)
-        for (let j = 0; j < len; j += 1) d[i + j] = (d[i + j] ?? 0) + a * Math.exp(-j / (len / 3)) * Math.cos(j * 1.3)
-      }
-    }
-    normalize(d, 0.9)
-  }
-  const crackle = make(impulses(0.004))
   const grit = make((d) => {
     for (let i = 0; i < d.length - 120; i += 1) {
       if (Math.random() < 0.0016) {
@@ -719,8 +415,7 @@ const makeBuffers = (ctx: BaseAudioContext): Buffers => {
     }
     normalize(d, 0.9)
   })
-  const vinyl = make(impulses(0.0012))
-  return { white, pink, brown, crackle, vinyl, grit }
+  return { white, pink, brown, grit }
 }
 
 const pulseWave = (ctx: BaseAudioContext, duty: number): PeriodicWave => {
@@ -734,21 +429,18 @@ const pulseWave = (ctx: BaseAudioContext, duty: number): PeriodicWave => {
   return ctx.createPeriodicWave(real, imag)
 }
 
-type RoomHandle = { stop(at: number): void }
-
 type Engine = {
   ctx: BaseAudioContext
   master: GainNode
   ready: Promise<void>
   apply(s: ChainSettings): void
-  voice(name: SoundName, variant: Variant, t: number, opts: PlayOptions): { gain: GainNode; end: number }
-  room(variant: Variant, t: number): RoomHandle
+  voice(name: SoundName, t: number, opts: PlayOptions): { gain: GainNode; end: number }
   musicInput(): GainNode
 }
 
 const createEngine = (ctx: BaseAudioContext, initial: ChainSettings): Engine => {
   const buffers = makeBuffers(ctx)
-  const waves = { p12: pulseWave(ctx, 0.125), p25: pulseWave(ctx, 0.25) }
+  const waves = { p25: pulseWave(ctx, 0.25) }
   const bus = ctx.createGain()
   const shaper = ctx.createWaveShaper()
   const lowpass = ctx.createBiquadFilter()
@@ -795,7 +487,7 @@ const createEngine = (ctx: BaseAudioContext, initial: ChainSettings): Engine => 
 
   const osc = (shape: Shape, freq: number, t: number, end: number): OscillatorNode => {
     const o = ctx.createOscillator()
-    if (shape === 'p12' || shape === 'p25') o.setPeriodicWave(waves[shape])
+    if (shape === 'p25') o.setPeriodicWave(waves.p25)
     else o.type = shape
     o.frequency.setValueAtTime(freq, t)
     o.start(t)
@@ -854,27 +546,11 @@ const createEngine = (ctx: BaseAudioContext, initial: ChainSettings): Engine => 
     return g
   }
 
-  const tail = (dest: AudioNode, time: number, feedback: number, wet: number): AudioNode => {
-    const input = ctx.createGain()
-    const delay = ctx.createDelay(1)
-    delay.delayTime.value = time
-    const fb = ctx.createGain()
-    fb.gain.value = feedback
-    const damp = filt('lowpass', 1600, 0.4)
-    const out = ctx.createGain()
-    out.gain.value = wet
-    input.connect(dest)
-    input.connect(delay).connect(damp).connect(fb).connect(delay)
-    damp.connect(out).connect(dest)
-    return input
-  }
-
-  const voice = (name: SoundName, variant: Variant, t: number, opts: PlayOptions): { gain: GainNode; end: number } => {
+  const voice = (name: SoundName, t: number, opts: PlayOptions): { gain: GainNode; end: number } => {
     const k = clamp(opts.intensity ?? 1, 0, 1)
     const gain = ctx.createGain()
-    const spread = PITCH_SPREAD[name]
-    const cents = 1200 * Math.log2(1 + rand(-spread, spread))
-    gain.gain.value = (0.45 + 0.55 * k) * TRIM[name][variant] * rand(1 - LEVEL_SPREAD, 1 + LEVEL_SPREAD)
+    const cents = 1200 * Math.log2(1 + rand(-PITCH_SPREAD, PITCH_SPREAD))
+    gain.gain.value = (0.45 + 0.55 * k) * TRIM[name] * rand(1 - LEVEL_SPREAD, 1 + LEVEL_SPREAD)
     const pan = ctx.createStereoPanner()
     pan.pan.value = clamp(opts.pan ?? 0, -1, 1)
     gain.connect(pan).connect(bus)
@@ -888,55 +564,9 @@ const createEngine = (ctx: BaseAudioContext, initial: ChainSettings): Engine => 
       f.detune.value = cents
       return f
     }
-    const kit: Kit = { ctx, out: gain, k, dur: opts.duration ?? DEFAULT_DURATIONS[name] ?? 0.5, land: opts.landing ?? true, osc: vOsc, env, curve, noise, filt: vFilt, flutter, wobble, tail }
-    const len = SOUNDS[name][variant](kit, t)
+    const kit: Kit = { ctx, out: gain, k, dur: opts.duration ?? DEFAULT_DURATIONS[name] ?? 0.5, land: opts.landing ?? true, osc: vOsc, env, curve, noise, filt: vFilt, flutter, wobble }
+    const len = SOUNDS[name](kit, t)
     return { gain, end: t + len }
-  }
-
-  const room = (variant: Variant, t: number): RoomHandle => {
-    const g = ctx.createGain()
-    g.gain.setValueAtTime(0, t)
-    g.gain.setTargetAtTime(1, t, 0.5)
-    g.connect(bus)
-    const sources: AudioScheduledSourceNode[] = []
-    const loop = (kind: NoiseKind, chain: AudioNode, level: number): void => {
-      const s = ctx.createBufferSource()
-      s.buffer = buffers[kind]
-      s.loop = true
-      s.start(t, Math.random() * 1.8)
-      const lg = ctx.createGain()
-      lg.gain.value = level
-      s.connect(chain)
-      chain.connect(lg).connect(g)
-      sources.push(s)
-    }
-    const hum = (f: number, level: number): void => {
-      const o = ctx.createOscillator()
-      o.frequency.value = f
-      o.start(t)
-      const lg = ctx.createGain()
-      lg.gain.value = level
-      o.connect(lg).connect(g)
-      sources.push(o)
-    }
-    if (variant === 'A') {
-      loop('pink', filt('lowpass', 2200, 0.4), 0.03)
-    } else if (variant === 'B') {
-      loop('pink', filt('bandpass', 1400, 0.4), 0.022)
-      hum(60, 0.018)
-      hum(120, 0.007)
-    } else {
-      loop('brown', filt('lowpass', 900, 0.4), 0.036)
-      loop('vinyl', filt('bandpass', 2000, 0.5), 0.03)
-    }
-    return {
-      stop: (at: number) => {
-        g.gain.cancelScheduledValues(at)
-        g.gain.setValueAtTime(g.gain.value, at)
-        g.gain.setTargetAtTime(0, at, 0.25)
-        for (const s of sources) s.stop(at + 1.5)
-      },
-    }
   }
 
   let musicIn: GainNode | null = null
@@ -970,22 +600,17 @@ const createEngine = (ctx: BaseAudioContext, initial: ChainSettings): Engine => 
     return input
   }
 
-  return { ctx, master, ready, apply, voice, room, musicInput }
+  return { ctx, master, ready, apply, voice, musicInput }
 }
 
-type Live = { name: SoundName; gain: GainNode; start: number; end: number }
+type Live = { name: SoundName; gain: GainNode; end: number }
 
 export const createSound = (initial: Partial<ChainSettings> = {}): SoundApi => {
   let settings: ChainSettings = { ...DEFAULT_SETTINGS, ...initial }
-  const variants: Record<SoundName, Variant> = { ...DEFAULT_VARIANTS }
-  let roomVariant: Variant = DEFAULT_ROOM_VARIANT
-  let roomOn = false
-  let roomHandle: RoomHandle | null = null
   let engine: Engine | null = null
   let ctx: AudioContext | null = null
   let enabled = false
   const prefs = readPrefs()
-  let muted = false
   let live: Live[] = []
   const lastAt: Partial<Record<SoundName, number>> = {}
 
@@ -1048,7 +673,7 @@ export const createSound = (initial: Partial<ChainSettings> = {}): SoundApi => {
     }
   }
 
-  const masterLevel = (): number => (enabled && !muted ? settings.volume : 0)
+  const masterLevel = (): number => (enabled ? settings.volume : 0)
 
   const rampMaster = (): void => {
     if (engine === null) return
@@ -1065,15 +690,6 @@ export const createSound = (initial: Partial<ChainSettings> = {}): SoundApi => {
     return engine
   }
 
-  const syncRoom = (): void => {
-    const want = roomOn && enabled && engine !== null
-    if (roomHandle !== null && engine !== null) {
-      roomHandle.stop(engine.ctx.currentTime)
-      roomHandle = null
-    }
-    if (want && engine !== null) roomHandle = engine.room(roomVariant, engine.ctx.currentTime + 0.01)
-  }
-
   const release = (v: Live, now: number): void => {
     v.gain.gain.cancelScheduledValues(now)
     v.gain.gain.setValueAtTime(v.gain.gain.value, now)
@@ -1083,7 +699,7 @@ export const createSound = (initial: Partial<ChainSettings> = {}): SoundApi => {
   }
 
   const play = (name: SoundName, opts: PlayOptions = {}): void => {
-    if (!enabled || !prefs.sfx || muted || engine === null || ctx === null) return
+    if (!enabled || !prefs.sfx || engine === null || ctx === null) return
     if (ctx.state === 'suspended') void ctx.resume()
     const now = ctx.currentTime
     const limit = LIMITS[name]
@@ -1102,8 +718,8 @@ export const createSound = (initial: Partial<ChainSettings> = {}): SoundApi => {
     }
     lastAt[name] = now
     const t = now + 0.005
-    const v = engine.voice(name, opts.variant ?? variants[name], t, opts)
-    const entry: Live = { name, gain: v.gain, start: t, end: v.end }
+    const v = engine.voice(name, t, opts)
+    const entry: Live = { name, gain: v.gain, end: v.end }
     live.push(entry)
     window.setTimeout(() => entry.gain.disconnect(), (v.end - now) * 1000 + 400)
   }
@@ -1115,12 +731,10 @@ export const createSound = (initial: Partial<ChainSettings> = {}): SoundApi => {
       enabled = true
       if (ctx.state !== 'running') void ctx.resume()
       rampMaster()
-      syncRoom()
       return
     }
     enabled = false
     rampMaster()
-    syncRoom()
     const c = ctx
     if (c !== null) {
       window.setTimeout(() => {
@@ -1150,43 +764,13 @@ export const createSound = (initial: Partial<ChainSettings> = {}): SoundApi => {
       prefs.music = on
       writePrefs(prefs)
     },
-    get muted() {
-      return muted
-    },
-    get room() {
-      return roomOn
-    },
-    get state() {
-      return ctx === null ? 'none' : ctx.state
-    },
-    get variants() {
-      return variants
-    },
-    get roomVariant() {
-      return roomVariant
-    },
-    get settings() {
-      return settings
-    },
     setEnabled,
-    setMuted: (m: boolean) => {
-      muted = m
-      rampMaster()
-    },
-    setRoom: (on: boolean, variant?: Variant) => {
-      roomOn = on
-      if (variant !== undefined) roomVariant = variant
-      syncRoom()
-    },
     play,
     wake: () => {
       if (enabled && ctx !== null && ctx.state === 'suspended') ctx.resume().catch(() => undefined)
     },
     audioClock: () => (enabled && ctx !== null && ctx.state === 'running' ? { time: ctx.currentTime, latency: ctx.outputLatency || ctx.baseLatency || 0 } : null),
     musicBus,
-    setVariant: (name: SoundName, variant: Variant) => {
-      variants[name] = variant
-    },
     setSettings: (next: Partial<ChainSettings>) => {
       settings = { ...settings, ...next }
       if (engine !== null) {

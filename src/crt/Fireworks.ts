@@ -32,7 +32,7 @@ const HELD = 1
 const DUST = 2
 const sampled = new Map<string, Sampled>()
 
-export const sampleSprite = (sprite: GridSprite, height: number): Sampled => {
+const sampleSprite = (sprite: GridSprite, height: number): Sampled => {
   const key = `${sprite.name}:${Math.round(height)}`
   const hit = sampled.get(key)
   if (hit) return hit
@@ -62,7 +62,7 @@ type Burst = { kind: 'sprite'; sprite: GridSprite } | { kind: 'shell'; colors: n
 export type Shot = { at: number; kind: ShotKind | 'twinkle'; x?: number; y?: number }
 type Item = { at: number; launch: number; shot: Shot; burst?: Burst }
 
-export type FireworksEvents = {
+type FireworksEvents = {
   onLaunch: (x: number) => void
   onBurst: (x: number, y: number, name: string | null, at: number) => void
   onEnd: () => void

@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react'
 
-export type SectionState = { active: boolean; armed: boolean }
+type SectionState = { active: boolean; armed: boolean }
 
 export const SectionContext = createContext<SectionState>({ active: true, armed: true })
 
@@ -26,7 +26,7 @@ export const regionsOf = (els: (HTMLElement | null)[]) => {
   })
 }
 
-export const sectionAt = (regions: { top: number }[], y: number) => {
+const sectionAt = (regions: { top: number }[], y: number) => {
   let index = 0
   regions.forEach((r, k) => {
     if (r.top <= y + 1) index = k
@@ -41,11 +41,11 @@ export const scrollProgress = (regions: { top: number; end: number }[], y: numbe
   return k + Math.min(1, Math.max(0, (y - regions[k].end) / Math.max(1, next.top - regions[k].end)))
 }
 
-export type Region = { top: number; end: number }
+type Region = { top: number; end: number }
 
 export type Stop = { y: number; section: number }
 
-export const PAGE_OVERLAP = 0.1
+const PAGE_OVERLAP = 0.1
 
 const FLAT_PX = 2
 
