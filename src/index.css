@@ -461,6 +461,7 @@ textarea {
   justify-items: center;
   gap: 4px;
   padding: 6px 10px 8px;
+  transform-origin: 50% 100%;
   animation: crt-on 260ms steps(8, end) both;
 }
 
