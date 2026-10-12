@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useCrt } from '@/crt/context'
-import { levelToVolume, readLevel, writeLevel } from '@/crt/soundLevel'
+import { levelToGain, readLevels, writeLevels } from '@/crt/soundLevel'
 
 type View = 'menu' | 'options'
 
@@ -10,7 +10,7 @@ export const ArcadePause = ({ shake, onShake, onResume, onExit }: { shake: boole
   const { t } = useTranslation()
   const [view, setView] = useState<View>('menu')
   const [on, setOn] = useState(crt.sound.enabled && crt.sound.sfx)
-  const [level, setLevel] = useState(readLevel)
+  const [level, setLevel] = useState(() => readLevels().sfx)
   const firstRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
@@ -29,9 +29,11 @@ export const ArcadePause = ({ shake, onShake, onResume, onExit }: { shake: boole
   }
 
   const slide = (value: number) => {
-    setLevel(value)
-    writeLevel(value)
-    crt.sound.setSettings({ volume: levelToVolume(value) })
+    if (value > 0) {
+      setLevel(value)
+      writeLevels({ ...readLevels(), sfx: value })
+      crt.sound.setSettings({ sfx: levelToGain(value) })
+    }
     if (value === 0 && on) enable(false)
     else if (value > 0 && !on) enable(true)
     else {

@@ -1,25 +1,35 @@
 const LEVEL_KEY = 'cd-sound-level'
-const MAX_VOLUME = 0.6
+const LEVELS_KEY = 'cd-sound-levels'
 
-export const readLevel = () => {
+// Master gain at full slider; each channel scales under it, so 50 on both matches the old single slider at 50.
+export const MAX_VOLUME = 0.6
+
+export type SoundLevels = { sfx: number; music: number }
+
+const level = (value: unknown, fallback: number) => {
+  const n = Number(value)
+  return value !== null && value !== undefined && Number.isFinite(n) && n > 0 && n <= 100 ? n : fallback
+}
+
+export const readLevels = (): SoundLevels => {
   try {
-    const raw = window.localStorage.getItem(LEVEL_KEY)
-    const stored = Number(raw)
-    return raw !== null && Number.isFinite(stored) && stored >= 0 && stored <= 100 ? stored : 50
+    const legacy = level(window.localStorage.getItem(LEVEL_KEY), 50)
+    const raw = JSON.parse(window.localStorage.getItem(LEVELS_KEY) ?? 'null') as Partial<SoundLevels> | null
+    return { sfx: level(raw?.sfx, legacy), music: level(raw?.music, legacy) }
   } catch {
-    return 50
+    return { sfx: 50, music: 50 }
   }
 }
 
-export const writeLevel = (value: number) => {
+export const writeLevels = (levels: SoundLevels) => {
   try {
-    window.localStorage.setItem(LEVEL_KEY, String(value))
+    window.localStorage.setItem(LEVELS_KEY, JSON.stringify(levels))
   } catch {
     return
   }
 }
 
-export const levelToVolume = (level: number) => (level / 100) * MAX_VOLUME
+export const levelToGain = (value: number) => value / 100
 
 type SoundPrefs = { sfx: boolean; music: boolean }
 const PREFS_KEY = 'cd-sound-prefs'

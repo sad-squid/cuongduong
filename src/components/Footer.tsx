@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties } from 'react'
+import { useEffect, useId, useRef, useState, type CSSProperties } from 'react'
 import { Link, useRouterState } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { LANGUAGE_META, SUPPORTED_LANGUAGES, toLanguage, type Language } from '@/i18n'
@@ -8,7 +8,7 @@ import { LINKS } from '@/content/names'
 import { IconDoor } from './Doors'
 import { DotIcon } from './DotIcon'
 import { SquidIcon } from './SquidIcon'
-import { levelToVolume, readAsked, readLevel, writeAsked, writeLevel } from '@/crt/soundLevel'
+import { levelToGain, readAsked, readLevels, writeAsked, writeLevels } from '@/crt/soundLevel'
 
 const FireworksButton = () => {
   const { t } = useTranslation()
@@ -67,23 +67,21 @@ const SoundControl = () => {
   const { t } = useTranslation()
   const read = () => ({ on: crt.sound.enabled, sfx: crt.sound.sfx, music: crt.sound.music })
   const [state, setState] = useState(read)
-  const [level, setLevel] = useState(readLevel)
+  const [levels, setLevels] = useState(readLevels)
+  const id = useId()
   const [pop, setPop] = useState<'open' | 'closing' | null>(null)
   const [invite, setInvite] = useState(false)
   const timer = useRef(0)
   const held = useRef(false)
+  const pinned = useRef(false)
   const audible = state.on && (state.sfx || state.music)
-
-  useEffect(() => {
-    crt.sound.setSettings({ volume: levelToVolume(level) })
-  }, [crt, level])
 
   useEffect(
     () =>
       crt.subscribe((event) => {
         if (event.type !== 'sound') return
         setState({ on: crt.sound.enabled, sfx: crt.sound.sfx, music: crt.sound.music })
-        setLevel(readLevel())
+        setLevels(readLevels())
       }),
     [crt],
   )
@@ -96,17 +94,12 @@ const SoundControl = () => {
     return () => window.clearTimeout(wait)
   }, [])
 
-  useEffect(() => {
-    if (readAsked()) return
-    const wait = window.setTimeout(() => setInvite(true), INVITE_DELAY_MS)
-    return () => window.clearTimeout(wait)
-  }, [])
-
   const close = () => {
     window.clearTimeout(timer.current)
     if (held.current) return
     timer.current = window.setTimeout(() => {
       setPop('closing')
+      pinned.current = false
       timer.current = window.setTimeout(() => setPop(null), 220)
     }, POP_MS)
   }
@@ -142,6 +135,7 @@ const SoundControl = () => {
   const shut = () => {
     window.clearTimeout(timer.current)
     held.current = false
+    pinned.current = false
     setPop('closing')
     timer.current = window.setTimeout(() => setPop(null), 220)
   }
@@ -159,41 +153,62 @@ const SoundControl = () => {
     open()
   }
 
+  // Hover or focus only peeks at the menu; a press pins it open, and a press on a pinned menu closes it.
   const toggle = () => {
     dismissInvite()
-    enable(!audible)
+    if (pop === 'open' && pinned.current) return shut()
+    pinned.current = true
     open()
   }
 
-  const pick = (kind: 'sfx' | 'music') => {
-    if (!crt.sound.enabled) {
-      crt.sound.setSfx(kind === 'sfx')
-      crt.sound.setMusic(kind === 'music')
-      crt.sound.setEnabled(true)
-    } else if (kind === 'sfx') crt.sound.setSfx(!crt.sound.sfx)
-    else crt.sound.setMusic(!crt.sound.music)
-    if (!crt.sound.sfx && !crt.sound.music) crt.sound.setEnabled(false)
-    if (kind === 'sfx' && crt.sound.sfx) crt.sound.play('toggle')
-    changed()
+  const mute = () => {
+    enable(!audible)
     if (!held.current) open()
   }
 
-  const slide = (value: number) => {
-    setLevel(value)
-    writeLevel(value)
-    if (value === 0 && audible) enable(false)
-    else if (value > 0 && !audible) enable(true)
-    else if (value > 0) crt.sound.play('tick')
+  // Zero switches a channel off but keeps its last level, so unmuting brings it back where it was.
+  const slide = (kind: 'sfx' | 'music', value: number) => {
+    if (value > 0) {
+      const next = { ...levels, [kind]: value }
+      setLevels(next)
+      writeLevels(next)
+      crt.sound.setSettings({ [kind]: levelToGain(value) })
+    }
+    const wasOn = crt.sound.enabled && crt.sound[kind]
+    if (value > 0 && !crt.sound.enabled) {
+      crt.sound.setSfx(kind === 'sfx')
+      crt.sound.setMusic(kind === 'music')
+      crt.sound.setEnabled(true)
+    } else if (value > 0 && !wasOn) {
+      if (kind === 'sfx') crt.sound.setSfx(true)
+      else crt.sound.setMusic(true)
+    } else if (value === 0 && wasOn) {
+      if (kind === 'sfx') crt.sound.setSfx(false)
+      else crt.sound.setMusic(false)
+      if (!crt.sound.sfx && !crt.sound.music) crt.sound.setEnabled(false)
+    }
+    if (kind === 'sfx' && value > 0) crt.sound.play(wasOn ? 'tick' : 'toggle')
+    if (wasOn !== value > 0) changed()
+    if (!held.current) open()
   }
 
-  const shown = audible ? level : 0
-  const option = (kind: 'sfx' | 'music') => {
-    const on = state.on && state[kind]
+  const channel = (kind: 'sfx' | 'music') => {
+    const shown = state.on && state[kind] ? levels[kind] : 0
     return (
-      <button type="button" className="sound-option" aria-pressed={on} onClick={() => pick(kind)}>
-        <span>{t(`footer.${kind}`)}</span>
-        <b aria-hidden="true">{on ? t('footer.on') : t('footer.off')}</b>
-      </button>
+      <span className="sound-row" data-off={shown === 0 || undefined}>
+        <span id={`${id}-${kind}`}>{t(`footer.${kind}`)}</span>
+        <span className="volume" style={{ '--fill': `${shown}%` } as CSSProperties}>
+          <input
+            type="range"
+            min={0}
+            max={100}
+            step={5}
+            value={shown}
+            aria-labelledby={`${id}-${kind}`}
+            onChange={(e) => slide(kind, Number(e.currentTarget.value))}
+          />
+        </span>
+      </span>
     )
   }
 
@@ -210,7 +225,6 @@ const SoundControl = () => {
         type="button"
         className={audible ? 'icon-door sound on' : 'icon-door sound'}
         aria-label={t('footer.sound')}
-        aria-pressed={audible}
         aria-expanded={pop === 'open'}
         onClick={toggle}
         onContextMenu={(e) => {
@@ -233,22 +247,11 @@ const SoundControl = () => {
       ) : null}
       {pop ? (
         <span className={pop === 'closing' ? 'crt-pop sound-pop closing' : 'crt-pop sound-pop'}>
-          <span className="crt-pop-label" aria-hidden="true">
-            {audible ? t('footer.soundOn') : t('footer.soundOff')}
-          </span>
-          {option('sfx')}
-          {option('music')}
-          <span className="volume" style={{ '--fill': `${shown}%` } as CSSProperties}>
-            <input
-              type="range"
-              min={0}
-              max={100}
-              step={5}
-              value={shown}
-              aria-label={t('footer.volume')}
-              onChange={(e) => slide(Number(e.currentTarget.value))}
-            />
-          </span>
+          {channel('sfx')}
+          {channel('music')}
+          <button type="button" className="sound-option sound-mute" aria-pressed={!audible} onClick={mute}>
+            {audible ? t('footer.mute') : t('footer.unmute')}
+          </button>
         </span>
       ) : null}
     </span>

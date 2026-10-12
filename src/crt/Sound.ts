@@ -1,4 +1,4 @@
-import { readPrefs, writePrefs } from './soundLevel'
+import { MAX_VOLUME, levelToGain, readLevels, readPrefs, writePrefs } from './soundLevel'
 
 export type SoundName =
   | 'tear'
@@ -22,6 +22,8 @@ export type PlayOptions = {
 
 type ChainSettings = {
   volume: number
+  sfx: number
+  music: number
   bits: number
   rate: number
   tone: number
@@ -73,7 +75,7 @@ const musicPulse = (ctx: BaseAudioContext, duty: number) => {
   return ctx.createPeriodicWave(real, imag)
 }
 
-const DEFAULT_SETTINGS: ChainSettings = { volume: 0.3, bits: 10, rate: 18000, tone: 2800 }
+const DEFAULT_SETTINGS: ChainSettings = { volume: MAX_VOLUME, sfx: 0.5, music: 0.5, bits: 10, rate: 18000, tone: 2800 }
 
 type Limit = { max: number; gap: number; steal: boolean }
 
@@ -431,11 +433,15 @@ const createEngine = (ctx: BaseAudioContext, initial: ChainSettings): Engine => 
   const master = ctx.createGain()
   bus.connect(shaper).connect(lowpass).connect(comp).connect(master).connect(ctx.destination)
   let crush: AudioWorkletNode | null = null
+  let musicOut: GainNode | null = null
   let current = initial
+  bus.gain.value = initial.sfx
 
   const apply = (s: ChainSettings): void => {
     current = s
     const now = ctx.currentTime
+    bus.gain.setTargetAtTime(s.sfx, now, 0.05)
+    musicOut?.gain.setTargetAtTime(MUSIC_LEVEL * s.music, now, 0.05)
     lowpass.frequency.setTargetAtTime(s.tone, now, 0.02)
     shaper.curve = crushCurve(s.bits)
     if (crush !== null) {
@@ -566,11 +572,12 @@ const createEngine = (ctx: BaseAudioContext, initial: ChainSettings): Engine => 
     squash.threshold.value = -20
     squash.ratio.value = 3
     const out = ctx.createGain()
-    out.gain.value = MUSIC_LEVEL
+    out.gain.value = MUSIC_LEVEL * current.music
     input.connect(lp)
     lp.connect(squash)
     lp.connect(verb).connect(wet).connect(squash)
     squash.connect(out).connect(master)
+    musicOut = out
     musicIn = input
     return input
   }
@@ -581,7 +588,8 @@ const createEngine = (ctx: BaseAudioContext, initial: ChainSettings): Engine => 
 type Live = { name: SoundName; gain: GainNode; end: number }
 
 export const createSound = (initial: Partial<ChainSettings> = {}): SoundApi => {
-  let settings: ChainSettings = { ...DEFAULT_SETTINGS, ...initial }
+  const levels = readLevels()
+  let settings: ChainSettings = { ...DEFAULT_SETTINGS, sfx: levelToGain(levels.sfx), music: levelToGain(levels.music), ...initial }
   let engine: Engine | null = null
   let ctx: AudioContext | null = null
   let enabled = false

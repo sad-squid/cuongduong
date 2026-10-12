@@ -16,6 +16,8 @@
     "soundOn": "sound on",
     "soundOff": "sound off",
     "volume": "volume",
+    "mute": "mute",
+    "unmute": "unmute",
     "sfx": "sound effects",
     "music": "music",
     "on": "on",
