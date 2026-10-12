@@ -5,7 +5,7 @@ import { About } from '@/pages/About'
 import { Work } from '@/pages/Work'
 import { Notes } from '@/pages/Notes'
 import { NotFound } from '@/pages/NotFound'
-import i18n, { languageFromPath, stripLanguage, toLanguage, withLanguage, type Language } from '@/i18n'
+import i18n, { languageFromPath, rememberLanguage, stripLanguage, toLanguage, withLanguage, type Language } from '@/i18n'
 
 const rootRoute = createRootRoute({
   component: Layout,
@@ -44,6 +44,7 @@ export const router = createRouter({
 })
 
 export const setLanguage = async (lang: Language) => {
+  rememberLanguage(lang)
   if (toLanguage(i18n.resolvedLanguage) === lang) return
   const { pathname, searchStr, hash } = router.state.location
   await i18n.changeLanguage(lang)

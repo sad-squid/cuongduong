@@ -19,7 +19,11 @@
     "sfx": "効果音",
     "music": "音楽",
     "on": "オン",
-    "off": "オフ"
+    "off": "オフ",
+    "inviteLabel": "音楽のおすすめ",
+    "invite": "音楽ありがおすすめ",
+    "inviteYes": "音楽を流す",
+    "inviteNo": "静かなままで"
   },
   "palette": {
     "label": "コマンドパレット",

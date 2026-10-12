@@ -19,7 +19,11 @@
     "sfx": "hiệu ứng",
     "music": "nhạc",
     "on": "bật",
-    "off": "tắt"
+    "off": "tắt",
+    "inviteLabel": "gợi ý nhạc",
+    "invite": "nên nghe kèm nhạc",
+    "inviteYes": "bật nhạc",
+    "inviteNo": "giữ yên lặng"
   },
   "palette": {
     "label": "Bảng lệnh",

@@ -8,7 +8,7 @@ import { LINKS } from '@/content/names'
 import { IconDoor } from './Doors'
 import { DotIcon } from './DotIcon'
 import { SquidIcon } from './SquidIcon'
-import { levelToVolume, readLevel, writeLevel } from '@/crt/soundLevel'
+import { levelToVolume, readAsked, readLevel, writeAsked, writeLevel } from '@/crt/soundLevel'
 
 const FireworksButton = () => {
   const { t } = useTranslation()
@@ -60,6 +60,7 @@ const LangCycle = ({ current }: { current: Language }) => {
 }
 
 const POP_MS = 2400
+const INVITE_DELAY_MS = 1800
 
 const SoundControl = () => {
   const crt = useCrt()
@@ -68,6 +69,7 @@ const SoundControl = () => {
   const [state, setState] = useState(read)
   const [level, setLevel] = useState(readLevel)
   const [pop, setPop] = useState<'open' | 'closing' | null>(null)
+  const [invite, setInvite] = useState(false)
   const timer = useRef(0)
   const held = useRef(false)
   const audible = state.on && (state.sfx || state.music)
@@ -87,6 +89,18 @@ const SoundControl = () => {
   )
 
   useEffect(() => () => window.clearTimeout(timer.current), [])
+
+  useEffect(() => {
+    if (readAsked()) return
+    const wait = window.setTimeout(() => setInvite(true), INVITE_DELAY_MS)
+    return () => window.clearTimeout(wait)
+  }, [])
+
+  useEffect(() => {
+    if (readAsked()) return
+    const wait = window.setTimeout(() => setInvite(true), INVITE_DELAY_MS)
+    return () => window.clearTimeout(wait)
+  }, [])
 
   const close = () => {
     window.clearTimeout(timer.current)
@@ -132,7 +146,21 @@ const SoundControl = () => {
     timer.current = window.setTimeout(() => setPop(null), 220)
   }
 
+  const dismissInvite = () => {
+    writeAsked()
+    setInvite(false)
+  }
+
+  const answer = (music: boolean) => {
+    dismissInvite()
+    if (!music) return
+    crt.sound.setMusic(true)
+    enable(true)
+    open()
+  }
+
   const toggle = () => {
+    dismissInvite()
     enable(!audible)
     open()
   }
@@ -172,11 +200,11 @@ const SoundControl = () => {
   return (
     <span
       className="sound-wrap"
-      onPointerEnter={(e) => (pop || e.pointerType === 'mouse' ? hold(true) : undefined)}
+      onPointerEnter={(e) => (!invite && (pop || e.pointerType === 'mouse') ? hold(true) : undefined)}
       onPointerLeave={() => hold(false)}
-      onFocus={() => hold(true)}
+      onFocus={() => (invite ? undefined : hold(true))}
       onBlur={(e) => (e.currentTarget.contains(e.relatedTarget) ? undefined : hold(false))}
-      onKeyDown={(e) => (e.key === 'Escape' && pop === 'open' ? shut() : undefined)}
+      onKeyDown={(e) => (e.key !== 'Escape' ? undefined : invite ? dismissInvite() : pop === 'open' ? shut() : undefined)}
     >
       <button
         type="button"
@@ -192,6 +220,17 @@ const SoundControl = () => {
       >
         <DotIcon icon={audible ? 'sound' : 'muted'} />
       </button>
+      {invite && !pop ? (
+        <span className="crt-pop sound-pop sound-invite" role="group" aria-label={t('footer.inviteLabel')}>
+          <span className="crt-pop-label">{t('footer.invite')}</span>
+          <button type="button" className="sound-option invite-yes" onClick={() => answer(true)}>
+            {t('footer.inviteYes')}
+          </button>
+          <button type="button" className="sound-option invite-no" onClick={() => answer(false)}>
+            {t('footer.inviteNo')}
+          </button>
+        </span>
+      ) : null}
       {pop ? (
         <span className={pop === 'closing' ? 'crt-pop sound-pop closing' : 'crt-pop sound-pop'}>
           <span className="crt-pop-label" aria-hidden="true">

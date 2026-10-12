@@ -40,3 +40,21 @@ export const writePrefs = (prefs: SoundPrefs) => {
     return
   }
 }
+
+const ASKED_KEY = 'cd-sound-asked'
+
+export const readAsked = () => {
+  try {
+    return window.localStorage.getItem(ASKED_KEY) !== null
+  } catch {
+    return true
+  }
+}
+
+export const writeAsked = () => {
+  try {
+    window.localStorage.setItem(ASKED_KEY, '1')
+  } catch {
+    return
+  }
+}

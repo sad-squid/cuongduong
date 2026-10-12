@@ -487,6 +487,19 @@ textarea {
   touch-action: manipulation;
 }
 
+.sound-invite .sound-option {
+  justify-content: center;
+}
+
+.sound-option.invite-yes {
+  color: #fff1ec;
+  text-shadow: var(--glow-1);
+}
+
+.sound-option.invite-no {
+  color: var(--muted);
+}
+
 .sound-option b {
   font-weight: 400;
   color: var(--muted);

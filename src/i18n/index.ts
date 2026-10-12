@@ -30,10 +30,43 @@ export const stripLanguage = (pathname: string) => {
 
 export const withLanguage = (pathname: string, lang: Language) => (lang === 'en' ? pathname : `/${lang}${pathname === '/' ? '' : pathname}`)
 
+const LANG_KEY = 'cd-lang'
+
+export const rememberLanguage = (lang: Language) => {
+  try {
+    window.localStorage.setItem(LANG_KEY, lang)
+  } catch {
+    return
+  }
+}
+
+const browserLanguage = (): Language | null => {
+  for (const tag of navigator.languages ?? [navigator.language]) {
+    const base = tag.split('-')[0]
+    if ((SUPPORTED_LANGUAGES as readonly string[]).includes(base)) return base as Language
+  }
+  return null
+}
+
+const firstVisitLanguage = (): Language => {
+  const fromPath = languageFromPath(window.location.pathname)
+  try {
+    if (window.localStorage.getItem(LANG_KEY) !== null || fromPath !== 'en' || navigator.webdriver) return fromPath
+    const preferred = browserLanguage() ?? 'en'
+    rememberLanguage(preferred)
+    if (preferred === 'en') return fromPath
+    const { pathname, search, hash } = window.location
+    window.history.replaceState(window.history.state, '', `${withLanguage(pathname, preferred)}${search}${hash}`)
+    return preferred
+  } catch {
+    return fromPath
+  }
+}
+
 i18n
   .use(initReactI18next)
   .init({
-    lng: languageFromPath(window.location.pathname),
+    lng: firstVisitLanguage(),
     resources: {
       en: { translation: en },
       vi: { translation: vi },
