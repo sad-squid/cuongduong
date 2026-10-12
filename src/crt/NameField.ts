@@ -44,6 +44,7 @@ export class NameField {
   private mouseX = -1e4
   private mouseY = -1e4
   private raf = 0
+  private paintRaf = 0
   private running = false
   private diffusing = false
   private first = false
@@ -188,11 +189,19 @@ export class NameField {
   }
 
   pointer(clientX: number, clientY: number) {
-    if (!this.rect || this.reduceMotion) return false
+    if (!this.rect) return false
     const x = clientX - this.rect.left
     const y = clientY - this.rect.top
     const R = PHYSICS.radius
     const near = x > this.box.x0 - R && x < this.box.x1 + R && y > this.box.y0 - R && y < this.box.y1 + R
+    if (this.reduceMotion) {
+      if (near || this.mouseX > -1e3) {
+        this.mouseX = near ? x : -1e4
+        this.mouseY = near ? y : -1e4
+        this.repaint()
+      }
+      return false
+    }
     if (near) this.touched = true
     if (near || this.mouseX > -1e3) {
       this.mouseX = near ? x : -1e4
@@ -205,7 +214,8 @@ export class NameField {
   clearPointer() {
     this.mouseX = -1e4
     this.mouseY = -1e4
-    this.wake()
+    if (this.reduceMotion) this.repaint()
+    else this.wake()
   }
 
   impulse(clientX: number, clientY: number, radius: number, strength: number) {
@@ -252,6 +262,7 @@ export class NameField {
 
   destroy() {
     cancelAnimationFrame(this.raf)
+    cancelAnimationFrame(this.paintRaf)
     this.running = false
     this.queued = null
   }
@@ -347,6 +358,14 @@ export class NameField {
     this.py.set(this.ty)
     this.vx.fill(0)
     this.vy.fill(0)
+  }
+
+  private repaint() {
+    if (this.paintRaf || !this.ctx) return
+    this.paintRaf = requestAnimationFrame(() => {
+      this.paintRaf = 0
+      this.paint(1)
+    })
   }
 
   private wake() {
@@ -469,6 +488,8 @@ export class NameField {
     const bright = new Path2D()
     const dim = new Path2D()
     const torn = tear ? new Path2D() : null
+    const lit = this.reduceMotion && this.mouseX > -1e3 ? new Map<number, Path2D>() : null
+    const R = PHYSICS.radius
     let x0 = 1e9
     let y0 = 1e9
     let x1 = -1e9
@@ -488,9 +509,24 @@ export class NameField {
           continue
         }
       }
+      if (lit) {
+        const near = 1 - Math.hypot(x - this.mouseX, y - this.mouseY) / R
+        const band = near > 0 ? Math.min(3, Math.floor(near * 3) + 1) : 0
+        if (band) {
+          const key = this.dim[i] * 4 + band
+          let path = lit.get(key)
+          if (!path) {
+            path = new Path2D()
+            lit.set(key, path)
+          }
+          const s = DOT + (band / 3) * 1.4
+          path.rect(x - (s - DOT) / 2, y - (s - DOT) / 2, s, s)
+          continue
+        }
+      }
       ;(this.dim[i] ? dim : bright).rect(x, y, DOT, DOT)
     }
-    const pad = tear ? 30 : 0
+    const pad = tear ? 30 : lit ? 2 : 0
     const box: [number, number, number, number] = [x0 - 6 - pad, y0 - 4, x1 + 8 + pad, y1 + 6]
     const prev = this.prevBox ?? box
     const cx0 = Math.max(0, Math.min(box[0], prev[0]))
@@ -505,6 +541,11 @@ export class NameField {
     c.fill(bright)
     c.globalAlpha = alpha * 0.62
     c.fill(dim)
+    if (lit)
+      for (const [key, path] of lit) {
+        c.globalAlpha = alpha * Math.min(1, (key >= 4 ? 0.62 : 1) + ((key % 4) / 3) * 0.18)
+        c.fill(path)
+      }
     if (torn) {
       c.globalCompositeOperation = 'lighter'
       c.setTransform(d, 0, 0, d, -2.5 * d, 0)

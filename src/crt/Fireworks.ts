@@ -30,6 +30,12 @@ const LETTERS = 'ABCDEFGHIJKLMNOP'
 const BASE_ROWS = 40
 const HELD = 1
 const DUST = 2
+const STILL = 3
+const STILL_MS = 2300
+const CORAL = '#F06E61'
+const ROSE = '#B58484'
+
+const stepped = (t: number, steps: number) => Math.min(1, Math.floor(Math.max(0, t) * steps) / steps)
 const sampled = new Map<string, Sampled>()
 
 const sampleSprite = (sprite: GridSprite, height: number): Sampled => {
@@ -112,6 +118,7 @@ export class Fireworks {
   private events: FireworksEvents | null = null
   private lowPower = false
   private side = Math.random() < 0.5 ? 1 : -1
+  private still = false
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas
@@ -131,8 +138,9 @@ export class Fireworks {
     this.h = r.height
   }
 
-  play(events: FireworksEvents, lowPower: boolean, endless = false, clock?: () => number) {
+  play(events: FireworksEvents, lowPower: boolean, endless = false, clock?: () => number, still = false) {
     if (this.events || !this.ctx) return false
+    this.still = still
     this.driven = clock !== undefined
     this.clock = clock ?? (() => performance.now())
     this.events = events
@@ -237,6 +245,10 @@ export class Fireworks {
     for (let k = 0; k < count; k++) {
       const a = Math.random() * Math.PI * 2
       const v = 18 + Math.random() * 36
+      if (this.still) {
+        this.addStill(x + Math.cos(a) * v * 0.4, y + Math.sin(a) * v * 0.4, color, 1.4, now)
+        continue
+      }
       this.add(x, y, Math.cos(a) * v, Math.sin(a) * v - 10, 450 + Math.random() * 350, color, 1.4, now)
     }
   }
@@ -261,7 +273,7 @@ export class Fireworks {
       const half = (burst.sprite.grid[0].length * this.spriteHeight()) / BASE_ROWS / 2 + 12
       x = Math.min(this.w - half, Math.max(half, x))
     }
-    this.events?.onLaunch(x)
+    if (!this.still) this.events?.onLaunch(x)
     this.rockets.push({ x, y: this.h + 10, fromY: this.h + 10, toY, burstAt, burst, trail: this.colorIndex('#9A958B') })
   }
 
@@ -285,7 +297,38 @@ export class Fireworks {
     return i
   }
 
+  private addStill(x: number, y: number, color: number, size: number, now: number) {
+    const i = this.add(x, y, 0, 0, STILL_MS, color, size, now)
+    if (i >= 0) this.forming[i] = STILL
+    return i
+  }
+
+  private stillBurst(rocket: Rocket, now: number, t: number) {
+    const { x, toY: y, burst } = rocket
+    if (burst.kind === 'shell') {
+      const count = (this.lowPower ? 40 : 80) * (burst.big ? 2 : 1)
+      const rays = burst.big ? 20 : 14
+      const reach = Math.min(150, this.w * 0.18) * (burst.big ? 1.45 : 1)
+      const turn = Math.random() * Math.PI * 2
+      for (let k = 0; k < count; k++) {
+        const a = turn + ((k % rays) / rays) * Math.PI * 2 + (Math.random() - 0.5) * 0.12
+        const r = reach * (0.25 + 0.75 * Math.pow(Math.random(), 0.7))
+        this.addStill(x + Math.cos(a) * r, y + Math.sin(a) * r, burst.colors[k & 1], burst.big ? 2.6 : 2.2, now)
+      }
+      this.events?.onBurst(x, y, null, t)
+      return
+    }
+    const art = sampleSprite(burst.sprite, this.spriteHeight())
+    const colors = art.colors.map((hex) => this.colorIndex(hex))
+    for (let k = 0; k < art.xs.length; k++) if (this.addStill(x + art.xs[k], y + art.ys[k], colors[art.ci[k]], art.pitch * 0.55, now) < 0) break
+    this.events?.onBurst(x, y, burst.sprite.name, t)
+  }
+
   private burst(rocket: Rocket, now: number, t: number) {
+    if (this.still) {
+      this.stillBurst(rocket, now, t)
+      return
+    }
     const { x, toY: y, burst } = rocket
     const spark = this.lowPower ? 18 : 36
     for (let k = 0; k < spark; k++) {
@@ -340,7 +383,7 @@ export class Fireworks {
       const p = Math.min(1, Math.max(0, (t - rocket.burstAt + RISE_MS) / RISE_MS))
       const e = 1 - Math.pow(1 - p, 2.4)
       rocket.y = rocket.fromY + (rocket.toY - rocket.fromY) * e
-      this.add(rocket.x + (Math.random() - 0.5) * 2, rocket.y + 4, (Math.random() - 0.5) * 12, 30 + Math.random() * 30, 420, rocket.trail, 1.6, now)
+      if (!this.still) this.add(rocket.x + (Math.random() - 0.5) * 2, rocket.y + 4, (Math.random() - 0.5) * 12, 30 + Math.random() * 30, 420, rocket.trail, 1.6, now)
       if (near < rocket.burstAt) return true
       this.burst(rocket, now, t)
       return false
@@ -383,6 +426,10 @@ export class Fireworks {
         this.forming[i] = this.forming[last]
         continue
       }
+      if (this.forming[i] === STILL) {
+        i++
+        continue
+      }
       this.vx[i] *= 0.985
       this.vy[i] = this.vy[i] * 0.985 + GRAVITY * dt
       this.x[i] += this.vx[i] * dt
@@ -403,6 +450,10 @@ export class Fireworks {
     if (!c) return
     const d = this.dpr
     c.setTransform(d, 0, 0, d, 0, 0)
+    if (this.still) {
+      this.paintStill(c, now)
+      return
+    }
     c.globalCompositeOperation = 'destination-out'
     c.globalAlpha = 0.32
     c.fillRect(0, 0, this.w, this.h)
@@ -436,6 +487,36 @@ export class Fireworks {
     fill(dust, 0.6)
     fill(held, 1)
     c.globalCompositeOperation = 'source-over'
+    c.globalAlpha = 1
+  }
+
+  private paintStill(c: CanvasRenderingContext2D, now: number) {
+    c.globalCompositeOperation = 'source-over'
+    c.globalAlpha = 1
+    c.clearRect(0, 0, this.w, this.h)
+    const coral = this.colorIndex(CORAL)
+    const rose = this.colorIndex(ROSE)
+    const lit = new Map<number, Path2D>()
+    for (let i = 0; i < this.n; i++) {
+      const age = now - this.born[i]
+      const fade = age < 1450 ? 6 : Math.round((1 - stepped((age - 1450) / 850, 6)) * 6)
+      if (fade <= 0) continue
+      const cool = stepped(age / 1100, 5)
+      const color = cool < 0.4 ? coral : cool < 0.8 ? rose : this.color[i]
+      const key = color * 8 + fade
+      let path = lit.get(key)
+      if (!path) {
+        path = new Path2D()
+        lit.set(key, path)
+      }
+      const s = this.size[i]
+      path.rect(this.x[i] - s / 2, this.y[i] - s / 2, s, s)
+    }
+    for (const [key, path] of lit) {
+      c.fillStyle = this.palette[key >> 3]
+      c.globalAlpha = ((key & 7) / 6) * 0.95
+      c.fill(path)
+    }
     c.globalAlpha = 1
   }
 }

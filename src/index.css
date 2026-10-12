@@ -313,6 +313,30 @@ textarea {
   text-shadow: var(--glow-3);
 }
 
+.dim-1 {
+  color: var(--dusty-rose);
+  opacity: 0.35;
+}
+
+.dim-2 {
+  color: color-mix(in srgb, var(--dusty-rose) 75%, var(--beige));
+  opacity: 0.48;
+}
+
+.dim-3 {
+  color: color-mix(in srgb, var(--dusty-rose) 50%, var(--beige));
+  opacity: 0.61;
+}
+
+.dim-4 {
+  color: color-mix(in srgb, var(--dusty-rose) 25%, var(--beige));
+  opacity: 0.74;
+}
+
+.dim-5 {
+  opacity: 0.87;
+}
+
 .signal-log {
   position: absolute;
   left: 24px;

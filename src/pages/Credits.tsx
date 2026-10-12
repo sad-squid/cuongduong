@@ -34,7 +34,7 @@ export const Credits = () => {
   useEffect(() => {
     let timer = 0
     const off = crt.subscribe((event) => {
-      if (event.type !== 'fireworks' || event.on || playingRef.current || crt.fireworksHeld) return
+      if (event.type !== 'fireworks' || event.on || playingRef.current || crt.fireworksHeld || crt.reduceMotion) return
       window.clearTimeout(timer)
       timer = window.setTimeout(() => (playingRef.current || crt.fireworksHeld ? null : crt.launchFireworks(!doneRef.current, !doneRef.current)), RELAUNCH_MS)
     })

@@ -11,6 +11,12 @@ const renderChunk = (chunk: Chunk, key: string): ReactNode => {
         {chunk.text}
       </span>
     )
+  if (chunk.kind === 'dim')
+    return (
+      <span key={key} className={`dim-${chunk.level}`}>
+        {chunk.text}
+      </span>
+    )
   if (chunk.kind === 'glow')
     return (
       <span key={key} className={`glow-${chunk.level}`}>

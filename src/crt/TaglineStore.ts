@@ -5,6 +5,7 @@ export type Chunk =
   | { kind: 'beam'; text: string }
   | { kind: 'glow'; text: string; level: 1 | 2 | 3 }
   | { kind: 'slot'; text: string; glyph: string }
+  | { kind: 'dim'; text: string; level: 1 | 2 | 3 | 4 | 5 }
 
 type Word = { start: number; end: number; left: number; top: number; right: number; bottom: number }
 
@@ -16,6 +17,7 @@ const SCRAMBLE_GLYPHS: Record<string, string> = {
 
 const KEEP = /[\s。、,.-]/
 const SHIMMER_MS = 70
+const DIM_STEP_MS = 180
 
 const pick = (set: string) => set[Math.floor(Math.random() * set.length)]
 
@@ -70,6 +72,9 @@ export class TaglineStore {
   private hitUntil: Float64Array = new Float64Array(0)
   private hitGlyph: string[] = []
   private hitShimmer = 0
+  private dimUntil: Float64Array = new Float64Array(0)
+  private dimRaf = 0
+  private dimLevels = ''
   private onMeasured: () => void = () => {}
   private onHit: () => void = () => {}
 
@@ -98,6 +103,7 @@ export class TaglineStore {
     this.chunks = [{ kind: 'plain', text }]
     this.hitUntil = new Float64Array(text.length)
     this.hitGlyph = new Array(text.length).fill('')
+    this.dimUntil = new Float64Array(text.length)
     this.publish()
   }
 
@@ -143,7 +149,7 @@ export class TaglineStore {
 
   hitTarget(): HitTarget | null {
     if (!this.box) return null
-    return { box: this.box, test: (x, y) => this.hitAt(x, y) }
+    return { box: this.box, test: (x, y) => this.hitAt(x, y), dim: (x, y, radius) => this.dimNear(x, y, radius) }
   }
 
   setOnHit(onHit: () => void) {
@@ -193,6 +199,53 @@ export class TaglineStore {
     this.onHit = () => {}
     this.stop()
     this.listeners.clear()
+  }
+
+  private dimNear(x: number, y: number, radius: number) {
+    if (!this.reduceMotion || !this.words.length) return
+    const now = performance.now()
+    let any = false
+    for (const word of this.words) {
+      const dx = Math.max(word.left - x, 0, x - word.right)
+      const dy = Math.max(word.top - y, 0, y - word.bottom)
+      const near = 1 - Math.hypot(dx, dy) / radius
+      if (near <= 0) continue
+      for (let i = word.start; i < word.end; i++) {
+        if (KEEP.test(this.text[i]) || Math.random() > 0.25 + near * 0.5) continue
+        this.dimUntil[i] = Math.max(this.dimUntil[i], now + 120 + Math.random() * 260)
+        any = true
+      }
+    }
+    if (!any) return
+    this.onHit()
+    if (!this.dimRaf) this.dimRaf = requestAnimationFrame(this.dimTick)
+  }
+
+  private dimTick = () => {
+    this.dimRaf = 0
+    const now = performance.now()
+    const out: Chunk[] = []
+    let levels = ''
+    for (let i = 0; i < this.text.length; i++) {
+      const until = this.dimUntil[i]
+      const ch = this.text[i]
+      const level = until ? (now < until ? 1 : 1 + Math.floor((now - until) / DIM_STEP_MS)) : 0
+      if (level >= 1 && level <= 5) {
+        out.push({ kind: 'dim', text: ch, level: level as 1 | 2 | 3 | 4 | 5 })
+        levels += level
+      } else {
+        if (until) this.dimUntil[i] = 0
+        this.pushPlain(out, ch)
+        levels += '0'
+      }
+    }
+    const active = /[1-5]/.test(levels)
+    if (levels !== this.dimLevels) {
+      this.dimLevels = levels
+      this.chunks = active ? out : [{ kind: 'plain', text: this.text }]
+      this.publish()
+    }
+    if (active) this.dimRaf = requestAnimationFrame(this.dimTick)
   }
 
   private hitAt(x: number, y: number, quiet = false) {
@@ -286,9 +339,13 @@ export class TaglineStore {
     window.clearTimeout(this.sweepTimer)
     cancelAnimationFrame(this.sweepRaf)
     cancelAnimationFrame(this.hitRaf)
+    cancelAnimationFrame(this.dimRaf)
     this.hitRaf = 0
+    this.dimRaf = 0
+    this.dimLevels = ''
     this.sweeping = false
     this.hitUntil.fill(0)
+    this.dimUntil.fill(0)
   }
 
   private publish() {

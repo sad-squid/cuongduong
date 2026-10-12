@@ -3,9 +3,15 @@ import { COLORS, DOT, PHYSICS, jitterTear, type Tear } from './tokens'
 export type HitTarget = {
   box: { left: number; top: number; right: number; bottom: number }
   test: (clientX: number, clientY: number) => number | null
+  dim?: (clientX: number, clientY: number, radius: number) => void
 }
 
 const MAX_SPARKS = 600
+const FLASH_MS = 900
+
+const stepped = (t: number, steps: number) => Math.min(1, Math.floor(Math.max(0, t) * steps) / steps)
+
+type Flash = { x: number; y: number; at: number; radius: number }
 
 export class Lattice {
   private readonly canvas: HTMLCanvasElement
@@ -43,6 +49,9 @@ export class Lattice {
   private lastSnow = 0
   private tear: Tear | null = null
   private hitTarget: HitTarget | null = null
+  private flashing: Flash | null = null
+  private flashSeed = new Float32Array(0)
+  private flashRaf = 0
   rect: DOMRect | null = null
 
   constructor(canvas: HTMLCanvasElement, reduceMotion: boolean, onFrame: (t: number) => void) {
@@ -231,9 +240,90 @@ export class Lattice {
     this.wake()
   }
 
+  flash(clientX: number, clientY: number, radius: number) {
+    if (!this.rect || !this.ctx || !this.size) return
+    if (this.flashSeed.length !== this.size) this.flashSeed = new Float32Array(this.size)
+    for (let k = 0; k < this.size; k++) this.flashSeed[k] = Math.random()
+    this.flashing = { x: clientX - this.rect.left, y: clientY - this.rect.top, at: performance.now(), radius }
+    if (!this.flashRaf) this.flashRaf = requestAnimationFrame(this.flashFrame)
+  }
+
   destroy() {
     cancelAnimationFrame(this.raf)
+    cancelAnimationFrame(this.flashRaf)
+    this.flashRaf = 0
     this.running = false
+  }
+
+  private flashFrame = (now: number) => {
+    this.flashRaf = 0
+    const c = this.ctx
+    const f = this.flashing
+    if (!c || !this.cache || !f) return
+    const age = now - f.at
+    const d = this.dpr
+    c.setTransform(d, 0, 0, d, 0, 0)
+    c.globalAlpha = 1
+    c.clearRect(0, 0, this.w, this.h)
+    c.drawImage(this.cache, 0, 0, this.w, this.h)
+    if (age > FLASH_MS) {
+      this.flashing = null
+      return
+    }
+    const G = this.spacing
+    const R = f.radius
+    const glow = 1 - stepped(age / 720, 6)
+    const snow = 1 - stepped(age / 860, 7)
+    const hide = new Path2D()
+    const lit = new Map<number, Path2D>()
+    const c0 = Math.max(0, Math.floor((f.x - R) / G))
+    const c1 = Math.min(this.cols - 1, Math.ceil((f.x + R) / G))
+    const r0 = Math.max(0, Math.floor((f.y - R) / G))
+    const r1 = Math.min(this.rows - 1, Math.ceil((f.y + R) / G))
+    for (let row = r0; row <= r1; row++) {
+      for (let col = c0; col <= c1; col++) {
+        const k = row * this.cols + col
+        if (this.lifted[k]) continue
+        const x = col * G + G / 2
+        const y = row * G + G / 2
+        const dist = Math.hypot(x - f.x, y - f.y)
+        const near = 1 - dist / R
+        if (near <= 0) continue
+        const base = row & 1 ? 0.09 : 0.17
+        const r = this.flashSeed[k]
+        let alpha = base
+        let size = DOT
+        let coral = false
+        if (age < 760 && glow > 0) {
+          alpha = Math.max(alpha, base + near * near * glow * 0.85)
+          size = DOT + near * glow * 0.8
+          coral = dist < R * 0.22 && glow > 0.34
+        }
+        if (snow > 0 && r <= 0.2 + near * 0.6) {
+          alpha = Math.max(alpha, base + snow * (0.35 + ((r * 7) % 1) * 0.55))
+          coral ||= r < 0.06
+        }
+        if (alpha <= base + 0.01) continue
+        hide.rect(x - 0.6, y - 0.6, DOT + 1.2, DOT + 1.2)
+        const key = (coral ? 1000 : 0) + Math.round(Math.min(1, alpha) * 20) * 10 + Math.round((size - DOT) * 5)
+        let path = lit.get(key)
+        if (!path) {
+          path = new Path2D()
+          lit.set(key, path)
+        }
+        const s = DOT + (key % 10) / 5
+        path.rect(x - (s - DOT) / 2, y - (s - DOT) / 2, s, s)
+      }
+    }
+    c.fillStyle = COLORS.bg
+    c.fill(hide)
+    for (const [key, path] of lit) {
+      c.fillStyle = key >= 1000 ? COLORS.warmCoral : COLORS.cream
+      c.globalAlpha = (Math.floor(key / 10) % 100) / 20
+      c.fill(path)
+    }
+    c.globalAlpha = 1
+    this.flashRaf = requestAnimationFrame(this.flashFrame)
   }
 
   private activate(k: number) {

@@ -44,6 +44,7 @@ export class CrtController {
   private tap: { x: number; y: number; t: number; id: number; silent: boolean } | null = null
   private hold: { x: number; y: number; timer: number; on: boolean } | null = null
   private flightField: NameField | null = null
+  private words: HitTarget | null = null
   private suppressHandoff = false
   private scrollFrame = 0
   private listeners = new Set<Listener>()
@@ -215,7 +216,7 @@ export class CrtController {
   }
 
   launchFireworks(endless = false, tune = false) {
-    if (this.reduceMotion || !this.fireworks || this.fireworks.isRunning) return
+    if (!this.fireworks || this.fireworks.isRunning) return
     const token = ++this.pendingLaunch
     if (tune && !this.shows) {
       this.loadShows()
@@ -230,7 +231,7 @@ export class CrtController {
         onBurst: (x, y, name, at) => {
           show?.trace?.bursts.push(at)
           this.sound.play('generate', { ...DISPERSE, pan: this.pan(x) })
-          this.lattice?.impulse(x, y, 180, 5)
+          if (!this.reduceMotion) this.lattice?.impulse(x, y, 180, 5)
           this.emit({ type: 'burst', name })
         },
         onEnd: () => {
@@ -242,6 +243,7 @@ export class CrtController {
       this.lowPower,
       endless,
       show?.now,
+      this.reduceMotion,
     )
     if (!started) return
     this.lastTune = tune
@@ -334,6 +336,7 @@ export class CrtController {
   }
 
   setWordTarget(target: HitTarget | null) {
+    this.words = target
     this.lattice?.setHitTarget(
       target
         ? {
@@ -373,8 +376,15 @@ export class CrtController {
   }
 
   blast(clientX: number, clientY: number, quiet = false, silent = false) {
-    if (this.reduceMotion || !this.lattice) return
+    if (!this.lattice) return
     const compact = window.innerWidth <= 720
+    if (this.reduceMotion) {
+      const radius = BLAST.radius * (compact ? 0.48 : 0.8)
+      this.lattice.flash(clientX, clientY, radius)
+      this.words?.dim?.(clientX, clientY, radius * 0.6)
+      if (!quiet && !silent) this.sound.play('generate', { ...DISPERSE, pan: this.pan(clientX) })
+      return
+    }
     const radius = BLAST.radius * (compact ? 0.55 : 1)
     const strength = BLAST.strength * (compact ? 0.8 : 1)
     let moved = this.field?.impulse(clientX, clientY, radius, strength) ?? 0
