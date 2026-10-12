@@ -27,6 +27,7 @@ const ARRIVAL_POINT = 0.45
 const TAP_MS = 500
 const TAP_SLOP = 10
 
+const DISPERSE = { duration: 0.9, landing: false } as const
 const INTERACTIVE = 'a, button, input, textarea, select, label, [role="dialog"], [data-no-blast]'
 const HOLD_SKIP = `${INTERACTIVE}, p, li, dl, h2, h3, input, textarea`
 const HOLD_MS = 320
@@ -40,7 +41,7 @@ export class CrtController {
   private fireworks: Fireworks | null = null
   private handoff: { points: number[]; at: number } | null = null
   private arrivalTimers = new Map<NameField, number>()
-  private tap: { x: number; y: number; t: number; id: number } | null = null
+  private tap: { x: number; y: number; t: number; id: number; silent: boolean } | null = null
   private hold: { x: number; y: number; timer: number; on: boolean } | null = null
   private flightField: NameField | null = null
   private suppressHandoff = false
@@ -225,13 +226,10 @@ export class CrtController {
     const show = tune && this.shows ? new this.shows.CreditsShow(this.sound, this.fireworks) : null
     const started = this.fireworks.play(
       {
-        onLaunch: (x) => (show?.playing ? null : this.sound.play('rocket', { pan: this.pan(x), intensity: 0.7 })),
+        onLaunch: (x) => this.sound.play('rocket', { pan: this.pan(x), intensity: 0.7 }),
         onBurst: (x, y, name, at) => {
           show?.trace?.bursts.push(at)
-          if (!show?.playing) {
-            this.sound.play(name ? 'sprite' : 'burst', { pan: this.pan(x), intensity: 0.35 })
-            this.sound.play('generate', { pan: this.pan(x), duration: name ? 0.55 : 0.4, intensity: name ? 1 : 0.6 + Math.random() * 0.4 })
-          }
+          this.sound.play('generate', { ...DISPERSE, pan: this.pan(x) })
           this.lattice?.impulse(x, y, 180, 5)
           this.emit({ type: 'burst', name })
         },
@@ -317,7 +315,7 @@ export class CrtController {
     }
     this.ejectFromName()
     field.generate(text, false, null)
-    this.sound.play('generate', { duration: 0.9, landing: false })
+    this.sound.play('generate', DISPERSE)
     this.tear(1.6, true)
   }
 
@@ -374,7 +372,7 @@ export class CrtController {
     this.lattice?.setTear(tear)
   }
 
-  blast(clientX: number, clientY: number, quiet = false) {
+  blast(clientX: number, clientY: number, quiet = false, silent = false) {
     if (this.reduceMotion || !this.lattice) return
     const compact = window.innerWidth <= 720
     const radius = BLAST.radius * (compact ? 0.55 : 1)
@@ -388,7 +386,7 @@ export class CrtController {
       this.lattice.addSpark(clientX, clientY, Math.cos(a) * speed, Math.sin(a) * speed)
     }
     this.tear(1.2, true)
-    if (!quiet) this.sound.play('blast', { pan: this.pan(clientX), intensity: 0.45 })
+    if (!quiet && !silent) this.sound.play('generate', { ...DISPERSE, pan: this.pan(clientX) })
     const now = performance.now()
     if (quiet || now - this.lastPulse < 2500) return
     this.lastPulse = now
@@ -460,10 +458,10 @@ export class CrtController {
     const target = e.target as Element | null
     if (target?.closest?.(INTERACTIVE) && !target.closest('[data-blast]')) return
     if (e.pointerType !== 'touch') {
-      this.blast(e.clientX, e.clientY)
+      this.blast(e.clientX, e.clientY, false, !!target?.closest('[data-blast]'))
       return
     }
-    this.tap = { x: e.clientX, y: e.clientY, t: performance.now(), id: e.pointerId }
+    this.tap = { x: e.clientX, y: e.clientY, t: performance.now(), id: e.pointerId, silent: !!target?.closest('[data-blast]') }
   }
 
   private onUp = (e: PointerEvent) => {
@@ -471,7 +469,7 @@ export class CrtController {
     this.tap = null
     if (!tap || tap.id !== e.pointerId || performance.now() - tap.t > TAP_MS) return
     if (Math.hypot(e.clientX - tap.x, e.clientY - tap.y) > TAP_SLOP) return
-    this.blast(e.clientX, e.clientY)
+    this.blast(e.clientX, e.clientY, false, tap.silent)
   }
 
   private onCancel = () => {

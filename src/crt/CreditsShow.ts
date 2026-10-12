@@ -1,7 +1,7 @@
 import type { Fireworks, Shot } from './Fireworks'
 import type { MusicBus, SoundApi } from './Sound'
-import { BAR_MS, BEAT_MS, CHORDS, RISE_MS, WHISTLE_LEAD, barStart, kicksForBar, loopBar, nextEnd, notesForBar, twinkleHeight } from './creditsTune'
-import { arcade, chip, chipDrum, firework } from './music'
+import { BAR_MS, BEAT_MS, CHORDS, RISE_MS, barStart, kicksForBar, loopBar, nextEnd, notesForBar, twinkleHeight } from './creditsTune'
+import { arcade, chip, chipDrum } from './music'
 
 const AHEAD_MS = 1500
 const TICK_MS = 100
@@ -159,8 +159,7 @@ export class CreditsShow {
     if (ok(at(start))) arcade(band, at(start), CHORDS[loopBar(bar)], BAR_MS / 1000, 4)
     for (const k of kicks) {
       const t = at(k.at)
-      if (k.whistle && ok(t - WHISTLE_LEAD)) firework(band, t - WHISTLE_LEAD, 'whistle', k.pan, 0.7)
-      if (ok(t)) firework(band, t, 'boom', k.pan * 0.66, k.level)
+      if (ok(t)) chipDrum(band, t, 'kick')
     }
     for (const beat of [1, 3]) if (ok(at(start + beat * BEAT_MS))) chipDrum(band, at(start + beat * BEAT_MS), 'snare')
     for (let k = 0; k < 8; k++) if (ok(at(start + (k / 2) * BEAT_MS))) chipDrum(band, at(start + (k / 2) * BEAT_MS), 'hat')

@@ -10,7 +10,6 @@ describe('credits roll kick schedule', () => {
     kicks.forEach((k) => {
       expect(k.at).toBeCloseTo(origin + k.beat * BEAT_MS)
       expect(k.launch).toBeCloseTo(k.at - RISE_MS)
-      expect(k.whistle).toBe(true)
     })
   })
 
@@ -19,7 +18,7 @@ describe('credits roll kick schedule', () => {
       const kicks = kicksForBar(bar, 0)
       expect(kicks.map((k) => k.beat)).toEqual([0, 1.5, 3, 3.33, 3.66])
       expect(kicks[4].at).toBeCloseTo((bar * 4 + 3.66) * BEAT_MS)
-      expect(kicks.slice(3).every((k) => k.fill && !k.whistle && k.level === 0.8)).toBe(true)
+      expect(kicks.slice(3).every((k) => k.fill && k.level === 0.8)).toBe(true)
       expect(kicks[4].kind).toBe('sprite')
     }
     expect(kicksForBar(2, 0)).toHaveLength(3)

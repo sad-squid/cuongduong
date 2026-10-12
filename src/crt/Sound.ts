@@ -1,13 +1,11 @@
 import { readPrefs, writePrefs } from './soundLevel'
 
 export type SoundName =
-  | 'blast'
   | 'tear'
   | 'generate'
   | 'tick'
   | 'rocket'
   | 'burst'
-  | 'sprite'
   | 'toggle'
   | 'shot'
   | 'hurt'
@@ -80,13 +78,11 @@ const DEFAULT_SETTINGS: ChainSettings = { volume: 0.3, bits: 10, rate: 18000, to
 type Limit = { max: number; gap: number; steal: boolean }
 
 const LIMITS: Record<SoundName, Limit> = {
-  blast: { max: 3, gap: 0.06, steal: true },
   tear: { max: 2, gap: 0.08, steal: true },
   generate: { max: 3, gap: 0.08, steal: true },
   tick: { max: 3, gap: 0.03, steal: false },
   rocket: { max: 3, gap: 0.08, steal: true },
   burst: { max: 4, gap: 0.05, steal: true },
-  sprite: { max: 2, gap: 0.1, steal: true },
   toggle: { max: 1, gap: 0.1, steal: true },
   shot: { max: 2, gap: 0.12, steal: true },
   hurt: { max: 1, gap: 0.3, steal: true },
@@ -102,13 +98,11 @@ const LEVEL_SPREAD = 0.1
 const PITCH_SPREAD = 0.03
 
 const TRIM: Record<SoundName, number> = {
-  blast: 0.85,
   tear: 1.25,
   generate: 0.6,
   tick: 1.8,
   rocket: 0.95,
   burst: 0.62,
-  sprite: 0.57,
   toggle: 1.9,
   shot: 0.5,
   hurt: 0.75,
@@ -170,11 +164,6 @@ const tok = (kit: Kit, t: number, f: number, peak: number, release = 0.03): void
   tup(kit, 'triangle', f * 1.1, f * 0.8, t, peak * 0.6, release, 1000, 0.002)
 }
 
-const debris = (kit: Kit, t: number, peak: number, release: number, lp: number): void => {
-  const g = kit.env(kit.out, t, peak, 0.004, release)
-  kit.noise('white', t, t + release * 1.7 + 0.02).connect(kit.filt('lowpass', lp, 0.6)).connect(kit.wobble(g, t, t + release * 1.7 + 0.02, 55, 0.85))
-}
-
 const boom = (kit: Kit, t: number, from: number, to: number, peak: number, release: number): void => {
   const o = kit.osc('sine', from, t, t + release * 1.7 + 0.03)
   o.frequency.exponentialRampToValueAtTime(to, t + release)
@@ -226,13 +215,6 @@ const thump = (kit: Kit, t: number, from: number, to: number, peak: number, rele
 }
 
 const SOUNDS: Record<SoundName, SoundFn> = {
-  blast: (kit, t) => {
-    hit(kit, t, 0.32, 2600, 0.1)
-    tup(kit, 'triangle', 120 + 15 * kit.k, 55, t, 0.6, 0.09, 700)
-    tok(kit, t, 340, 0.14, 0.03)
-    debris(kit, t + 0.008, 0.3, 0.06, 1500)
-    return 0.17
-  },
   tear: (kit, t) => {
     hit(kit, t, 0.16, 2400)
     const o = kit.osc('square', 140, t, t + 0.12)
@@ -265,13 +247,6 @@ const SOUNDS: Record<SoundName, SoundFn> = {
     tup(kit, 'triangle', 130, 60, t, 0.16, 0.12, 400, 0.01)
     grit(kit, t + 0.06, 0.55, 0.2, 1800)
     return 0.45
-  },
-  sprite: (kit, t) => {
-    boom(kit, t, 75, 40, 0.6, 0.22)
-    tup(kit, 'triangle', 150, 70, t, 0.2, 0.14, 450, 0.01)
-    grit(kit, t + 0.05, 0.5, 0.18, 1800)
-    grit(kit, t + 0.16, 0.3, 0.18, 900)
-    return 0.5
   },
   toggle: (kit, t) => {
     tok(kit, t, 360, 0.22, 0.03)

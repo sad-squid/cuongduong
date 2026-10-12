@@ -7,7 +7,6 @@ const BAR_BEATS = 4
 export const BAR_MS = BAR_BEATS * BEAT_MS
 const BARS = 16
 const ENDS: readonly number[] = [3, 7, 11, 15]
-export const WHISTLE_LEAD = 0.6
 
 const KICKS = [0, 1.5, 3]
 const FILLS = [3.33, 3.66]
@@ -84,7 +83,7 @@ export const nextEnd = (bar: number) => {
 }
 
 
-type Kick = { bar: number; beat: number; at: number; launch: number; fill: boolean; whistle: boolean; level: number; kind: ShotKind }
+type Kick = { bar: number; beat: number; at: number; launch: number; fill: boolean; level: number; kind: ShotKind }
 
 export const barStart = (origin: number, bar: number) => origin + bar * BAR_MS
 
@@ -95,7 +94,7 @@ export const kicksForBar = (bar: number, origin: number, final = false): Kick[] 
     const at = origin + (bar * BAR_BEATS + beat) * BEAT_MS
     const last = end && i === beats.length - 1
     const kind: ShotKind = final && last ? 'big' : last || (beat === 0 && SPRITE_DOWNBEATS.includes(loopBar(bar))) ? (final ? 'shell' : 'sprite') : 'shell'
-    return { bar, beat, at, launch: at - RISE_MS, fill: beat > 3.2, whistle: beat < 3.2, level: beat > 3.2 ? 0.8 : 1, kind }
+    return { bar, beat, at, launch: at - RISE_MS, fill: beat > 3.2, level: beat > 3.2 ? 0.8 : 1, kind }
   })
 }
 
