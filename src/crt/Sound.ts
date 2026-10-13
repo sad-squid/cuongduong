@@ -1,4 +1,4 @@
-import { MAX_VOLUME, levelToGain, readLevels, readPrefs, writePrefs } from './soundLevel'
+import { readMuted, writeMuted } from './soundPrefs'
 
 export type SoundName =
   | 'tear'
@@ -31,11 +31,9 @@ type ChainSettings = {
 
 export type SoundApi = {
   readonly enabled: boolean
-  readonly sfx: boolean
-  readonly music: boolean
+  readonly muted: boolean
   readonly musicActive: boolean
-  setSfx(on: boolean): void
-  setMusic(on: boolean): void
+  setMuted(muted: boolean): void
   setEnabled(on: boolean): void
   play(name: SoundName, opts?: PlayOptions): void
   setSettings(next: Partial<ChainSettings>): void
@@ -75,7 +73,7 @@ const musicPulse = (ctx: BaseAudioContext, duty: number) => {
   return ctx.createPeriodicWave(real, imag)
 }
 
-const DEFAULT_SETTINGS: ChainSettings = { volume: MAX_VOLUME, sfx: 0.5, music: 0.5, bits: 10, rate: 18000, tone: 2800 }
+const DEFAULT_SETTINGS: ChainSettings = { volume: 0.6, sfx: 0.5, music: 0.5, bits: 10, rate: 18000, tone: 2800 }
 
 type Limit = { max: number; gap: number; steal: boolean }
 
@@ -588,12 +586,11 @@ const createEngine = (ctx: BaseAudioContext, initial: ChainSettings): Engine => 
 type Live = { name: SoundName; gain: GainNode; end: number }
 
 export const createSound = (initial: Partial<ChainSettings> = {}): SoundApi => {
-  const levels = readLevels()
-  let settings: ChainSettings = { ...DEFAULT_SETTINGS, sfx: levelToGain(levels.sfx), music: levelToGain(levels.music), ...initial }
+  let settings: ChainSettings = { ...DEFAULT_SETTINGS, ...initial }
   let engine: Engine | null = null
   let ctx: AudioContext | null = null
   let enabled = false
-  const prefs = readPrefs()
+  let muted = readMuted()
   let live: Live[] = []
   const lastAt: Partial<Record<SoundName, number>> = {}
 
@@ -601,7 +598,7 @@ export const createSound = (initial: Partial<ChainSettings> = {}): SoundApi => {
   const waves = new Map<number, PeriodicWave>()
 
   const musicBus = (echoTime: number, level = 1, fadeIn = 0): MusicBus | null => {
-    if (!enabled || !prefs.music || engine === null || ctx === null || ctx.state !== 'running') return null
+    if (!enabled || engine === null || ctx === null || ctx.state !== 'running') return null
     const c = ctx
     const bus = c.createGain()
     bus.gain.setValueAtTime(fadeIn > 0 ? 0 : level, c.currentTime)
@@ -682,7 +679,7 @@ export const createSound = (initial: Partial<ChainSettings> = {}): SoundApi => {
   }
 
   const play = (name: SoundName, opts: PlayOptions = {}): void => {
-    if (!enabled || !prefs.sfx || engine === null || ctx === null) return
+    if (!enabled || engine === null || ctx === null) return
     if (ctx.state === 'suspended') void ctx.resume()
     const now = ctx.currentTime
     const limit = LIMITS[name]
@@ -730,22 +727,16 @@ export const createSound = (initial: Partial<ChainSettings> = {}): SoundApi => {
     get enabled() {
       return enabled
     },
-    get sfx() {
-      return prefs.sfx
-    },
-    get music() {
-      return prefs.music
+    get muted() {
+      return muted
     },
     get musicActive() {
-      return enabled && prefs.music
+      return enabled
     },
-    setSfx: (on: boolean) => {
-      prefs.sfx = on
-      writePrefs(prefs)
-    },
-    setMusic: (on: boolean) => {
-      prefs.music = on
-      writePrefs(prefs)
+    setMuted: (next: boolean) => {
+      muted = next
+      writeMuted(next)
+      setEnabled(!next)
     },
     setEnabled,
     play,

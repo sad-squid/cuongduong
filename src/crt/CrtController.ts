@@ -7,6 +7,9 @@ import { createSound } from './Sound'
 import type { CreditsShow } from './CreditsShow'
 import type { HomeMusic } from './HomeMusic'
 
+// Events browsers count as a user activation, which audio needs before it can start.
+const GESTURES = ['pointerdown', 'pointerup', 'keydown', 'touchend'] as const
+
 type Shows = typeof import('./musicShows')
 
 type CrtEvent =
@@ -100,6 +103,7 @@ export class CrtController {
       this.scheduleIdleTear()
       this.emit({ type: 'reveal', on: true })
     }
+    for (const type of GESTURES) window.addEventListener(type, this.onGesture, { capture: true, passive: true })
     window.addEventListener('pointermove', this.onMove, { passive: true })
     window.addEventListener('pointerdown', this.onDown, { passive: true })
     window.addEventListener('pointerup', this.onUp, { passive: true })
@@ -130,6 +134,7 @@ export class CrtController {
     this.arrivalTimers.forEach((timer) => window.clearTimeout(timer))
     this.arrivalTimers.clear()
     cancelAnimationFrame(this.scrollFrame)
+    for (const type of GESTURES) window.removeEventListener(type, this.onGesture, { capture: true })
     window.removeEventListener('pointermove', this.onMove)
     window.removeEventListener('pointerdown', this.onDown)
     window.removeEventListener('pointerup', this.onUp)
@@ -461,6 +466,18 @@ export class CrtController {
       if (v > 1.8) this.tear(Math.min(1.6, v / 2))
     }
     this.last = { x: e.clientX, y: e.clientY, t }
+  }
+
+  // Browsers hold audio until the visitor interacts, so sound (music included) starts on the first gesture unless they muted it before.
+  // Captured ahead of onDown so that first tap is heard too; keeps listening until the context is actually running.
+  private onGesture = () => {
+    if (this.sound.muted) return
+    if (!this.sound.enabled) {
+      this.sound.setEnabled(true)
+      this.soundChanged()
+    } else this.sound.wake()
+    if (this.sound.audioClock() === null) return
+    for (const type of GESTURES) window.removeEventListener(type, this.onGesture, { capture: true })
   }
 
   private onDown = (e: PointerEvent) => {

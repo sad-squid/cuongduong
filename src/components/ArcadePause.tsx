@@ -1,7 +1,6 @@
-import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react'
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useCrt } from '@/crt/context'
-import { levelToGain, readLevels, writeLevels } from '@/crt/soundLevel'
 
 type View = 'menu' | 'options'
 
@@ -9,42 +8,25 @@ export const ArcadePause = ({ shake, onShake, onResume, onExit }: { shake: boole
   const crt = useCrt()
   const { t } = useTranslation()
   const [view, setView] = useState<View>('menu')
-  const [on, setOn] = useState(crt.sound.enabled && crt.sound.sfx)
-  const [level, setLevel] = useState(() => readLevels().sfx)
+  const [on, setOn] = useState(!crt.sound.muted)
   const firstRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     firstRef.current?.focus()
   }, [view])
 
-  useEffect(() => crt.subscribe((event) => (event.type === 'sound' ? setOn(crt.sound.enabled && crt.sound.sfx) : undefined)), [crt])
+  useEffect(() => crt.subscribe((event) => (event.type === 'sound' ? setOn(!crt.sound.muted) : undefined)), [crt])
 
   const enable = (next: boolean) => {
-    crt.sound.setSfx(next)
-    if (next) crt.sound.setEnabled(true)
-    else if (!crt.sound.music) crt.sound.setEnabled(false)
+    crt.sound.setMuted(!next)
     if (next) crt.sound.play('toggle')
     setOn(next)
     crt.soundChanged()
   }
 
-  const slide = (value: number) => {
-    if (value > 0) {
-      setLevel(value)
-      writeLevels({ ...readLevels(), sfx: value })
-      crt.sound.setSettings({ sfx: levelToGain(value) })
-    }
-    if (value === 0 && on) enable(false)
-    else if (value > 0 && !on) enable(true)
-    else {
-      if (value > 0) crt.sound.play('tick')
-      crt.soundChanged()
-    }
-  }
-
   const trap = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key !== 'Tab') return
-    const items = Array.from(e.currentTarget.querySelectorAll<HTMLElement>('button, input'))
+    const items = Array.from(e.currentTarget.querySelectorAll<HTMLElement>('button'))
     const first = items[0]
     const last = items[items.length - 1]
     if (!first || !last) return
@@ -80,12 +62,6 @@ export const ArcadePause = ({ shake, onShake, onResume, onExit }: { shake: boole
             <span>{t('arcade.sound')}</span>
             <b>{on ? t('arcade.on') : t('arcade.off')}</b>
           </button>
-          <label className="arcade-option arcade-volume">
-            <span>{t('arcade.volume')}</span>
-            <span className="volume" style={{ '--fill': `${on ? level : 0}%` } as CSSProperties}>
-              <input type="range" min={0} max={100} step={5} value={on ? level : 0} onChange={(e) => slide(Number(e.currentTarget.value))} />
-            </span>
-          </label>
           <button type="button" className="arcade-option" aria-pressed={shake} onClick={() => onShake(!shake)}>
             <span>{t('arcade.shake')}</span>
             <b>{shake ? t('arcade.on') : t('arcade.off')}</b>
